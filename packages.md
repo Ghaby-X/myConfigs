@@ -18,3 +18,11 @@ we pull in something new.
 | networkmanager | network | Network management                     | installed (pre-existing) |
 | stow         | core      | Symlink dotfiles from this repo        | pending   |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | pending |
+| chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages, no compiling needed | pending |
+| aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | pending |
+
+Per-widget Astal libraries (add here as we build bar modules that need them —
+all available prebuilt via chaotic-aur, e.g. `libastal-tray-git`,
+`libastal-notifd-git`, `libastal-mpris-git`, `libastal-network-git`,
+`libastal-wireplumber-git`, `libastal-battery-git`). Sway workspaces use the
+generic `ext-workspace-v1` protocol (no Hyprland-specific IPC lib needed/available).

@@ -1,11 +1,33 @@
 #!/usr/bin/env bash
-# Installs every package this rice depends on. Safe to re-run (pacman -S skips
-# already-installed packages). Requires sudo — run it yourself, not via Claude.
+# Installs every package this rice depends on. Safe to re-run. Requires sudo —
+# run it yourself, not via Claude.
 set -euo pipefail
+
+CHAOTIC_KEY=3056513887B78AEB
+
+if ! pacman-key --list-keys "$CHAOTIC_KEY" >/dev/null 2>&1; then
+  echo "==> Importing Chaotic-AUR signing key"
+  sudo pacman-key --recv-key "$CHAOTIC_KEY" --keyserver keyserver.ubuntu.com
+  sudo pacman-key --lsign-key "$CHAOTIC_KEY"
+fi
+
+if ! pacman -Q chaotic-keyring >/dev/null 2>&1; then
+  echo "==> Installing Chaotic-AUR keyring + mirrorlist"
+  sudo pacman -U --noconfirm \
+    'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+    'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+fi
+
+if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
+  echo "==> Adding [chaotic-aur] repo to /etc/pacman.conf"
+  printf '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n' | sudo tee -a /etc/pacman.conf >/dev/null
+  sudo pacman -Syu
+fi
 
 PACMAN_PACKAGES=(
   stow
   kitty
+  aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
