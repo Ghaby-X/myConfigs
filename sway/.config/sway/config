@@ -3,7 +3,11 @@
 ### Variables ###
 set $mod Mod4
 set $term kitty
-set $menu wofi --show drun
+# cd first: wofi's CSS @import resolves relative to the process's cwd, not
+# the stylesheet's own location (a real wofi quirk, confirmed) — without
+# this, the theme import silently fails depending on what cwd sway itself
+# has when it execs this.
+set $menu sh -c 'cd ~/.config/wofi && exec wofi --show drun'
 
 ### Autostart ###
 exec_always mkdir -p ~/Pictures/Screenshots

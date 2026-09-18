@@ -5,6 +5,7 @@
 # by re-running it. The actual theme content lives in theme/.../themes/*/.
 **/current-theme.conf
 **/current-theme.scss
+**/current-theme.css
 theme/.config/rice/current-wallpaper
 
 # ags: generated types/build artifacts, npm deps — all regeneratable
