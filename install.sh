@@ -31,6 +31,7 @@ PACMAN_PACKAGES=(
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
   ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these
   dart-sass              # compiles the bar's style.scss (official extra repo)
+  swaybg                 # wallpaper renderer (module 5) — official extra repo
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
