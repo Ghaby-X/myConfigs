@@ -25,6 +25,7 @@ if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
 fi
 
 PACMAN_PACKAGES=(
+  swayfx                 # sway fork w/ rounded corners/blur/shadows; replaces sway (conflict, pacman will ask)
   stow
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)

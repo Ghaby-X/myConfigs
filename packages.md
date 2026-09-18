@@ -6,8 +6,8 @@ we pull in something new.
 
 | Package      | Module    | Why                                   | Status    |
 |--------------|-----------|----------------------------------------|-----------|
-| sway         | core      | Wayland compositor                     | installed (pre-existing) |
-| waybar       | bar       | Status bar                             | installed (pre-existing) |
+| sway         | core      | Wayland compositor (pre-existing; will be **replaced** by swayfx, see below) | installed (pre-existing) |
+| waybar       | bar       | Status bar (unused, replaced by AGS/Astal below) | installed (pre-existing) |
 | wofi         | launcher  | App launcher                           | installed (pre-existing) |
 | foot         | terminal  | Fallback terminal                      | installed (pre-existing) |
 | alacritty    | terminal  | Fallback terminal                      | installed (pre-existing) |
@@ -16,6 +16,7 @@ we pull in something new.
 | playerctl    | media     | Media key control                      | installed (pre-existing) |
 | pavucontrol  | audio     | Volume GUI                             | installed (pre-existing) |
 | networkmanager | network | Network management                     | installed (pre-existing) |
+| swayfx       | core      | Sway fork with rounded corners/blur/shadows/dim-inactive — drop-in replacement, same config+IPC. Official `cachyos` repo, no AUR needed. **Conflicts with and replaces `sway`.** | pending |
 | stow         | core      | Symlink dotfiles from this repo        | pending   |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | pending |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages, no compiling needed | pending |
