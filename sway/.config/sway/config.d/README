@@ -1,0 +1,4 @@
+Drop machine-specific `*.conf` files here — real monitor names/positions,
+per-machine input quirks, anything that would break portability if committed.
+Loaded automatically via `include config.d/*.conf` in the main config.
+These `*.conf` files are gitignored; this README is the only tracked file here.

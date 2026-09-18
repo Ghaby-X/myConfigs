@@ -1,0 +1,133 @@
+# myConfig — core swayfx config
+# Module 1: compositor core. Colors here are placeholders — module 3 (theme
+# engine) replaces the block below with an `include` into ~/.config/rice.
+
+### Variables ###
+set $mod Mod4
+set $term kitty
+set $menu wofi --show drun
+
+### Autostart ###
+exec_always mkdir -p ~/Pictures/Screenshots
+
+### Output ###
+# Intentionally no hardware-specific `output` lines here — sway picks each
+# output's preferred/native mode automatically, which keeps this config
+# portable across machines. Add a real multi-monitor layout in
+# config.d/local.conf (gitignored, machine-specific) if/when needed.
+include config.d/*.conf
+
+### Input ###
+input type:keyboard {
+    xkb_layout us
+}
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+}
+
+### Appearance ###
+font pango:MesloLGL Nerd Font Mono 10
+
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+
+gaps inner 8
+gaps outer 4
+smart_gaps on
+
+# swayfx eye-candy (moderate)
+corner_radius 8
+shadows enable
+shadow_blur_radius 15
+blur enable
+blur_passes 2
+blur_radius 5
+default_dim_inactive 0.15
+
+# --- colors (placeholder, module 3 makes this swappable) ---
+set $bg    #1e1e2e
+set $fg    #cdd6f4
+set $accent #89b4fa
+set $urgent #f38ba8
+set $inactive #45475a
+
+client.focused          $accent $bg $fg $accent $accent
+client.focused_inactive $inactive $bg $fg $inactive $inactive
+client.unfocused        $inactive $bg $fg $inactive $inactive
+client.urgent           $urgent $bg $fg $urgent $urgent
+
+### Keybindings (Super, vim-style hjkl) ###
+bindsym $mod+Return exec $term
+bindsym $mod+shift+q kill
+bindsym $mod+d exec $menu
+bindsym $mod+shift+c reload
+bindsym $mod+shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+
+# focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# move window
+bindsym $mod+shift+h move left
+bindsym $mod+shift+j move down
+bindsym $mod+shift+k move up
+bindsym $mod+shift+l move right
+
+# layout
+bindsym $mod+v splitv
+bindsym $mod+b splith
+bindsym $mod+f fullscreen
+bindsym $mod+space focus mode_toggle
+bindsym $mod+shift+space floating toggle
+
+# workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+bindsym $mod+shift+1 move container to workspace number 1
+bindsym $mod+shift+2 move container to workspace number 2
+bindsym $mod+shift+3 move container to workspace number 3
+bindsym $mod+shift+4 move container to workspace number 4
+bindsym $mod+shift+5 move container to workspace number 5
+bindsym $mod+shift+6 move container to workspace number 6
+bindsym $mod+shift+7 move container to workspace number 7
+bindsym $mod+shift+8 move container to workspace number 8
+bindsym $mod+shift+9 move container to workspace number 9
+bindsym $mod+shift+0 move container to workspace number 10
+
+# resize mode
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 20px
+    bindsym j resize grow height 20px
+    bindsym k resize shrink height 20px
+    bindsym l resize grow width 20px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# screenshots
+bindsym Print exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S.png')
+bindsym $mod+Print exec grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S.png')
+
+# media / volume
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+include /etc/sway/config.d/*
