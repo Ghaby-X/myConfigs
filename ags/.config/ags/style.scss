@@ -54,10 +54,6 @@ network {
   -gtk-icon-size: 11px;
 }
 
-bluetooth {
-  -gtk-icon-size: 11px;
-}
-
 workspaces {
   padding-left: 3px;
 }
@@ -88,13 +84,16 @@ clock {
   font-weight: bold;
 }
 
-// speaker/microphone have cssName overrides (speaker/microphone), which
-// replaces their CSS node type entirely — a `button` type selector no
-// longer matches them at all, so these must be targeted directly.
+// speaker/microphone/bluetooth have cssName overrides, which replace
+// their CSS node type entirely — a `button` type selector no longer
+// matches them, so these must be targeted directly.
 speaker,
 microphone,
+bluetooth,
 tray button {
   background: transparent;
+  border: none;
+  box-shadow: none;
   border-radius: 4px;
   padding: 1px 2px;
 
@@ -120,6 +119,8 @@ battery {
 }
 
 bluetooth {
+  -gtk-icon-size: 13px;
+
   &.off {
     color: rgba(255, 255, 255, 0.3);
   }

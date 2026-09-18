@@ -28,7 +28,8 @@ we pull in something new.
 | libastal-wireplumber-git | bar | Volume + microphone widgets. From chaotic-aur. | installed |
 | libastal-battery-git | bar | Battery widget (inert on this VM, matters on real hardware). From chaotic-aur. | installed |
 | libastal-mpris-git | bar | Now-playing/media widget. From chaotic-aur. | installed |
-| libastal-bluetooth-git | bar | Bluetooth status widget (grouped with wifi/battery). From chaotic-aur. | pending |
+| libastal-bluetooth-git | bar | Bluetooth status widget (grouped with wifi/battery). From chaotic-aur. | installed |
+| ttf-jetbrains-mono-nerd | bar | Full icon-set Nerd Font for bar glyphs (CPU/RAM icons) — GeistMono/MesloL Nerd Font builds on this system only include a narrower "essential" glyph subset (verified: Material Design Icons/Font Awesome/Octicons codepoints render as a missing-glyph placeholder box, not tofu-that-happens-to-look-ok). Official `extra` repo. | pending |
 
 Workspaces widget: **not** using `libastal-workspace-git` (the generic
 `ext-workspace-v1` protocol binding) — it isn't in chaotic-aur's prebuilt set,

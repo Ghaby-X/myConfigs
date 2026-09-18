@@ -29,6 +29,7 @@ PACMAN_PACKAGES=(
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
+  ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these
   dart-sass              # compiles the bar's style.scss (official extra repo)
 )
 
