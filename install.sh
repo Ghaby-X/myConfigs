@@ -35,6 +35,7 @@ PACMAN_PACKAGES=(
   rofi                   # launcher (module 6) — v2.0.0 has native Wayland support, no fork needed
   ttf-iosevka-nerd       # launcher font (adi1090x style-2 default)
   papirus-icon-theme     # launcher app icons
+  swaylock               # screen locker — used by the power menu's Lock entry
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
