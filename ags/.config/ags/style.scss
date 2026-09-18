@@ -4,8 +4,10 @@
 
 window.Bar {
   // Hugs the top edge flush, full-width — no floating/rounded outer shell.
-  background: $bg;
-  color: $fg;
+  // Deliberately monochrome (pure black/white), independent of the active
+  // color theme — not derived from $bg/$fg.
+  background: #000000;
+  color: #ffffff;
   font-weight: bold;
   font-size: 12px;
 
@@ -57,18 +59,18 @@ button.workspace {
   padding: 0;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.06);
-  color: $fg;
+  color: #ffffff;
   transition: 100ms linear;
 
   &.focused {
-    background: $accent;
-    color: $bg;
+    background: #ffffff;
+    color: #000000;
     min-width: 24px;
   }
 
   &.urgent {
     background: $urgent;
-    color: $bg;
+    color: #000000;
   }
 }
 
