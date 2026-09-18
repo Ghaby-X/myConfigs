@@ -35,7 +35,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <SystemStats />
           <Audio />
           <Tray />
-          <box cssName="status-group" spacing={6}>
+          <box cssName="status-group" spacing={3}>
             <Network />
             <Bluetooth />
             <Battery />
