@@ -36,6 +36,9 @@ mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags"
 ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
 ln -sfn "$theme_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
+if [[ -f "$theme_path/wallpaper.png" ]]; then
+  ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
+fi
 
 echo "Theme set to: $name"
 
@@ -65,4 +68,11 @@ if command -v ags >/dev/null; then
   setsid ags run >/tmp/ags.log 2>&1 &
   disown
   echo "ags: started/restarted"
+fi
+
+if [[ -e "$RICE_DIR/current-wallpaper" ]] && command -v swaybg >/dev/null; then
+  pkill -x swaybg 2>/dev/null || true
+  setsid swaybg -i "$RICE_DIR/current-wallpaper" -m fill >/tmp/swaybg.log 2>&1 &
+  disown
+  echo "swaybg: started/restarted"
 fi

@@ -5,6 +5,7 @@
 # by re-running it. The actual theme content lives in theme/.../themes/*/.
 **/current-theme.conf
 **/current-theme.scss
+theme/.config/rice/current-wallpaper
 
 # ags: generated types/build artifacts, npm deps — all regeneratable
 # (node_modules/@girs symlink to the system ags install anyway).

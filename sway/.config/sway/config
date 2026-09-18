@@ -8,6 +8,7 @@ set $menu wofi --show drun
 ### Autostart ###
 exec_always mkdir -p ~/Pictures/Screenshots
 exec ags run
+exec swaybg -i ~/.config/rice/current-wallpaper -m fill
 
 ### Output ###
 # Intentionally no hardware-specific `output` lines here — sway picks each
