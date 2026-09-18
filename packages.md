@@ -31,9 +31,9 @@ we pull in something new.
 | libastal-bluetooth-git | bar | Bluetooth status widget (grouped with wifi/battery). From chaotic-aur. | installed |
 | ttf-jetbrains-mono-nerd | bar | Full icon-set Nerd Font for bar glyphs (CPU/RAM icons) — GeistMono/MesloL Nerd Font builds on this system only include a narrower "essential" glyph subset (verified: Material Design Icons/Font Awesome/Octicons codepoints render as a missing-glyph placeholder box, not tofu-that-happens-to-look-ok). Official `extra` repo. | installed |
 | swaybg       | wallpaper | Wallpaper renderer — sway has no built-in background rendering, execs this. Official `extra` repo. | installed |
-| rofi         | launcher  | App launcher (module 6), replaces wofi — matches a previously-tuned hyprland+rofi setup (adi1090x theme pack, type-2/style-2, onedark colors). v2.0.0 has native Wayland support built in, no `rofi-wayland` fork needed. Official `extra` repo. | pending |
-| ttf-iosevka-nerd | launcher | Launcher font (adi1090x style-2 default: "Iosevka Nerd Font 10"). Official `extra` repo. | pending |
-| papirus-icon-theme | launcher | App icons for the launcher grid. Official `extra` repo. | pending |
+| rofi         | launcher  | App launcher (module 6), replaces wofi — matches a previously-tuned hyprland+rofi setup (adi1090x theme pack, type-2/style-2, onedark colors). v2.0.0 has native Wayland support built in, no `rofi-wayland` fork needed. Official `extra` repo. | installed |
+| ttf-iosevka-nerd | launcher | Launcher font (adi1090x style-2 default: "Iosevka Nerd Font 10"). Official `extra` repo. | installed |
+| papirus-icon-theme | launcher | App icons for the launcher grid. Official `extra` repo. | installed |
 
 Workspaces widget: **not** using `libastal-workspace-git` (the generic
 `ext-workspace-v1` protocol binding) — it isn't in chaotic-aur's prebuilt set,
