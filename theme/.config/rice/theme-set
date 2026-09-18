@@ -78,3 +78,16 @@ if [[ -e "$RICE_DIR/current-wallpaper" ]] && command -v swaybg >/dev/null; then
   disown
   echo "swaybg: started/restarted"
 fi
+
+# System-wide light/dark preference (org.freedesktop.appearance color-scheme,
+# read via the xdg-desktop-portal Settings interface) — this is what lets
+# portal-aware apps (Firefox, GTK4/libadwaita apps, etc.) follow the rice's
+# theme automatically instead of just our own configs.
+if [[ -f "$theme_path/mode" ]] && command -v gsettings >/dev/null; then
+  mode="$(cat "$theme_path/mode")"
+  case "$mode" in
+    dark)  gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' ;;
+    light) gsettings set org.gnome.desktop.interface color-scheme 'prefer-light' ;;
+  esac
+  echo "system color-scheme: $mode"
+fi
