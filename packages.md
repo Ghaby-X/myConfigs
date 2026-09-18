@@ -34,7 +34,7 @@ we pull in something new.
 | rofi         | launcher  | App launcher (module 6), replaces wofi — matches a previously-tuned hyprland+rofi setup (adi1090x theme pack, type-2/style-2, onedark colors). v2.0.0 has native Wayland support built in, no `rofi-wayland` fork needed. Official `extra` repo. | installed |
 | ttf-iosevka-nerd | launcher | Launcher font (adi1090x style-2 default: "Iosevka Nerd Font 10"). Official `extra` repo. | installed |
 | papirus-icon-theme | launcher | App icons for the launcher grid. Official `extra` repo. | installed |
-| swaylock     | power-menu | Screen locker, used by the power menu's Lock entry — first piece of the still-pending lock-screen/idle module. Official `extra` repo. | pending |
+| swaylock     | power-menu | Screen locker, used by the power menu's Lock entry — first piece of the still-pending lock-screen/idle module. Official `extra` repo. | installed |
 
 Workspaces widget: **not** using `libastal-workspace-git` (the generic
 `ext-workspace-v1` protocol binding) — it isn't in chaotic-aur's prebuilt set,
