@@ -61,6 +61,10 @@ network {
   -gtk-icon-size: 11px;
 }
 
+bluetooth {
+  -gtk-icon-size: 11px;
+}
+
 workspaces {
   padding-left: 3px;
 }
@@ -91,7 +95,11 @@ clock {
   font-weight: bold;
 }
 
-audio button,
+// speaker/microphone have cssName overrides (speaker/microphone), which
+// replaces their CSS node type entirely — a `button` type selector no
+// longer matches them at all, so these must be targeted directly.
+speaker,
+microphone,
 tray button {
   background: transparent;
   border-radius: 4px;
@@ -102,8 +110,9 @@ tray button {
   }
 }
 
-audio button.muted {
-  color: rgba(255, 255, 255, 0.3);
+speaker.muted,
+microphone.muted {
+  color: rgba(255, 255, 255, 0.25);
 }
 
 system-stats label {
