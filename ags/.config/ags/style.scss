@@ -58,11 +58,11 @@ button.workspace {
   border: none;
   box-shadow: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.3);
   transition: 100ms linear;
 
   &.occupied {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.45);
   }
 
   &.focused {
