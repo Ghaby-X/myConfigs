@@ -25,7 +25,6 @@ if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
 fi
 
 PACMAN_PACKAGES=(
-  swayfx                 # sway fork w/ rounded corners/blur/shadows; replaces sway (conflict, pacman will ask)
   stow
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
@@ -33,3 +32,8 @@ PACMAN_PACKAGES=(
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
 sudo pacman -S --needed "${PACMAN_PACKAGES[@]}"
+
+# cachyos's swayfx build lags behind their own wlroots updates (was pinned to
+# wlroots0.19 while cachyos ships wlroots0.20) — pull it from chaotic-aur
+# explicitly instead, since repo priority would otherwise pick the stale one.
+sudo pacman -S --needed chaotic-aur/swayfx
