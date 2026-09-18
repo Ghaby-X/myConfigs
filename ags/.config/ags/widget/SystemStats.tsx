@@ -48,15 +48,15 @@ export default function SystemStats() {
 
   return (
     <box cssName="system-stats" spacing={4}>
-      <box spacing={3}>
+      <box spacing={6}>
         <label class="stat-icon" label="" />
         <label label={cpu.as((c) => `${c.usage}%`)} />
       </box>
-      <box spacing={3}>
+      <box spacing={6}>
         <label class="stat-icon" label="" />
         <label label={mem.as((m) => `${m}GiB`)} />
       </box>
-      <box spacing={3} visible={gpu.as((g) => g !== null)}>
+      <box spacing={6} visible={gpu.as((g) => g !== null)}>
         <label label="GPU" />
         <label label={gpu.as((g) => g ?? "")} />
       </box>
