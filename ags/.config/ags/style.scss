@@ -76,6 +76,13 @@ button.workspace {
 
 clock {
   font-weight: bold;
+  background: transparent;
+  border-radius: 4px;
+  padding: 2px 6px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 audio button,
