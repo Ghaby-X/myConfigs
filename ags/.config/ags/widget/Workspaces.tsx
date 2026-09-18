@@ -1,7 +1,7 @@
 import { For, createState, createComputed } from "ags"
 import { execAsync, subprocess } from "ags/process"
 
-const MIN_WORKSPACES = 4
+const MIN_WORKSPACES = 5
 
 type SwayWorkspace = {
   num: number
