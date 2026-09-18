@@ -4,3 +4,9 @@
 # Active-theme symlinks — runtime state managed by theme-set, reconstructable
 # by re-running it. The actual theme content lives in theme/.../themes/*/.
 **/current-theme.conf
+**/current-theme.scss
+
+# ags: generated types/build artifacts, npm deps — all regeneratable
+# (node_modules/@girs symlink to the system ags install anyway).
+ags/.config/ags/node_modules/
+ags/.config/ags/@girs/

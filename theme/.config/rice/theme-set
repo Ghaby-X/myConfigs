@@ -32,9 +32,10 @@ if [[ ! -d "$theme_path" ]]; then
   exit 1
 fi
 
-mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty"
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags"
 ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
+ln -sfn "$theme_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
 
 echo "Theme set to: $name"
 
@@ -44,3 +45,12 @@ if command -v swaymsg >/dev/null && [[ -n "${SWAYSOCK:-}" ]]; then
 fi
 
 echo "kitty: press Ctrl+Shift+F5 in open windows to pick up the new colors (new windows get it automatically)"
+
+if command -v ags >/dev/null && ags list 2>/dev/null | grep -q .; then
+  ags quit >/dev/null 2>&1 || true
+  nohup ags run >/tmp/ags.log 2>&1 &
+  disown
+  echo "ags: restarted"
+else
+  echo "ags: not running, nothing to restart"
+fi

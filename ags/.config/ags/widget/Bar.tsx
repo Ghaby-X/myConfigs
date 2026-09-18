@@ -1,10 +1,15 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { execAsync } from "ags/process"
-import { createPoll } from "ags/time"
+import Workspaces from "./Workspaces"
+import Clock from "./Clock"
+import Tray from "./Tray"
+import Network from "./Network"
+import Audio from "./Audio"
+import Battery from "./Battery"
+import Media from "./Media"
+import SystemStats from "./SystemStats"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
-  const time = createPoll("", 1000, "date")
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
   return (
@@ -18,21 +23,20 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={app}
     >
       <centerbox cssName="centerbox">
-        <button
-          $type="start"
-          onClicked={() => execAsync("echo hello").then(console.log)}
-          hexpand
-          halign={Gtk.Align.CENTER}
-        >
-          <label label="Welcome to AGS!" />
-        </button>
-        <box $type="center" />
-        <menubutton $type="end" hexpand halign={Gtk.Align.CENTER}>
-          <label label={time} />
-          <popover>
-            <Gtk.Calendar />
-          </popover>
-        </menubutton>
+        <box $type="start" halign={Gtk.Align.START}>
+          <Workspaces />
+        </box>
+        <box $type="center" halign={Gtk.Align.CENTER}>
+          <Clock />
+        </box>
+        <box $type="end" halign={Gtk.Align.END}>
+          <Media />
+          <SystemStats />
+          <Network />
+          <Audio />
+          <Battery />
+          <Tray />
+        </box>
       </centerbox>
     </window>
   )

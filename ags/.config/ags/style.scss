@@ -1,20 +1,70 @@
-// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
-$fg-color: #{"@theme_fg_color"};
-$bg-color: #{"@theme_bg_color"};
+// Colors: current-theme.scss is a symlink managed by
+// ~/.config/rice/theme-set (gitignored, not tracked here — see theme/).
+@import "current-theme";
 
 window.Bar {
   background: transparent;
-  color: $fg-color;
+  color: $fg;
   font-weight: bold;
 
   > centerbox {
-    background: $bg-color;
+    background: $bg;
     border-radius: 10px;
-    margin: 8px;
+    margin: 6px 10px;
+    padding: 2px 10px;
+  }
+}
+
+workspaces {
+  padding: 0 4px;
+}
+
+button.workspace {
+  min-width: 24px;
+  min-height: 24px;
+  margin: 3px 2px;
+  padding: 0;
+  border-radius: 8px;
+  background: $inactive;
+  color: $fg;
+
+  &.focused {
+    background: $accent;
+    color: $bg;
   }
 
-  button {
-    border-radius: 8px;
-    margin: 2px;
+  &.urgent {
+    background: $urgent;
+    color: $bg;
   }
+}
+
+clock {
+  padding: 0 10px;
+  color: $fg;
+}
+
+tray,
+network,
+audio,
+battery,
+media,
+system-stats {
+  padding: 0 8px;
+  color: $fg;
+}
+
+audio button,
+tray button {
+  background: transparent;
+  border-radius: 8px;
+  padding: 2px 4px;
+
+  &:hover {
+    background: $inactive;
+  }
+}
+
+battery {
+  color: $fg;
 }
