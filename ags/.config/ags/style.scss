@@ -14,7 +14,7 @@ window.Bar {
   > centerbox {
     border-radius: 0;
     margin: 0;
-    padding: 4px 8px 2px;
+    padding: 4px 6px 2px;
     min-height: 24px;
   }
 }
@@ -29,7 +29,7 @@ audio,
 battery,
 media,
 system-stats {
-  margin: 0 4px;
+  margin: 0 3px;
 }
 
 system-stats,
@@ -40,7 +40,7 @@ media,
 tray {
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.08);
-    padding-left: 8px;
+    padding-left: 6px;
   }
 }
 
@@ -49,7 +49,7 @@ image {
 }
 
 workspaces {
-  padding-left: 4px;
+  padding-left: 3px;
 }
 
 button.workspace {
