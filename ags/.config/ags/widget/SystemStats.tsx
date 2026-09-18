@@ -49,7 +49,7 @@ export default function SystemStats() {
     <box cssName="system-stats">
       <label label={cpu.as((c) => `  ${c.usage}%`)} />
       <label label={mem.as((m) => `  ${m}%`)} />
-      <label label={gpu} visible={gpu.as((g) => g !== null)} />
+      <label label={gpu.as((g) => g ?? "")} visible={gpu.as((g) => g !== null)} />
     </box>
   )
 }

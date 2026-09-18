@@ -1,6 +1,6 @@
 // Colors: current-theme.scss is a symlink managed by
 // ~/.config/rice/theme-set (gitignored, not tracked here — see theme/).
-@import "current-theme";
+@use "current-theme" as *;
 
 window.Bar {
   background: transparent;
