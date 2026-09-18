@@ -44,8 +44,21 @@ tray {
   }
 }
 
+// the three categories within status-group (wifi/bluetooth/battery) also
+// get a line between them, not just spacing
+status-group > *:not(:first-child) {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding-left: 6px;
+}
+
 image {
   -gtk-icon-size: 13px;
+}
+
+// network-offline-symbolic in particular renders visually heavier than the
+// other symbolic icons at the same nominal size
+network {
+  -gtk-icon-size: 11px;
 }
 
 workspaces {

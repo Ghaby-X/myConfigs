@@ -33,13 +33,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box $type="end" halign={Gtk.Align.END}>
           <Media />
           <SystemStats />
+          <Audio />
+          <Tray />
           <box cssName="status-group" spacing={6}>
             <Network />
             <Bluetooth />
             <Battery />
           </box>
-          <Audio />
-          <Tray />
         </box>
       </centerbox>
     </window>
