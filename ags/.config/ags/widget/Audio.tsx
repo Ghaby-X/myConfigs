@@ -10,7 +10,7 @@ export default function Audio() {
   const micMuted = createBinding(wp, "audio", "defaultMicrophone", "mute")
 
   return (
-    <box cssName="audio" spacing={6}>
+    <box cssName="audio" spacing={2}>
       <button
         cssName="speaker"
         class={speakerMuted.as((muted) => (muted ? "muted" : ""))}

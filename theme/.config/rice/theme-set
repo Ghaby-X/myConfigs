@@ -46,23 +46,23 @@ fi
 
 echo "kitty: press Ctrl+Shift+F5 in open windows to pick up the new colors (new windows get it automatically)"
 
-if command -v ags >/dev/null && ags list 2>/dev/null | grep -q .; then
-  ags quit >/dev/null 2>&1 || true
-  sleep 0.5
-  # `ags quit` doesn't always fully release the app's D-Bus name (seen this
-  # hang around as an orphaned gjs process at least once) — if it's still
-  # registered, a fresh `ags run` just silently gets routed to it as an
-  # unhandled request instead of actually starting. Force it if so.
-  if gdbus call --session --dest org.freedesktop.DBus \
-       --object-path /org/freedesktop/DBus \
-       --method org.freedesktop.DBus.GetConnectionUnixProcessID "io.Astal.ags" \
-       >/dev/null 2>&1; then
-    pkill -9 -f "gjs -m.*ags\.js" 2>/dev/null || true
+if command -v ags >/dev/null; then
+  if ags list 2>/dev/null | grep -q .; then
+    ags quit >/dev/null 2>&1 || true
     sleep 0.5
+    # `ags quit` doesn't always fully release the app's D-Bus name (seen this
+    # hang around as an orphaned gjs process at least once) — if it's still
+    # registered, a fresh `ags run` just silently gets routed to it as an
+    # unhandled request instead of actually starting. Force it if so.
+    if gdbus call --session --dest org.freedesktop.DBus \
+         --object-path /org/freedesktop/DBus \
+         --method org.freedesktop.DBus.GetConnectionUnixProcessID "io.Astal.ags" \
+         >/dev/null 2>&1; then
+      pkill -9 -f "gjs -m.*ags\.js" 2>/dev/null || true
+      sleep 0.5
+    fi
   fi
-  nohup ags run >/tmp/ags.log 2>&1 &
+  setsid ags run >/tmp/ags.log 2>&1 &
   disown
-  echo "ags: restarted"
-else
-  echo "ags: not running, nothing to restart"
+  echo "ags: started/restarted"
 fi

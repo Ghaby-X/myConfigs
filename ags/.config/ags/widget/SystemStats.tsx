@@ -46,7 +46,7 @@ export default function SystemStats() {
   const gpu = createPoll<string | null>(null, 2000, () => readGpu())
 
   return (
-    <box cssName="system-stats" spacing={8}>
+    <box cssName="system-stats" spacing={6}>
       <label label={cpu.as((c) => `CPU ${c.usage}%`)} />
       <label label={mem.as((m) => `RAM ${m}%`)} />
       <label label={gpu.as((g) => `GPU ${g ?? ""}`)} visible={gpu.as((g) => g !== null)} />

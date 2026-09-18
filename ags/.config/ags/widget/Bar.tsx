@@ -10,6 +10,10 @@ import Battery from "./Battery"
 import Media from "./Media"
 import SystemStats from "./SystemStats"
 
+function Divider() {
+  return <box cssName="divider" valign={Gtk.Align.CENTER} />
+}
+
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
@@ -32,10 +36,12 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         </box>
         <box $type="end" halign={Gtk.Align.END}>
           <Media />
-          <SystemStats />
-          <Audio />
           <Tray />
-          <box cssName="status-group" spacing={3}>
+          <SystemStats />
+          <Divider />
+          <Audio />
+          <Divider />
+          <box cssName="status-group" spacing={6}>
             <Network />
             <Bluetooth />
             <Battery />
