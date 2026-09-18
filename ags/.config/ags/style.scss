@@ -1,6 +1,17 @@
 // Colors: current-theme.scss is a symlink managed by
 // ~/.config/rice/theme-set (gitignored, not tracked here — see theme/).
 @use "current-theme" as *;
+@use "sass:color";
+
+// Bar text/icon base color: white on dark themes, near-black on light ones.
+// Every opacity tier below (dividers, dim states, hover backgrounds) is
+// derived from this instead of a hardcoded 255,255,255 — otherwise a light
+// theme's low-opacity "white" rules would be almost invisible against its
+// light $bg-alt.
+$bar-fg: if(
+  sass(color.channel($bg-alt, "lightness", $space: hsl) > 50%): #111111;
+  else: #ffffff
+);
 
 // CPU/RAM icons: GeistMono/MesloL Nerd Font builds on this system only
 // include a narrower glyph subset — verified these specific codepoints
@@ -8,19 +19,20 @@
 // installed just for this.
 .stat-icon {
   font-family: "JetBrainsMono Nerd Font";
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba($bar-fg, 0.55);
 }
 
 system-stats label:not(.stat-icon) {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba($bar-fg, 0.75);
 }
 
 window.Bar {
   // Hugs the top edge flush, full-width — no floating/rounded outer shell.
-  // White text/icons on each theme's darkest tone ($bg-alt) — varies per
-  // theme now, unlike the previous hardcoded pure black.
+  // Text/icons on each theme's darkest tone ($bg-alt) — both the background
+  // and the base text color vary per theme now, unlike the previous
+  // hardcoded #000000/#ffffff.
   background: $bg-alt;
-  color: #ffffff;
+  color: $bar-fg;
   font-weight: bold;
   font-size: 12px;
 
@@ -52,7 +64,7 @@ system-stats {
 divider {
   min-width: 1px;
   min-height: 12px;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba($bar-fg, 0.3);
   margin: 0 10px;
 }
 
@@ -77,15 +89,15 @@ button.workspace {
   border: none;
   box-shadow: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba($bar-fg, 0.3);
   transition: 100ms linear;
 
   &.occupied {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba($bar-fg, 0.45);
   }
 
   &.focused {
-    color: #ffffff;
+    color: $bar-fg;
   }
 
   &.urgent {
@@ -111,13 +123,13 @@ tray button {
   padding: 1px 2px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba($bar-fg, 0.08);
   }
 }
 
 speaker.muted,
 microphone.muted {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba($bar-fg, 0.6);
 }
 
 system-stats label {
@@ -135,14 +147,14 @@ bluetooth {
   -gtk-icon-size: 13px;
 
   &.off {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba($bar-fg, 0.3);
   }
 
   &.on {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba($bar-fg, 0.7);
   }
 
   &.connected {
-    color: #ffffff;
+    color: $bar-fg;
   }
 }
