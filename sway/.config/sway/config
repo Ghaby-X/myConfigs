@@ -1,6 +1,4 @@
 # myConfig — core swayfx config
-# Module 1: compositor core. Colors here are placeholders — module 3 (theme
-# engine) replaces the block below with an `include` into ~/.config/rice.
 
 ### Variables ###
 set $mod Mod4
@@ -46,17 +44,8 @@ blur_passes 2
 blur_radius 5
 default_dim_inactive 0.15
 
-# --- colors (placeholder, module 3 makes this swappable) ---
-set $bg    #1e1e2e
-set $fg    #cdd6f4
-set $accent #89b4fa
-set $urgent #f38ba8
-set $inactive #45475a
-
-client.focused          $accent $bg $fg $accent $accent
-client.focused_inactive $inactive $bg $fg $inactive $inactive
-client.unfocused        $inactive $bg $fg $inactive $inactive
-client.urgent           $urgent $bg $fg $urgent $urgent
+# --- colors: managed by ~/.config/rice/theme-set, not tracked in git ---
+include current-theme.conf
 
 ### Keybindings (Super, vim-style hjkl) ###
 bindsym $mod+Return exec $term

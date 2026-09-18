@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Switches the active rice theme: symlinks each app's current-theme.conf to
+# the chosen theme's snippet, then live-reloads what can be live-reloaded.
+#
+# The current-theme.conf files this writes are intentionally NOT tracked in
+# git (see .gitignore) — the active theme is runtime state, fully
+# reconstructable by re-running this script. Themes themselves live in
+# themes/<name>/ and ARE tracked.
+set -euo pipefail
+
+RICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+THEMES_DIR="$RICE_DIR/themes"
+
+usage() {
+  echo "Usage: theme-set <name>"
+  echo "Available themes:"
+  for d in "$THEMES_DIR"/*/; do
+    echo "  - $(basename "$d")"
+  done
+}
+
+name="${1:-}"
+if [[ -z "$name" ]]; then
+  usage
+  exit 1
+fi
+
+theme_path="$THEMES_DIR/$name"
+if [[ ! -d "$theme_path" ]]; then
+  echo "No such theme: $name" >&2
+  usage
+  exit 1
+fi
+
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty"
+ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
+ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
+
+echo "Theme set to: $name"
+
+if command -v swaymsg >/dev/null && [[ -n "${SWAYSOCK:-}" ]]; then
+  swaymsg reload >/dev/null
+  echo "sway: reloaded"
+fi
+
+echo "kitty: press Ctrl+Shift+F5 in open windows to pick up the new colors (new windows get it automatically)"

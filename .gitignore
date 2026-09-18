@@ -1,2 +1,6 @@
 # Machine-specific overrides — never portable, never committed.
 **/config.d/*.conf
+
+# Active-theme symlinks — runtime state managed by theme-set, reconstructable
+# by re-running it. The actual theme content lives in theme/.../themes/*/.
+**/current-theme.conf
