@@ -29,6 +29,7 @@ PACMAN_PACKAGES=(
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
+  dart-sass              # compiles the bar's style.scss (official extra repo)
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
@@ -38,3 +39,11 @@ sudo pacman -S --needed "${PACMAN_PACKAGES[@]}"
 # wlroots0.19 while cachyos ships wlroots0.20) — pull it from chaotic-aur
 # explicitly instead, since repo priority would otherwise pick the stale one.
 sudo pacman -S --needed chaotic-aur/swayfx
+
+# Astal widget libraries for the bar (module 4) — all prebuilt via chaotic-aur.
+sudo pacman -S --needed \
+  libastal-tray-git \
+  libastal-network-git \
+  libastal-wireplumber-git \
+  libastal-battery-git \
+  libastal-mpris-git

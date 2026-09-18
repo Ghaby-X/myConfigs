@@ -22,9 +22,16 @@ we pull in something new.
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | installed |
 | otf-geist-mono-nerd | terminal | Geist Mono, patched with Nerd Font glyphs — kitty font (`GeistMono Nerd Font Mono`). Official `extra` repo (nerd-fonts group), no AUR needed. | installed |
+| dart-sass    | bar       | Compiles the AGS bar's style.scss. Official `extra` repo. | pending |
+| libastal-tray-git | bar | System tray widget. From chaotic-aur. | pending |
+| libastal-network-git | bar | Network status widget. From chaotic-aur. | pending |
+| libastal-wireplumber-git | bar | Volume + microphone widgets. From chaotic-aur. | pending |
+| libastal-battery-git | bar | Battery widget (inert on this VM, matters on real hardware). From chaotic-aur. | pending |
+| libastal-mpris-git | bar | Now-playing/media widget. From chaotic-aur. | pending |
 
-Per-widget Astal libraries (add here as we build bar modules that need them —
-all available prebuilt via chaotic-aur, e.g. `libastal-tray-git`,
-`libastal-notifd-git`, `libastal-mpris-git`, `libastal-network-git`,
-`libastal-wireplumber-git`, `libastal-battery-git`). Sway workspaces use the
-generic `ext-workspace-v1` protocol (no Hyprland-specific IPC lib needed/available).
+Workspaces widget: **not** using `libastal-workspace-git` (the generic
+`ext-workspace-v1` protocol binding) — it isn't in chaotic-aur's prebuilt set,
+only buildable from AUR source, which we're avoiding. Using direct `swaymsg`
+IPC (subprocess + JSON) instead, which is native to sway anyway. CPU/RAM/GPU
+stats: no Astal lib for these either — reading `/proc` directly and shelling
+out to a GPU tool if one's present.
