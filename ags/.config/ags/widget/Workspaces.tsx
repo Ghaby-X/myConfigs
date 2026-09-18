@@ -1,6 +1,8 @@
 import { For, createState, createComputed } from "ags"
 import { execAsync, subprocess } from "ags/process"
 
+const MIN_WORKSPACES = 4
+
 type SwayWorkspace = {
   num: number
   name: string
@@ -27,14 +29,21 @@ export default function Workspaces() {
     },
   })
 
+  // sway only reports workspaces that currently exist (have windows, or are
+  // focused) — always show at least 1..MIN_WORKSPACES as click-to-create
+  // slots, plus any real workspace beyond that range.
+  const displayNumbers = createComputed(() => {
+    const nums = new Set<number>(Array.from({ length: MIN_WORKSPACES }, (_, i) => i + 1))
+    for (const ws of workspaces()) nums.add(ws.num)
+    return Array.from(nums).sort((a, b) => a - b)
+  })
+
   return (
     <box cssName="workspaces">
-      <For each={workspaces} id={(ws) => ws.name}>
-        {(ws) => {
-          const name = ws.name
-          const num = ws.num
-          const focused = createComputed(() => workspaces().find((w) => w.name === name)?.focused ?? false)
-          const urgent = createComputed(() => workspaces().find((w) => w.name === name)?.urgent ?? false)
+      <For each={displayNumbers}>
+        {(num) => {
+          const focused = createComputed(() => workspaces().find((w) => w.num === num)?.focused ?? false)
+          const urgent = createComputed(() => workspaces().find((w) => w.num === num)?.urgent ?? false)
 
           return (
             <button
