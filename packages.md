@@ -21,6 +21,7 @@ we pull in something new.
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | installed |
+| otf-geist-mono-nerd | terminal | Geist Mono, patched with Nerd Font glyphs — kitty font (`GeistMono Nerd Font Mono`). Official `extra` repo (nerd-fonts group), no AUR needed. | installed |
 
 Per-widget Astal libraries (add here as we build bar modules that need them —
 all available prebuilt via chaotic-aur, e.g. `libastal-tray-git`,

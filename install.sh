@@ -28,6 +28,7 @@ PACMAN_PACKAGES=(
   stow
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
+  otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
