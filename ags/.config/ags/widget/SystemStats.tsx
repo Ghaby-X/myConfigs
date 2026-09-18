@@ -41,6 +41,9 @@ async function readGpu(): Promise<string | null> {
   }
 }
 
+const CPU_ICON = ""
+const MEM_ICON = ""
+
 export default function SystemStats() {
   const cpu = createPoll<CpuSample>({ idleTotal: 0, total: 0, usage: 0 }, 2000, readCpu)
   const mem = createPoll<string>("0", 2000, () => readMem())
@@ -49,12 +52,12 @@ export default function SystemStats() {
   return (
     <box cssName="system-stats" spacing={4}>
       <box spacing={6}>
-        <label class="stat-icon" label="" />
-        <label label={cpu.as((c) => `${c.usage}%`)} />
+        <label class="stat-icon" label={MEM_ICON} />
+        <label label={mem.as((m) => `${m}GiB`)} />
       </box>
       <box spacing={6}>
-        <label class="stat-icon" label="" />
-        <label label={mem.as((m) => `${m}GiB`)} />
+        <label class="stat-icon" label={CPU_ICON} />
+        <label label={cpu.as((c) => `${c.usage}%`)} />
       </box>
       <box spacing={6} visible={gpu.as((g) => g !== null)}>
         <label label="GPU" />
