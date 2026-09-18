@@ -2,6 +2,14 @@
 // ~/.config/rice/theme-set (gitignored, not tracked here — see theme/).
 @use "current-theme" as *;
 
+// CPU/RAM icons: GeistMono/MesloL Nerd Font builds on this system only
+// include a narrower glyph subset — verified these specific codepoints
+// (oct-cpu, fa-memory) render as real icons in JetBrainsMono Nerd Font,
+// installed just for this.
+.stat-icon {
+  font-family: "JetBrainsMono Nerd Font";
+}
+
 window.Bar {
   // Hugs the top edge flush, full-width — no floating/rounded outer shell.
   // Deliberately monochrome (pure black/white), independent of the active

@@ -20,12 +20,13 @@ function readCpu(prev: CpuSample): CpuSample {
   return { idleTotal, total, usage }
 }
 
-function readMem(): number {
+function readMem(): string {
   const text = readFile("/proc/meminfo")
   const get = (key: string) => Number(text.match(new RegExp(`${key}:\\s+(\\d+)`))?.[1] ?? 0)
   const total = get("MemTotal")
   const avail = get("MemAvailable")
-  return total > 0 ? Math.round(((total - avail) / total) * 100) : 0
+  const usedGiB = (total - avail) / (1024 * 1024)
+  return usedGiB.toFixed(1)
 }
 
 // GPU monitoring is vendor-specific and there's no generic Astal lib for it.
@@ -42,14 +43,23 @@ async function readGpu(): Promise<string | null> {
 
 export default function SystemStats() {
   const cpu = createPoll<CpuSample>({ idleTotal: 0, total: 0, usage: 0 }, 2000, readCpu)
-  const mem = createPoll<number>(0, 2000, () => readMem())
+  const mem = createPoll<string>("0", 2000, () => readMem())
   const gpu = createPoll<string | null>(null, 2000, () => readGpu())
 
   return (
-    <box cssName="system-stats" spacing={6}>
-      <label label={cpu.as((c) => `CPU ${c.usage}%`)} />
-      <label label={mem.as((m) => `RAM ${m}%`)} />
-      <label label={gpu.as((g) => `GPU ${g ?? ""}`)} visible={gpu.as((g) => g !== null)} />
+    <box cssName="system-stats" spacing={4}>
+      <box spacing={3}>
+        <label class="stat-icon" label="" />
+        <label label={cpu.as((c) => `${c.usage}%`)} />
+      </box>
+      <box spacing={3}>
+        <label class="stat-icon" label="" />
+        <label label={mem.as((m) => `${m}GiB`)} />
+      </box>
+      <box spacing={3} visible={gpu.as((g) => g !== null)}>
+        <label label="GPU" />
+        <label label={gpu.as((g) => g ?? "")} />
+      </box>
     </box>
   )
 }
