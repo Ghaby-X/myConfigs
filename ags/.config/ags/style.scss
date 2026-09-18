@@ -7,12 +7,13 @@ window.Bar {
   background: $bg;
   color: $fg;
   font-weight: bold;
+  font-size: 12px;
 
   > centerbox {
     border-radius: 0;
     margin: 0;
-    padding: 0 12px;
-    min-height: 32px;
+    padding: 0 8px;
+    min-height: 24px;
   }
 }
 
@@ -26,7 +27,7 @@ audio,
 battery,
 media,
 system-stats {
-  margin: 0 6px;
+  margin: 0 4px;
 }
 
 system-stats,
@@ -37,12 +38,12 @@ media,
 tray {
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.08);
-    padding-left: 12px;
+    padding-left: 8px;
   }
 }
 
 image {
-  -gtk-icon-size: 15px;
+  -gtk-icon-size: 13px;
 }
 
 workspaces {
@@ -50,9 +51,9 @@ workspaces {
 }
 
 button.workspace {
-  min-width: 22px;
-  min-height: 22px;
-  margin: 0 3px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0 2px;
   padding: 0;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.06);
@@ -62,7 +63,7 @@ button.workspace {
   &.focused {
     background: $accent;
     color: $bg;
-    min-width: 30px;
+    min-width: 24px;
   }
 
   &.urgent {
