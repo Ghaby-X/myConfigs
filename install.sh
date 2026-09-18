@@ -32,6 +32,9 @@ PACMAN_PACKAGES=(
   ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these
   dart-sass              # compiles the bar's style.scss (official extra repo)
   swaybg                 # wallpaper renderer (module 5) — official extra repo
+  rofi                   # launcher (module 6) — v2.0.0 has native Wayland support, no fork needed
+  ttf-iosevka-nerd       # launcher font (adi1090x style-2 default)
+  papirus-icon-theme     # launcher app icons
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"

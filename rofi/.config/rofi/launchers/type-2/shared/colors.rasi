@@ -1,0 +1,6 @@
+/**
+ * Colors: current-theme.rasi is a symlink managed by
+ * ~/.config/rice/theme-set (gitignored, not tracked here — see theme/).
+ **/
+
+@import "~/.config/rofi/current-theme.rasi"

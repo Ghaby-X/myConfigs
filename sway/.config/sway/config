@@ -3,11 +3,10 @@
 ### Variables ###
 set $mod Mod4
 set $term kitty
-# cd first: wofi's CSS @import resolves relative to the process's cwd, not
-# the stylesheet's own location (a real wofi quirk, confirmed) — without
-# this, the theme import silently fails depending on what cwd sway itself
-# has when it execs this.
-set $menu sh -c 'cd ~/.config/wofi && exec wofi --show drun'
+# wofi (module 6 first pass) replaced by rofi — matches a previously-tuned
+# hyprland+rofi setup (2-col icon grid via the adi1090x pack's type-2/
+# style-2 theme). wofi's config is left in place, just unused.
+set $menu ~/.config/rofi/launchers/type-2/launcher.sh
 
 ### Autostart ###
 exec_always mkdir -p ~/Pictures/Screenshots

@@ -32,11 +32,12 @@ if [[ ! -d "$theme_path" ]]; then
   exit 1
 fi
 
-mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/wofi"
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/wofi" "$HOME/.config/rofi"
 ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
 ln -sfn "$theme_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
 ln -sfn "$theme_path/wofi.css" "$HOME/.config/wofi/current-theme.css"
+ln -sfn "$theme_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
 if [[ -f "$theme_path/wallpaper.png" ]]; then
   ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
 fi
