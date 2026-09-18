@@ -16,7 +16,8 @@ export default function Media() {
   })
 
   return (
-    <box cssName="media" visible={hasPlayer}>
+    <box cssName="media" spacing={6} visible={hasPlayer}>
+      <image iconName="media-playback-start-symbolic" />
       <label label={label} maxWidthChars={30} ellipsize={Pango.EllipsizeMode.END} />
     </box>
   )

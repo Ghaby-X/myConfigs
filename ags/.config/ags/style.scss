@@ -3,34 +3,66 @@
 @use "current-theme" as *;
 
 window.Bar {
-  background: transparent;
+  // Hugs the top edge flush, full-width — no floating/rounded outer shell.
+  background: $bg;
   color: $fg;
   font-weight: bold;
 
   > centerbox {
-    background: $bg;
-    border-radius: 10px;
-    margin: 6px 10px;
-    padding: 2px 10px;
+    border-radius: 0;
+    margin: 0;
+    padding: 0 12px;
+    min-height: 32px;
   }
 }
 
+// shared, restrained spacing between the right-side modules — no filled
+// pill background per module, just breathing room + a divider
+workspaces,
+clock,
+tray,
+network,
+audio,
+battery,
+media,
+system-stats {
+  margin: 0 6px;
+}
+
+system-stats,
+network,
+audio,
+battery,
+media,
+tray {
+  &:not(:first-child) {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    padding-left: 12px;
+  }
+}
+
+image {
+  -gtk-icon-size: 15px;
+}
+
 workspaces {
-  padding: 0 4px;
+  margin-left: 0;
 }
 
 button.workspace {
-  min-width: 24px;
-  min-height: 24px;
-  margin: 3px 2px;
+  min-width: 22px;
+  min-height: 22px;
+  margin: 0 3px;
   padding: 0;
-  border-radius: 8px;
-  background: $inactive;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
   color: $fg;
+  transition: 100ms linear;
 
   &.focused {
     background: $accent;
     color: $bg;
+    min-width: 30px;
   }
 
   &.urgent {
@@ -40,31 +72,27 @@ button.workspace {
 }
 
 clock {
-  padding: 0 10px;
-  color: $fg;
-}
-
-tray,
-network,
-audio,
-battery,
-media,
-system-stats {
-  padding: 0 8px;
-  color: $fg;
+  font-weight: bold;
 }
 
 audio button,
 tray button {
   background: transparent;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 2px 4px;
 
   &:hover {
-    background: $inactive;
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
+system-stats label {
+  font-size: 0.9em;
+  margin: 0 4px;
+}
+
 battery {
-  color: $fg;
+  &.low label {
+    color: $urgent;
+  }
 }

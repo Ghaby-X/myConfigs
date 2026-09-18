@@ -1,7 +1,9 @@
 import { createPoll } from "ags/time"
 
 export default function Clock() {
-  const time = createPoll("", 1000, "date '+%a %d %b  %H:%M:%S'")
+  // Forced via `sh -c` so LC_TIME=C applies regardless of the system locale
+  // (this system has LC_TIME=rw_RW while everything else is en_US.UTF-8).
+  const time = createPoll("", 1000, ["sh", "-c", "LC_TIME=C date '+%a %d %b  %H:%M:%S'"])
 
   return <label cssName="clock" label={time} />
 }
