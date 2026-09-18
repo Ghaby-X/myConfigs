@@ -102,6 +102,10 @@ tray button {
   }
 }
 
+audio button.muted {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 system-stats label {
   font-size: 0.9em;
   margin: 0 4px;
