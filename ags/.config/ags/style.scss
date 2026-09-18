@@ -17,9 +17,9 @@ system-stats label:not(.stat-icon) {
 
 window.Bar {
   // Hugs the top edge flush, full-width — no floating/rounded outer shell.
-  // Deliberately monochrome (pure black/white), independent of the active
-  // color theme — not derived from $bg/$fg.
-  background: #000000;
+  // White text/icons on each theme's darkest tone ($bg-alt) — varies per
+  // theme now, unlike the previous hardcoded pure black.
+  background: $bg-alt;
   color: #ffffff;
   font-weight: bold;
   font-size: 12px;
