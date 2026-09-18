@@ -42,6 +42,11 @@ export default function Workspaces() {
     <box cssName="workspaces">
       <For each={displayNumbers}>
         {(num) => {
+          // "occupied" = sway actually reports this workspace at all (has
+          // windows, or is the active-but-empty one on some output) — a
+          // placeholder slot we synthesized to pad up to MIN_WORKSPACES
+          // never appears in the live list until something's put on it.
+          const occupied = createComputed(() => workspaces().some((w) => w.num === num))
           const focused = createComputed(() => workspaces().find((w) => w.num === num)?.focused ?? false)
           const urgent = createComputed(() => workspaces().find((w) => w.num === num)?.urgent ?? false)
 
@@ -49,6 +54,7 @@ export default function Workspaces() {
             <button
               class={createComputed(() => {
                 const classes = ["workspace"]
+                if (occupied()) classes.push("occupied")
                 if (focused()) classes.push("focused")
                 if (urgent()) classes.push("urgent")
                 return classes.join(" ")
