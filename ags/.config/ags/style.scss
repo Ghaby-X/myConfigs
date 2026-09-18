@@ -62,7 +62,7 @@ button.workspace {
   transition: 100ms linear;
 
   &.occupied {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.55);
   }
 
   &.focused {
