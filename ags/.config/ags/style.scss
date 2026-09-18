@@ -19,23 +19,23 @@ window.Bar {
   }
 }
 
-// shared, restrained spacing between the right-side modules — no filled
-// pill background per module, just breathing room + a divider
+// shared, restrained spacing between the right-side groups — no filled
+// pill background per group, just breathing room + a divider. Three groups:
+// status-group (network/bluetooth/battery), audio (mic/volume), system-stats
+// (resource usage) — each is one visual unit, no dividers *within* a group.
 workspaces,
 clock,
 tray,
-network,
+status-group,
 audio,
-battery,
 media,
 system-stats {
   margin: 0 3px;
 }
 
 system-stats,
-network,
+status-group,
 audio,
-battery,
 media,
 tray {
   &:not(:first-child) {
@@ -97,5 +97,19 @@ system-stats label {
 battery {
   &.low label {
     color: $urgent;
+  }
+}
+
+bluetooth {
+  &.off {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &.on {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &.connected {
+    color: #ffffff;
   }
 }

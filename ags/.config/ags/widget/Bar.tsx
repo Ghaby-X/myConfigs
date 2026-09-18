@@ -4,6 +4,7 @@ import Workspaces from "./Workspaces"
 import Clock from "./Clock"
 import Tray from "./Tray"
 import Network from "./Network"
+import Bluetooth from "./Bluetooth"
 import Audio from "./Audio"
 import Battery from "./Battery"
 import Media from "./Media"
@@ -32,9 +33,12 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box $type="end" halign={Gtk.Align.END}>
           <Media />
           <SystemStats />
-          <Network />
+          <box cssName="status-group" spacing={6}>
+            <Network />
+            <Bluetooth />
+            <Battery />
+          </box>
           <Audio />
-          <Battery />
           <Tray />
         </box>
       </centerbox>

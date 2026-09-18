@@ -46,4 +46,5 @@ sudo pacman -S --needed \
   libastal-network-git \
   libastal-wireplumber-git \
   libastal-battery-git \
-  libastal-mpris-git
+  libastal-mpris-git \
+  libastal-bluetooth-git
