@@ -27,7 +27,12 @@ fi
 PACMAN_PACKAGES=(
   stow
   python                 # theme-render (generates every theme file from colors.toml); stdlib only
-  zsh                    # default login shell (set below); ~/.zshenv from the qt package exports the Qt theme var
+  zsh                    # default login shell (set below); config is the `zsh` stow package
+  oh-my-zsh-git          # Oh My Zsh (cachyos/chaotic-aur), loaded from /usr/share by ~/.zshrc
+  zsh-theme-powerlevel10k # prompt
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  eza                    # `ls` alias in ~/.zshrc
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)

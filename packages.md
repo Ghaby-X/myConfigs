@@ -19,7 +19,12 @@ we pull in something new.
 | swayfx       | core      | Sway fork with rounded corners/blur/shadows/dim-inactive — drop-in replacement, same config+IPC. **From chaotic-aur specifically** (cachyos repo's build was stale, pinned to wlroots0.19 vs installed wlroots0.20). Replaced `sway`. | installed |
 | python | core | Runs `theme-render`, which generates every app's theme files from a theme's `colors.toml` (stdlib only, needs 3.11+ for `tomllib`). Normally already installed. | installed |
 | stow         | core      | Symlink dotfiles from this repo        | installed |
-| zsh          | core      | Default login shell — install.sh runs `chsh` to set it | installed |
+| zsh          | core      | Default login shell — install.sh runs `chsh` to set it; config lives in the `zsh` stow package (.zshrc, .p10k.zsh, .zshenv) | installed |
+| oh-my-zsh-git | zsh | Oh My Zsh framework (`git` plugin); loaded from /usr/share/oh-my-zsh by `zsh/.zshrc`. cachyos/chaotic-aur. | installed |
+| zsh-theme-powerlevel10k | zsh | Prompt (Pure style, configured in `zsh/.p10k.zsh`). | installed |
+| zsh-autosuggestions | zsh | Fish-style suggestions; color follows the rice theme. | installed |
+| zsh-syntax-highlighting | zsh | Command highlighting; colors follow the rice theme. | installed |
+| eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | installed |
@@ -43,7 +48,7 @@ we pull in something new.
 | imagemagick | polish | Decodes and resizes the wallpapers `scripts/fetch-wallpapers.sh` downloads (needs JPEG XL support for the GNOME pack). Official `extra` repo. | installed |
 | cliphist | polish | Clipboard history daemon storage; `wl-paste --watch` feeds it, `rofi/clipboard.sh` is the picker (`$mod+Shift+v`). Official `extra` repo. | installed |
 | bibata-cursor-theme | polish | Cursor theme (Bibata-Modern-Classic, 24px), set in sway config + gsettings + `~/.zshenv`. From chaotic-aur. | installed |
-| qt6ct | polish | Qt6 theming: Fusion style + per-theme palette (`themes/*/qt6ct.conf`), generated config by theme-set; needs `QT_QPA_PLATFORMTHEME=qt6ct`, set by the `qt` stow package (`~/.zshenv`). Official `extra` repo. | installed |
+| qt6ct | polish | Qt6 theming: Fusion style + per-theme palette (rendered from `themes/*/colors.toml`), generated config by theme-set; needs `QT_QPA_PLATFORMTHEME=qt6ct`, set in `~/.zshenv` (the `zsh` stow package). Official `extra` repo. | installed |
 | kvantum | polish | Installed but **unused** — qt6ct + Fusion covers Qt theming; can be uninstalled. | installed (unused) |
 
 Workspaces widget: **not** using `libastal-workspace-git` (the generic
