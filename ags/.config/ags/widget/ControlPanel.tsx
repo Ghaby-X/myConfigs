@@ -52,7 +52,8 @@ function Tile(props: {
 // Compact toggle: icon with its name underneath.
 function SquareTile(props: {
   icon: Accessor<string>
-  title: string
+  title: string | Accessor<string>
+  tooltip?: string
   active: Accessor<boolean>
   available?: Accessor<boolean>
   onClicked: () => void
@@ -61,6 +62,7 @@ function SquareTile(props: {
   return (
     <button
       class={props.active.as((a) => (a ? "square active" : "square"))}
+      tooltipText={props.tooltip ?? (typeof props.title === "string" ? props.title : "")}
       sensitive={props.available ?? true}
       hexpand
       onClicked={props.onClicked}
@@ -72,6 +74,36 @@ function SquareTile(props: {
       </box>
     </button>
   )
+}
+
+// Power profile via power-profiles-daemon. Enter toggles performance <-> balanced;
+// Shift+Enter toggles power-saver <-> balanced. Machines without a "performance"
+// profile (VMs, some laptops) fall back to power-saver on Enter.
+function usePowerProfile() {
+  const [profile, setProfile] = createState("balanced")
+  const [profiles, setProfiles] = createState<string[]>([])
+  const refresh = () => {
+    execAsync(["powerprofilesctl", "get"]).then((p) => setProfile(p.trim())).catch(() => {})
+  }
+  execAsync(["powerprofilesctl", "list"])
+    .then((out) => setProfiles([...out.matchAll(/^\*?\s*([\w-]+):/gm)].map((m) => m[1])))
+    .catch(() => setProfiles([]))
+  refresh()
+  interval(3000, refresh)
+
+  const set = (target: string) =>
+    execAsync(["powerprofilesctl", "set", profile.get() === target ? "balanced" : target])
+      .then(refresh)
+      .catch(console.error)
+  const hasPerf = () => profiles.get().includes("performance")
+
+  return {
+    profile,
+    available: profiles.as((l) => l.length > 1),
+    hasPerf,
+    toggle: () => set(hasPerf() ? "performance" : "power-saver"),
+    toggleSaver: () => set("power-saver"),
+  }
 }
 
 // Airplane mode = everything rfkill knows about is soft-blocked. On a machine
@@ -113,6 +145,7 @@ function Toggles() {
   const btDevices = createBinding(bt, "devices")
 
   const airplane = useAirplane()
+  const power = usePowerProfile()
 
   // DND / mic
   const dnd = createBinding(notifd, "dontDisturb")
@@ -190,6 +223,17 @@ function Toggles() {
           active={airplane.on}
           available={airplane.available}
           onClicked={airplane.toggle}
+        />
+        <SquareTile
+          title={power.profile.as((p) => (p === "performance" ? "Perf" : p === "power-saver" ? "Saver" : "Balanced"))}
+          tooltip="Performance mode  (Shift+Enter: power saver)"
+          icon={power.profile.as((p) =>
+            p === "performance" ? "perf-performance-symbolic" : p === "power-saver" ? "perf-saver-symbolic" : "perf-balanced-symbolic",
+          )}
+          active={power.profile.as((p) => p === "performance" || p === "power-saver")}
+          available={power.available}
+          onClicked={power.toggle}
+          more={power.toggleSaver}
         />
       </box>
     </box>
