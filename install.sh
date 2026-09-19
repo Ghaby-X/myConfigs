@@ -26,6 +26,7 @@ fi
 
 PACMAN_PACKAGES=(
   stow
+  python                 # theme-render (generates every theme file from colors.toml); stdlib only
   zsh                    # default login shell (set below); ~/.zshenv from the qt package exports the Qt theme var
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)

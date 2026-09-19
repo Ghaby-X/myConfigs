@@ -17,6 +17,7 @@ we pull in something new.
 | pavucontrol  | audio     | Volume GUI                             | installed (pre-existing) |
 | networkmanager | network | Network management                     | installed (pre-existing) |
 | swayfx       | core      | Sway fork with rounded corners/blur/shadows/dim-inactive — drop-in replacement, same config+IPC. **From chaotic-aur specifically** (cachyos repo's build was stale, pinned to wlroots0.19 vs installed wlroots0.20). Replaced `sway`. | installed |
+| python | core | Runs `theme-render`, which generates every app's theme files from a theme's `colors.toml` (stdlib only, needs 3.11+ for `tomllib`). Normally already installed. | installed |
 | stow         | core      | Symlink dotfiles from this repo        | installed |
 | zsh          | core      | Default login shell — install.sh runs `chsh` to set it | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |

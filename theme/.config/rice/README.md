@@ -1,57 +1,65 @@
 # theme engine
 
+Every theme is **one file**, `themes/<name>/colors.toml`. Everything else — kitty,
+sway, the AGS bar, rofi, swaylock, GTK, Qt — is generated from it by
+`theme-render`, so all apps always agree.
+
 ```
 rice/
-├── theme-set              # the switcher: theme-set <name>
-└── themes/
-    ├── catppuccin-mocha/
-    │   ├── sway.conf       # $bg/$fg/$accent/$urgent/$inactive + client.* lines
-    │   ├── kitty.conf      # kitty color directives
-    │   └── ags.scss        # $bg/$fg/$accent/$urgent/$inactive/$bg-alt (SCSS vars)
-    ├── one-dark/
-    │   └── (same files)
-    ├── catppuccin-latte/       # light
-    ├── mac-dark/               # Apple system colors: pure-black shell, crisp white text
-    └── mac-light/              # Apple system colors: white, near-black text
+├── theme-set              # theme-set <name>: render + link + reload everything
+├── theme-render           # colors.toml + templates/*.tpl -> ~/.local/state/rice/rendered/<name>/
+├── wallpaper-set          # wallpaper-set <image>: change only the wallpaper
+├── templates/             # one .tpl per app (sway, kitty, ags.scss, rofi, swaylock, gtk)
+└── themes/<name>/
+    ├── colors.toml        # the palette (below)
+    ├── default-wallpaper  # optional: file in backgrounds/ used as the theme's default
+    └── backgrounds/       # extra wallpapers — downloaded by scripts/fetch-wallpapers.sh, not in git
 ```
 
-Every theme folder also carries `rofi.rasi`, `swaylock.conf`, `gtk.css`,
-`qt6ct.conf`, `mode` (`dark`/`light`) and `wallpaper.png`.
+## colors.toml
 
-`theme-set <name>` symlinks each app's `current-theme.*` to the chosen
-theme's snippet and reloads what it can live-reload (sway reloads instantly;
-kitty needs Ctrl+Shift+F5 in already-open windows; ags is quit and restarted).
-The `current-theme.*` files it writes are gitignored — they're runtime state,
-not content; the active theme is always reconstructable by re-running
-`theme-set`.
+```toml
+name = "Tokyo Night"
+mode = "dark"                 # or "light" (also drives the system dark/light preference)
+
+background = "#1a1b26"        # windows, terminal, lock screen
+foreground = "#c0caf5"
+accent     = "#7aa2f7"        # focus borders, selections, active toggles
+
+color0 = "#15161e"            # ANSI 0-15 for the terminal; red/green/yellow/blue/
+...                           # magenta/cyan (color1-6) also drive urgent/ok/warn
+color15 = "#c0caf5"
+
+# optional — otherwise computed by fixed rules from the colors above:
+cursor    = "..."             # default: foreground
+selection = "..."             # default: background mixed 22% toward foreground
+shell     = "..."             # bar, launcher, panels. default: background 25% darker
+                              #   (5% darker for light themes)
+surface   = "..."             # notification cards. default: background
+border    = "..."             # default: background mixed 18% toward foreground
+```
+
+Derived roles (`urgent`, `ok`, `warn`, `muted`, `on(color)` = readable text on a
+color, ...) come from the same palette, so a new theme only needs the block above.
+A file of the same name in a theme folder (e.g. `themes/foo/kitty.conf`) is used
+instead of the rendered one — a per-theme override.
 
 ## Adding a theme
 
-Make `themes/<name>/sway.conf` and `themes/<name>/kitty.conf`. sway.conf needs
-at minimum:
+1. `scripts/import-base16.py <scheme>` creates `colors.toml` from any of the 339
+   [tinted-theming](https://github.com/tinted-theming/schemes) schemes — or write it
+   by hand from the theme's official palette (some Base16 ports mis-assign colors).
+2. Add wallpapers to `scripts/fetch-wallpapers.sh` and name the default in
+   `default-wallpaper`.
+3. `theme-set <name>` — or pick it with `$mod+t`.
 
-```
-set $bg       #......
-set $fg       #......
-set $accent   #......
-set $urgent   #......
-set $inactive #......
+## Templates
 
-client.focused          $accent $bg $fg $accent $accent
-client.focused_inactive $inactive $bg $fg $inactive $inactive
-client.unfocused        $inactive $bg $fg $inactive $inactive
-client.urgent           $urgent $bg $fg $urgent $urgent
-```
-
-The bar (`ags.scss`) uses the same five variables, but as SCSS `$vars`
-instead of sway's `set $var` syntax. As more modules gain theming (launcher,
-notifications), each theme folder grows a matching file (`rofi.rasi`,
-`mako.conf`, ...).
+`{{ key }}`, `{{ key|strip }}` (no #), `{{ key|rgb }}`, `{{ key|upper }}`,
+`{{ mix(a, b, 0.3) }}`, `{{ on(color) }}`, `{{ alpha(key, 99) }}`. The Qt palette is
+computed in `theme-render` itself.
 
 ## Adding a new app to the engine
 
-1. Give the app's own config an `include`/`@import current-theme.<ext>` (or
-   that app's equivalent).
-2. Add `**/current-theme.<ext>` to the root `.gitignore`.
-3. Add a `<app>.<ext>` to every folder under `themes/`.
-4. Add the symlink line to `theme-set`.
+Add `templates/<file>.tpl` (its output name is the file name minus `.tpl`), then
+link the rendered file from `theme-set` and have the app include/read that link.

@@ -29,7 +29,7 @@ don't leak between machines; the tracked config auto-detects sane defaults.
 - `install.sh` — installs those packages via pacman.
 - `scripts/stow-all.sh` — symlinks every package into `$HOME`, portably.
 - `theme/` — the theme-switching engine. See `theme/.config/rice/README.md`.
-- one directory per app (`sway/`, `kitty/`, `ags/`, `rofi/`) — each
+- one directory per app (`sway/`, `kitty/`, `ags/`, `rofi/`, `qt/`) — each
   a stow package.
 
 ## Switching themes
