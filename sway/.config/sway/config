@@ -12,6 +12,12 @@ set $menu ~/.config/rofi/launchers/type-2/launcher.sh
 exec_always mkdir -p ~/Pictures/Screenshots
 exec ags run
 exec swaybg -i ~/.config/rice/current-wallpaper -m fill
+# idle: lock after 5min, screens off after 10min (resume on activity), and
+# always lock before sleep/suspend.
+exec swayidle -w \
+  timeout 300 '~/.config/rice/lock' \
+  timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+  before-sleep '~/.config/rice/lock'
 
 ### Output ###
 # Intentionally no hardware-specific `output` lines here — sway picks each
@@ -59,6 +65,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+shift+q kill
 bindsym $mod+d exec $menu
 bindsym $mod+shift+c reload
+bindsym $mod+shift+l exec ~/.config/rice/lock
 # power menu (lock/sleep/logout/reboot/shutdown) — replaces the plain exit
 # confirm, rofi-based, matches a previously-tuned hyprland setup
 bindsym $mod+shift+e exec ~/.config/rofi/powermenu.sh

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Locks the screen using the active theme's swaylock config (colors) plus
+# its wallpaper as the lock background. Shared by the power menu's Lock
+# entry and swayidle, so both lock the same way.
+set -euo pipefail
+
+RICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -e "$RICE_DIR/current-wallpaper" ]]; then
+  exec swaylock -f --image "$RICE_DIR/current-wallpaper"
+else
+  exec swaylock -f
+fi

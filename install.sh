@@ -36,6 +36,7 @@ PACMAN_PACKAGES=(
   ttf-iosevka-nerd       # launcher font (adi1090x style-2 default)
   papirus-icon-theme     # launcher app icons
   swaylock               # screen locker — used by the power menu's Lock entry
+  swayidle               # idle management (module 7) — auto-lock, DPMS off
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"

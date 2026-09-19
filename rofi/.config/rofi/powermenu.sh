@@ -33,7 +33,7 @@ generate_entries() {
 selected="$(generate_entries | rofi -dmenu -show-icons -theme "${dir}/powermenu.rasi" -no-custom -format i)"
 
 case "$selected" in
-  0) exec swaylock ;;
+  0) exec ~/.config/rice/lock ;;
   1) exec systemctl suspend ;;
   2) exec swaymsg exit ;;
   3) exec systemctl reboot ;;

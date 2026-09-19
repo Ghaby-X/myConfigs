@@ -32,12 +32,17 @@ if [[ ! -d "$theme_path" ]]; then
   exit 1
 fi
 
-mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/wofi" "$HOME/.config/rofi"
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/wofi" "$HOME/.config/rofi" "$HOME/.config/swaylock"
 ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
 ln -sfn "$theme_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
 ln -sfn "$theme_path/wofi.css" "$HOME/.config/wofi/current-theme.css"
 ln -sfn "$theme_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
+# swaylock has no include directive, so its whole config is theme-managed
+# (not a partial "current-theme.*" that gets included by a static file).
+if [[ -f "$theme_path/swaylock.conf" ]]; then
+  ln -sfn "$theme_path/swaylock.conf" "$HOME/.config/swaylock/config"
+fi
 if [[ -f "$theme_path/wallpaper.png" ]]; then
   ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
 fi
