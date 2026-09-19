@@ -465,36 +465,6 @@ window.ControlPanel {
     }
   }
 
-  // volume
-  .slider-value {
-    font-size: 11px;
-    color: rgba($fg, 0.6);
-    min-width: 32px;
-  }
-
-  scale {
-    trough {
-      min-height: 6px;
-      border-radius: 999px;
-      background: rgba($fg, 0.15);
-    }
-
-    highlight {
-      border-radius: 999px;
-      background: $accent;
-    }
-
-    slider {
-      min-width: 14px;
-      min-height: 14px;
-      margin: -4px;
-      border-radius: 999px;
-      background: $fg;
-      border: none;
-      box-shadow: none;
-    }
-  }
-
   // notifications
   .section-title {
     font-weight: bold;

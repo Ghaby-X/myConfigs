@@ -170,44 +170,6 @@ function Toggles() {
   )
 }
 
-// ── volume slider ────────────────────────────────────────────────────────
-function VolumeSlider() {
-  const wp = Wp.get_default()
-  const icon = createBinding(wp, "audio", "defaultSpeaker", "volumeIcon")
-  const volume = createBinding(wp, "audio", "defaultSpeaker", "volume")
-
-  return (
-    <box class="slider-row" spacing={10}>
-      <button
-        onClicked={() => {
-          const s = wp.audio.defaultSpeaker
-          if (s) s.mute = !s.mute
-        }}
-      >
-        <image iconName={icon} />
-      </button>
-      <Gtk.Scale
-        hexpand
-        drawValue={false}
-        $={(self) => {
-          self.set_range(0, 1)
-          self.set_increments(0.05, 0.1)
-          const sync = (v: number) => {
-            if (Math.abs(self.get_value() - v) > 0.001) self.set_value(v)
-          }
-          sync(volume.get())
-          volume.subscribe(() => sync(volume.get()))
-          self.connect("value-changed", () => {
-            const s = wp.audio.defaultSpeaker
-            if (s && Math.abs(s.volume - self.get_value()) > 0.001) s.volume = self.get_value()
-          })
-        }}
-      />
-      <label class="slider-value" label={volume.as((v) => `${Math.round(v * 100)}%`)} />
-    </box>
-  )
-}
-
 // ── notifications ────────────────────────────────────────────────────────
 
 // "Take me to it": run the notification's default action if it has one, and
@@ -401,7 +363,6 @@ export default function ControlPanel() {
           </button>
         </box>
         <Toggles />
-        <VolumeSlider />
         <Notifications />
       </box>
     </window>
