@@ -396,8 +396,8 @@ window.ControlPanel {
   // quick toggles
   button.tile {
     background: rgba($fg, 0.07);
-    border-radius: 12px;
-    padding: 10px 12px;
+    border-radius: 10px;
+    padding: 7px 10px;
 
     &:hover {
       background: rgba($fg, 0.12);
@@ -421,17 +421,52 @@ window.ControlPanel {
     }
 
     image {
-      -gtk-icon-size: 18px;
+      -gtk-icon-size: 16px;
     }
 
     .tile-title {
       font-weight: bold;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .tile-sub {
-      font-size: 11px;
+      font-size: 10px;
       color: rgba($fg, 0.6);
+    }
+  }
+
+  // small square switches (DND, mic, airplane)
+  button.square {
+    background: rgba($fg, 0.07);
+    border-radius: 10px;
+    min-width: 56px;
+    min-height: 50px;
+    padding: 0;
+
+    &:hover {
+      background: rgba($fg, 0.12);
+    }
+
+    &.active {
+      background: $accent;
+      color: $bg;
+
+      &:hover {
+        background: color.adjust($accent, $lightness: 5%);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.45;
+    }
+
+    image {
+      -gtk-icon-size: 16px;
+    }
+
+    .square-label {
+      font-size: 9px;
+      font-weight: bold;
     }
   }
 
@@ -503,6 +538,38 @@ window.ControlPanel {
 
       image {
         -gtk-icon-size: 12px;
+      }
+    }
+  }
+
+  // list scrollbar: own thin gutter instead of an overlay drawn over the cards
+  scrolledwindow undershoot,
+  scrolledwindow overshoot {
+    background: none;
+  }
+
+  scrollbar.vertical {
+    background: transparent;
+    border: none;
+    margin-left: 4px;
+
+    trough {
+      background: transparent;
+      border: none;
+      min-width: 6px;
+    }
+
+    slider {
+      min-width: 4px;
+      min-height: 32px;
+      border-radius: 999px;
+      background: rgba($fg, 0.25);
+      border: none;
+      box-shadow: none;
+      margin: 0;
+
+      &:hover {
+        background: rgba($fg, 0.45);
       }
     }
   }

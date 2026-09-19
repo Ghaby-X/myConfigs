@@ -3,6 +3,7 @@ import { Astal, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Notifd from "gi://AstalNotifd"
 import { For, createState } from "ags"
+import { panelOpen } from "../state"
 
 const DEFAULT_TIMEOUT_MS = 5000
 
@@ -79,6 +80,8 @@ export default function NotificationPopups() {
     const n = notifd.get_notification(id)
     if (!n) return
     if (notifd.dontDisturb && n.urgency !== Notifd.Urgency.CRITICAL) return
+    // the open control panel already shows new notifications live
+    if (panelOpen.get() && n.urgency !== Notifd.Urgency.CRITICAL) return
 
     // For keys by id and never re-renders an existing key, so a replaced
     // notification (same id, new content) must be removed first

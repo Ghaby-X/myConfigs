@@ -6,7 +6,8 @@ import Wp from "gi://AstalWp"
 import Network from "gi://AstalNetwork"
 import Bluetooth from "gi://AstalBluetooth"
 import Pango from "gi://Pango"
-import { Accessor, For, createBinding, createComputed } from "ags"
+import { Accessor, For, createBinding, createComputed, createState } from "ags"
+import { interval } from "ags/time"
 import { panelOpen, setPanelOpen } from "../state"
 import { appIconPaintable, timeLabel } from "./NotificationPopups"
 
@@ -43,6 +44,49 @@ function Tile(props: {
   )
 }
 
+// Small square toggle: icon over a tiny caption, for the secondary switches.
+function SquareTile(props: {
+  icon: Accessor<string>
+  title: string
+  active: Accessor<boolean>
+  available?: Accessor<boolean>
+  onClicked: () => void
+}) {
+  return (
+    <button
+      class={props.active.as((a) => (a ? "square active" : "square"))}
+      sensitive={props.available ?? true}
+      tooltipText={props.title}
+      onClicked={props.onClicked}
+    >
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={4} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+        <image iconName={props.icon} />
+        <label class="square-label" label={props.title} />
+      </box>
+    </button>
+  )
+}
+
+// Airplane mode = everything rfkill knows about is soft-blocked. On a machine
+// with no radios at all (like this VM) the tile is unavailable.
+function useAirplane() {
+  const [on, setOn] = createState(false)
+  const [available, setAvailable] = createState(false)
+  const refresh = () =>
+    execAsync(["bash", "-c", "rfkill -n -o SOFT list | sort -u"])
+      .then((out) => {
+        const states = out.split(/\s+/).filter(Boolean)
+        setAvailable(states.length > 0)
+        setOn(states.length > 0 && !states.includes("unblocked"))
+      })
+      .catch(() => setAvailable(false))
+  refresh()
+  interval(3000, refresh)
+  const toggle = () =>
+    execAsync(["rfkill", on.get() ? "unblock" : "block", "all"]).then(refresh).catch(console.error)
+  return { on, available, toggle }
+}
+
 function Toggles() {
   const network = Network.get_default()
   const bt = Bluetooth.get_default()
@@ -60,6 +104,8 @@ function Toggles() {
   const btPowered = createBinding(bt, "isPowered")
   const btConnected = createBinding(bt, "isConnected")
   const btDevices = createBinding(bt, "devices")
+
+  const airplane = useAirplane()
 
   // DND / mic
   const dnd = createBinding(notifd, "dontDisturb")
@@ -99,23 +145,28 @@ function Toggles() {
           }}
         />
       </box>
-      <box spacing={8} homogeneous>
-        <Tile
-          title="Do not disturb"
-          icon={dnd.as((d) => (d ? "notifications-disabled-symbolic" : "preferences-system-notifications-symbolic"))}
-          subtitle={dnd.as((d) => (d ? "On" : "Off"))}
+      <box class="squares" spacing={6}>
+        <SquareTile
+          title="DND"
+          icon={createComputed(() => "weather-clear-night-symbolic")}
           active={dnd}
           onClicked={() => (notifd.dontDisturb = !notifd.dontDisturb)}
         />
-        <Tile
-          title="Microphone"
+        <SquareTile
+          title="Mic"
           icon={micMuted.as((m) => (m ? "microphone-disabled-symbolic" : "audio-input-microphone-symbolic"))}
-          subtitle={micMuted.as((m) => (m ? "Muted" : "On"))}
           active={micMuted.as((m) => !m)}
           onClicked={() => {
             const mic = wp.audio.defaultMicrophone
             if (mic) mic.mute = !mic.mute
           }}
+        />
+        <SquareTile
+          title="Airplane"
+          icon={createComputed(() => "airplane-mode-symbolic")}
+          active={airplane.on}
+          available={airplane.available}
+          onClicked={airplane.toggle}
         />
       </box>
     </box>
@@ -195,7 +246,7 @@ function NotificationItem({ n }: { n: Notifd.Notification }) {
 
 function Notifications() {
   const notifd = Notifd.get_default()
-  const list = createBinding(notifd, "notifications").as((l) => [...l].sort((a, b) => b.time - a.time))
+  const list = createBinding(notifd, "notifications").as((l) => [...l].sort((a, b) => b.time - a.time || b.id - a.id))
   const count = list.as((l) => l.length)
 
   return (
@@ -206,7 +257,7 @@ function Notifications() {
           <label label="Clear all" />
         </button>
       </box>
-      <Gtk.ScrolledWindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER}>
+      <Gtk.ScrolledWindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
         <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
           <For each={list} id={(n) => `${n.id}-${n.time}`}>
             {(n) => <NotificationItem n={n} />}
