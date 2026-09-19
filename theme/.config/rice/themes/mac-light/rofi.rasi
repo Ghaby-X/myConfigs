@@ -1,0 +1,12 @@
+/**
+ * Mac Light — Apple system colors (light): pure white, crisp near-black text
+ **/
+
+* {
+    background:     #FFFFFFFF;
+    background-alt: #F5F5F7FF;
+    foreground:     #1D1D1FFF;
+    selected:       #007AFFFF;
+    active:         #34C759FF;
+    urgent:         #FF3B30FF;
+}

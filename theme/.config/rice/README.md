@@ -8,11 +8,15 @@ rice/
     │   ├── sway.conf       # $bg/$fg/$accent/$urgent/$inactive + client.* lines
     │   ├── kitty.conf      # kitty color directives
     │   └── ags.scss        # $bg/$fg/$accent/$urgent/$inactive/$bg-alt (SCSS vars)
-    └── one-dark/
-        ├── sway.conf
-        ├── kitty.conf
-        └── ags.scss
+    ├── one-dark/
+    │   └── (same files)
+    ├── catppuccin-latte/       # light
+    ├── mac-dark/               # Apple system colors: pure-black shell, crisp white text
+    └── mac-light/              # Apple system colors: white, near-black text
 ```
+
+Every theme folder also carries `rofi.rasi`, `swaylock.conf`, `gtk.css`,
+`qt6ct.conf`, `mode` (`dark`/`light`) and `wallpaper.png`.
 
 `theme-set <name>` symlinks each app's `current-theme.*` to the chosen
 theme's snippet and reloads what it can live-reload (sway reloads instantly;

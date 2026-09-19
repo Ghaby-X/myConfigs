@@ -5,6 +5,7 @@ import Notifd from "gi://AstalNotifd"
 import Wp from "gi://AstalWp"
 import Network from "gi://AstalNetwork"
 import Bluetooth from "gi://AstalBluetooth"
+import Battery from "gi://AstalBattery"
 import Pango from "gi://Pango"
 import { Accessor, For, createBinding, createComputed, createState } from "ags"
 import { interval } from "ags/time"
@@ -44,10 +45,11 @@ function Tile(props: {
   )
 }
 
-// Small square toggle: icon over a tiny caption, for the secondary switches.
+// Compact toggle: icon, a short name, and a one-word status underneath.
 function SquareTile(props: {
   icon: Accessor<string>
   title: string
+  status: Accessor<string>
   active: Accessor<boolean>
   available?: Accessor<boolean>
   onClicked: () => void
@@ -56,10 +58,14 @@ function SquareTile(props: {
     <button
       class={props.active.as((a) => (a ? "square active" : "square"))}
       sensitive={props.available ?? true}
-      tooltipText={props.title}
+      hexpand
       onClicked={props.onClicked}
     >
-      <image iconName={props.icon} />
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={1} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+        <image iconName={props.icon} />
+        <label class="square-title" label={props.title} />
+        <label class="square-status" label={props.status} />
+      </box>
     </button>
   )
 }
@@ -107,6 +113,9 @@ function Toggles() {
   // DND / mic
   const dnd = createBinding(notifd, "dontDisturb")
   const micMuted = createBinding(wp, "audio", "defaultMicrophone", "mute")
+  const speakerMuted = createBinding(wp, "audio", "defaultSpeaker", "mute")
+  const speakerVolume = createBinding(wp, "audio", "defaultSpeaker", "volume")
+  const speakerIcon = createBinding(wp, "audio", "defaultSpeaker", "volumeIcon")
 
   return (
     <box class="tiles" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
@@ -142,16 +151,18 @@ function Toggles() {
           }}
         />
       </box>
-      <box class="squares" spacing={6}>
+      <box class="squares" spacing={6} homogeneous>
         <SquareTile
           title="DND"
           icon={createComputed(() => "do-not-disturb-symbolic")}
+          status={dnd.as((d) => (d ? "On" : "Off"))}
           active={dnd}
           onClicked={() => (notifd.dontDisturb = !notifd.dontDisturb)}
         />
         <SquareTile
           title="Mic"
           icon={micMuted.as((m) => (m ? "microphone-disabled-symbolic" : "audio-input-microphone-symbolic"))}
+          status={micMuted.as((m) => (m ? "Muted" : "On"))}
           active={micMuted.as((m) => !m)}
           onClicked={() => {
             const mic = wp.audio.defaultMicrophone
@@ -159,8 +170,19 @@ function Toggles() {
           }}
         />
         <SquareTile
+          title="Speaker"
+          icon={speakerIcon}
+          status={createComputed(() => (speakerMuted() ? "Muted" : `${Math.round((speakerVolume() ?? 0) * 100)}%`))}
+          active={speakerMuted.as((m) => !m)}
+          onClicked={() => {
+            const sp = wp.audio.defaultSpeaker
+            if (sp) sp.mute = !sp.mute
+          }}
+        />
+        <SquareTile
           title="Airplane"
           icon={createComputed(() => "airplane-mode-symbolic")}
+          status={createComputed(() => (!airplane.available() ? "N/A" : airplane.on() ? "On" : "Off"))}
           active={airplane.on}
           available={airplane.available}
           onClicked={airplane.toggle}
@@ -332,6 +354,21 @@ function Notifications() {
 }
 
 // ── panel ────────────────────────────────────────────────────────────────
+function BatteryChip() {
+  const bat = Battery.get_default()
+  const present = createBinding(bat, "isPresent")
+  const percent = createBinding(bat, "percentage")
+  const icon = createBinding(bat, "batteryIconName")
+  const charging = createBinding(bat, "charging")
+
+  return (
+    <box class={charging.as((c) => (c ? "battery-chip charging" : "battery-chip"))} spacing={4} visible={present} valign={Gtk.Align.CENTER}>
+      <image iconName={icon} />
+      <label label={percent.as((p) => `${Math.round(p * 100)}%`)} />
+    </box>
+  )
+}
+
 export default function ControlPanel() {
   const { TOP, BOTTOM, RIGHT } = Astal.WindowAnchor
 
@@ -354,6 +391,7 @@ export default function ControlPanel() {
       <box class="panel-card" orientation={Gtk.Orientation.VERTICAL} spacing={14} widthRequest={370}>
         <box class="panel-header" spacing={4}>
           <label class="panel-title" label="Control center" xalign={0} hexpand />
+          <BatteryChip />
           {/* placeholder for a future settings view — does nothing yet */}
           <button tooltipText="Settings">
             <image iconName="emblem-system-symbolic" />
