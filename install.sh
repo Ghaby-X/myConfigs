@@ -32,6 +32,7 @@ PACMAN_PACKAGES=(
   zsh-theme-powerlevel10k # prompt
   zsh-autosuggestions
   zsh-syntax-highlighting
+  brightnessctl          # backlight keys (theme/.config/rice/brightness); no-op without a backlight
   tmux                   # terminal multiplexer; config is the `tmux` stow package (plugins: scripts/tmux-plugins.sh)
   eza                    # `ls` alias in ~/.zshrc
   kitty

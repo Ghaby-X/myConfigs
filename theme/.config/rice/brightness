@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Backlight up/down with an on-screen popup:  brightness up|down
+# Does nothing (quietly) on machines without a controllable backlight, e.g. a
+# desktop with an external monitor or a VM.
+command -v brightnessctl >/dev/null || exit 0
+
+case "${1:-}" in
+  up)   brightnessctl -q set 5%+ ;;
+  down) brightnessctl -q --min-value=1 set 5%- ;;   # never go fully black
+  *)    echo "usage: brightness up|down" >&2; exit 1 ;;
+esac || exit 0
+
+percent="$(brightnessctl -m 2>/dev/null | head -n 1 | cut -d, -f4 | tr -d '%')"
+[[ -n "$percent" ]] && ags request osd brightness "$percent" >/dev/null 2>&1
+exit 0

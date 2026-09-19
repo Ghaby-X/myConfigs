@@ -769,3 +769,45 @@ window.Keybindings {
     color: rgba($fg, 0.45);
   }
 }
+
+// On-screen display for volume / mic / brightness
+window.OsdPopup {
+  background: transparent;
+}
+
+.osd {
+  background: $bg-alt;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 16px;
+  padding: 12px 20px;
+  min-width: 300px;
+
+  image {
+    -gtk-icon-size: 22px;
+  }
+
+  .osd-label {
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 54px;
+  }
+
+  .osd-bar {
+    trough {
+      min-height: 8px;
+      border-radius: 999px;
+      background: rgba($fg, 0.15);
+    }
+
+    progress {
+      min-height: 8px;
+      border-radius: 999px;
+      background: $accent;
+    }
+
+    &.muted progress {
+      background: $muted;
+    }
+  }
+}

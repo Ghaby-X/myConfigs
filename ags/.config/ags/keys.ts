@@ -16,6 +16,7 @@ const NAMES: Record<string, string> = {
   return: "Enter", escape: "Esc", space: "Space", minus: "-", slash: "/", tab: "Tab",
   bracketleft: "[", bracketright: "]", print: "PrtSc", left: "←", right: "→", up: "↑", down: "↓",
   xf86audioraisevolume: "Vol +", xf86audiolowervolume: "Vol −", xf86audiomute: "Mute",
+  xf86audiomicmute: "Mic mute", xf86monbrightnessup: "Bright +", xf86monbrightnessdown: "Bright −",
   xf86audioplay: "Play", xf86audionext: "Next", xf86audioprev: "Prev",
   shift: "Shift", ctrl: "Ctrl", control: "Ctrl", alt: "Alt", mod1: "Alt", mod4: "Super", super: "Super",
 }

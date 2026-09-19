@@ -24,6 +24,7 @@ we pull in something new.
 | zsh-theme-powerlevel10k | zsh | Prompt (Pure style, configured in `zsh/.p10k.zsh`). | installed |
 | zsh-autosuggestions | zsh | Fish-style suggestions; color follows the rice theme. | installed |
 | zsh-syntax-highlighting | zsh | Command highlighting; colors follow the rice theme. | installed |
+| brightnessctl | polish | Backlight up/down for the brightness keys, via `theme/.config/rice/brightness` (shows the on-screen popup). Does nothing on machines without a backlight (VM, desktop monitor). Official `extra` repo. | pending |
 | tmux | tmux | Terminal multiplexer. Config: `tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | installed |
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |

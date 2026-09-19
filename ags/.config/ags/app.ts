@@ -9,6 +9,7 @@ import ControlPanel from "./widget/ControlPanel"
 import ThemePicker from "./widget/ThemePicker"
 import WallpaperPicker from "./widget/WallpaperPicker"
 import Keybindings from "./widget/Keybindings"
+import OsdPopup, { showBrightness } from "./widget/Osd"
 import { togglePanel, toggleCalendar, toggleThemePicker, toggleWallpaperPicker, toggleKeys } from "./state"
 
 app.start({
@@ -24,6 +25,11 @@ app.start({
       res("ok")
     } else if (cmd === "themes") {
       toggleThemePicker()
+      res("ok")
+    } else if (cmd === "osd") {
+      // ags request osd brightness <percent>
+      const [, kind, value] = Array.isArray(argv) ? argv : []
+      if (kind === "brightness" && !Number.isNaN(Number(value))) showBrightness(Number(value))
       res("ok")
     } else if (cmd === "keys") {
       toggleKeys()
@@ -47,5 +53,6 @@ app.start({
     ThemePicker()
     WallpaperPicker()
     Keybindings()
+    OsdPopup()
   },
 })
