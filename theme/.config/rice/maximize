@@ -57,9 +57,12 @@ x, y, w, h = ws["x"], ws["y"], ws["width"], ws["height"]
 
 r = win["rect"]
 mark = "_max:tiled" if win["type"] == "con" else f"_max:float:{r['x']}:{r['y']}:{r['width']}:{r['height']}"
-sway(f"[con_id={cid}] mark --add {mark}")
-sway(f"[con_id={cid}] floating enable")
-sway(f"[con_id={cid}] border pixel 2")
+# One chained command, so sway applies mark + floating + size + position in a single
+# step and the window never shows up at its default floating size in the middle.
+sway(
+    f"[con_id={cid}] mark --add {mark}, floating enable, border pixel 2, "
+    f"resize set {w} {h}, move absolute position {x} {y}"
+)
 
 
 def size_now():
@@ -67,12 +70,12 @@ def size_now():
     return (node["rect"]["width"], node["rect"]["height"]) if node else None
 
 
-# sway sets a floating window's default size a moment after `floating enable` and
-# would overwrite an immediate resize, so apply it, check, and retry.
+# Fallback: on some setups sway re-applies the default floating size a moment after
+# `floating enable`; if the size isn't right, apply it again (with retries).
 # (`move position` is relative to the workspace area, so use absolute.)
 for _ in range(6):
+    if size_now() == (w, h):
+        break
     time.sleep(0.12)
     sway(f"[con_id={cid}] resize set {w} {h}")
     sway(f"[con_id={cid}] move absolute position {x} {y}")
-    if size_now() == (w, h):
-        break
