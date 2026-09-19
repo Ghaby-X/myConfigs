@@ -6,6 +6,22 @@ import { For, createState } from "ags"
 
 const DEFAULT_TIMEOUT_MS = 5000
 
+// The bar/AGS use Adwaita (system icon theme), which has no app logos —
+// look app icons up in Papirus instead (same theme rofi uses) without
+// changing the system-wide theme, which would restyle the bar's icons too.
+const papirus = Gtk.IconTheme.new()
+papirus.set_theme_name("Papirus")
+
+function appIconPaintable(n: Notifd.Notification): Gtk.IconPaintable | null {
+  const candidates = [n.appIcon, n.desktopEntry, n.appName?.toLowerCase()].filter(Boolean) as string[]
+  for (const name of candidates) {
+    if (papirus.has_icon(name)) {
+      return papirus.lookup_icon(name, null, 48, 1, Gtk.TextDirection.NONE, 0)
+    }
+  }
+  return null
+}
+
 function timeLabel(unix: number): string {
   return GLib.DateTime.new_from_unix_local(unix).format("%H:%M") ?? ""
 }
@@ -13,6 +29,7 @@ function timeLabel(unix: number): string {
 function NotificationCard({ n }: { n: Notifd.Notification }) {
   const critical = n.urgency === Notifd.Urgency.CRITICAL
   const hasFile = n.image && n.image.startsWith("/")
+  const appIcon = hasFile ? null : appIconPaintable(n)
 
   return (
     <box class={critical ? "notification critical" : "notification"} orientation={Gtk.Orientation.VERTICAL} spacing={6}>
@@ -24,6 +41,8 @@ function NotificationCard({ n }: { n: Notifd.Notification }) {
       <box class="content" spacing={10}>
         {hasFile ? (
           <image class="thumb" file={n.image} pixelSize={48} valign={Gtk.Align.START} />
+        ) : appIcon ? (
+          <image class="thumb" paintable={appIcon} pixelSize={48} valign={Gtk.Align.START} />
         ) : (
           <image
             class="thumb"
