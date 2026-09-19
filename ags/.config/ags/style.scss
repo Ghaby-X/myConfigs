@@ -123,6 +123,7 @@ clock {
 speaker,
 microphone,
 bluetooth,
+dnd,
 tray button {
   background: transparent;
   border: none;
@@ -149,6 +150,12 @@ battery {
   &.low label {
     color: $urgent;
   }
+}
+
+// do-not-disturb indicator: accent-colored so it stands out from the plain status icons
+dnd {
+  color: $accent;
+  -gtk-icon-size: 13px;
 }
 
 bluetooth {
