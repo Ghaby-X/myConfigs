@@ -52,5 +52,8 @@ while open:
 | `Esc` / `q` | close |
 | `H` / `L`, `PageUp` / `PageDown`, `t` | calendar only: previous / next month, jump to today |
 
+Theme picker (`$mod+t`): `h`/`l` (or `j`/`k`) move, `Enter` applies, `/` searches by
+name (subsequence match), `g`/`G` first/last, `Esc` leaves search then closes.
+
 rofi menus (launcher, power menu, clipboard) use `Ctrl+h/j/k/l` instead, since
 plain letters type into rofi's search box.

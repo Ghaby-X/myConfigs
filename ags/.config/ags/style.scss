@@ -624,3 +624,82 @@ window.ControlPanel {
     border-radius: 10px;
   }
 }
+
+// Theme picker ($mod+t)
+window.ThemePicker {
+  background: transparent;
+}
+
+.picker-card {
+  background: $bg-alt;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 16px;
+  padding: 18px;
+
+  .picker-title {
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .picker-search {
+    background: rgba($fg, 0.08);
+    color: $fg;
+    border: 1px solid rgba($fg, 0.15);
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 2px 8px;
+    min-height: 0;
+  }
+
+  .picker-empty {
+    color: rgba($fg, 0.5);
+  }
+
+  .theme-card {
+    background: rgba($fg, 0.06);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 6px 6px 10px;
+    transition: border-color 120ms ease;
+
+    &.selected {
+      border-color: $accent;
+      background: rgba($accent, 0.14);
+    }
+
+    .thumb-frame {
+      border-radius: 8px;
+    }
+
+    .theme-meta {
+      padding: 0 4px;
+    }
+
+    .theme-name {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .theme-mode {
+      font-size: 10px;
+      color: rgba($fg, 0.55);
+    }
+
+    .swatches {
+      padding: 0 4px;
+    }
+
+    .swatch {
+      min-width: 16px;
+      min-height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba($fg, 0.25);
+    }
+  }
+
+  .picker-hint {
+    font-size: 10px;
+    color: rgba($fg, 0.45);
+  }
+}
