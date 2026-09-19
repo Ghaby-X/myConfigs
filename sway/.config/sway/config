@@ -20,6 +20,7 @@ exec swaybg -i ~/.config/rice/current-wallpaper -m fill
 # idle: lock after 5min, screens off after 10min (resume on activity), and
 # always lock before sleep/suspend.
 # (the timers go through `idle`, which does nothing while "keep awake" is on)
+exec ~/.config/rice/maximize-watch
 exec swayidle -w \
   timeout 300 '~/.config/rice/idle lock' \
   timeout 600 '~/.config/rice/idle screen-off' resume '~/.config/rice/idle screen-on' \
@@ -107,8 +108,11 @@ bindsym $mod+shift+l move right
 bindsym $mod+v splitv
 #: Windows | Split next window horizontally
 bindsym $mod+b splith
-#: Windows | Toggle fullscreen
-bindsym $mod+f fullscreen
+# $mod+f maximizes within the workspace area (looks like a lone window, bar stays); $mod+Shift+f is real fullscreen (covers the bar too)
+#: Windows | Maximize (looks like the only window open; bar stays)
+bindsym $mod+f exec ~/.config/rice/maximize
+#: Windows | Fullscreen (covers the bar too)
+bindsym $mod+shift+f fullscreen toggle
 #: Windows | Switch focus tiled / floating
 bindsym $mod+space focus mode_toggle
 #: Windows | Toggle floating

@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Companion to `maximize`: when a new window opens on a workspace that has a
+maximized window, un-maximize it so the new window is visible next to it (a floating
+maximized window would otherwise hide the new tiled one). Started by sway at login."""
+import json
+import subprocess
+
+
+def sway(*args):
+    return subprocess.run(["swaymsg", *args], capture_output=True, text=True).stdout
+
+
+def workspace_of(node_id, tree):
+    def walk(n, ws=None):
+        if n.get("type") == "workspace":
+            ws = n["name"]
+        if n.get("id") == node_id:
+            return ws or ""
+        for c in n.get("nodes", []) + n.get("floating_nodes", []):
+            hit = walk(c, ws)
+            if hit is not None:
+                return hit
+        return None
+
+    return walk(tree)
+
+
+def maximized_on(ws, tree):
+    found = []
+
+    def walk(n, cur=None):
+        if n.get("type") == "workspace":
+            cur = n["name"]
+        if cur == ws and any(m.startswith("_max:") for m in n.get("marks", [])):
+            found.append(n["id"])
+        for c in n.get("nodes", []) + n.get("floating_nodes", []):
+            walk(c, cur)
+
+    walk(tree)
+    return found
+
+
+proc = subprocess.Popen(["swaymsg", "-m", "-t", "subscribe", '["window"]'], stdout=subprocess.PIPE, text=True)
+for line in proc.stdout:
+    try:
+        event = json.loads(line)
+    except json.JSONDecodeError:
+        continue
+    if event.get("change") != "new":
+        continue
+    tree = json.loads(sway("-t", "get_tree"))
+    new_id = event["container"]["id"]
+    ws = workspace_of(new_id, tree)
+    for cid in maximized_on(ws, tree):
+        if cid == new_id:
+            continue
+        # restore it exactly as pressing the maximize key again would
+        sway(f"[con_id={cid}] focus")
+        subprocess.run([str(__import__("pathlib").Path.home() / ".config/rice/maximize")])
+        sway(f"[con_id={new_id}] focus")

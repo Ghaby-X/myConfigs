@@ -88,7 +88,8 @@ into one row).
 | `$mod+s` / `$mod+Shift+w` / `$mod+e` | stacking / tabbed / toggle split layout |
 | `$mod+w` | close the focused window |
 | `$mod+a` / `$mod+Shift+a` | focus parent / child container |
-| `$mod+f` | fullscreen |
+| `$mod+f` | maximize: the window looks like the only one open, top bar stays (press again to restore; a new window restores it too) |
+| `$mod+Shift+f` | real fullscreen, covers the bar |
 | `$mod+Shift+Space` / `$mod+Space` | toggle floating / switch focus between tiled and floating |
 | `$mod+Shift+minus` / `$mod+minus` | send to scratchpad / show scratchpad |
 | `$mod+1..0` | workspace (`+Shift` moves the window there) |

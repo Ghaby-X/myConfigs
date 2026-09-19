@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""Toggle "maximize" for the focused window: it fills the workspace area exactly like
+a lone window would (same gaps, same border, top bar untouched) and every other
+window on the workspace is hidden behind it. Press again to put things back.
+
+Sway's own fullscreen hides the bar, so this floats the window at the workspace
+rect instead; a mark on the window remembers how it was (tiled, or its old floating
+geometry). maximize-watch un-maximizes when a new window opens on that workspace.
+"""
+import json
+import subprocess
+import time
+from pathlib import Path
+
+
+def sway(*args):
+    return subprocess.run(["swaymsg", *args], capture_output=True, text=True).stdout
+
+
+def find_focused(node):
+    if node.get("focused"):
+        return node
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        hit = find_focused(child)
+        if hit:
+            return hit
+    return None
+
+
+win = find_focused(json.loads(sway("-t", "get_tree")))
+if not win or win.get("type") not in ("con", "floating_con") or not win.get("pid"):
+    raise SystemExit(0)
+cid = win["id"]
+
+# already real-fullscreen: just leave fullscreen
+if win.get("fullscreen_mode"):
+    sway(f"[con_id={cid}] fullscreen disable")
+    raise SystemExit(0)
+
+marks = [m for m in win.get("marks", []) if m.startswith("_max:")]
+if marks:  # restore
+    mark = marks[0]
+    parts = mark.split(":")
+    sway(f"[con_id={cid}] unmark {mark}")
+    if parts[1] == "tiled":
+        sway(f"[con_id={cid}] floating disable, border pixel 2")
+    else:
+        x, y, w, h = parts[2:6]
+        sway(f"[con_id={cid}] resize set {w} {h}")
+        sway(f"[con_id={cid}] move absolute position {x} {y}")
+        sway(f"[con_id={cid}] border pixel 2")
+    raise SystemExit(0)
+
+# the workspace rect is what sway gives a lone window (already minus bar and gaps)
+ws = next(w for w in json.loads(sway("-t", "get_workspaces")) if w["focused"])["rect"]
+x, y, w, h = ws["x"], ws["y"], ws["width"], ws["height"]
+
+r = win["rect"]
+mark = "_max:tiled" if win["type"] == "con" else f"_max:float:{r['x']}:{r['y']}:{r['width']}:{r['height']}"
+sway(f"[con_id={cid}] mark --add {mark}")
+sway(f"[con_id={cid}] floating enable")
+sway(f"[con_id={cid}] border pixel 2")
+
+
+def size_now():
+    node = find_focused(json.loads(sway("-t", "get_tree")))
+    return (node["rect"]["width"], node["rect"]["height"]) if node else None
+
+
+# sway sets a floating window's default size a moment after `floating enable` and
+# would overwrite an immediate resize, so apply it, check, and retry.
+# (`move position` is relative to the workspace area, so use absolute.)
+for _ in range(6):
+    time.sleep(0.12)
+    sway(f"[con_id={cid}] resize set {w} {h}")
+    sway(f"[con_id={cid}] move absolute position {x} {y}")
+    if size_now() == (w, h):
+        break
