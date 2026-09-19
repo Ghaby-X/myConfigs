@@ -37,6 +37,8 @@ function Calendar() {
     if (calendarOpen.get()) setView(nowView())
   })
 
+  const cells = view.as(monthCells)
+
   const shift = (delta: number) =>
     setView((v) => {
       const d = new Date(v.year, v.month + delta, 1)
@@ -67,24 +69,24 @@ function Calendar() {
           <label label={w} />
         ))}
       </box>
-      <With value={view}>
-        {(v) => (
-          <box class="cal-grid" orientation={Gtk.Orientation.VERTICAL} spacing={2}>
-            {Array.from({ length: 6 }, (_, row) => (
-              <box homogeneous spacing={2}>
-                {monthCells(v)
-                  .slice(row * 7, row * 7 + 7)
-                  .map((c) => (
-                    <label
-                      class={`cal-day${c.outside ? " outside" : ""}${c.today ? " today" : ""}${c.weekend ? " weekend" : ""}`}
-                      label={String(c.day)}
-                    />
-                  ))}
-              </box>
-            ))}
+      {/* 42 persistent labels: a month change only updates text/classes
+          instead of rebuilding the grid, which is what made spamming the
+          arrows lag on this software-rendered VM. */}
+      <box class="cal-grid" orientation={Gtk.Orientation.VERTICAL} spacing={2}>
+        {Array.from({ length: 6 }, (_, row) => (
+          <box homogeneous spacing={2}>
+            {Array.from({ length: 7 }, (_, col) => {
+              const cell = cells.as((c) => c[row * 7 + col])
+              return (
+                <label
+                  class={cell.as((c) => `cal-day${c.outside ? " outside" : ""}${c.today ? " today" : ""}${c.weekend ? " weekend" : ""}`)}
+                  label={cell.as((c) => String(c.day))}
+                />
+              )
+            })}
           </box>
-        )}
-      </With>
+        ))}
+      </box>
     </box>
   )
 }
