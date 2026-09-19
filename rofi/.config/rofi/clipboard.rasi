@@ -36,7 +36,7 @@ prompt, entry {
 }
 
 listview {
-    lines:            10;
+    lines:            6;
     columns:          1;
     spacing:          4px;
     scrollbar:        false;
@@ -44,6 +44,7 @@ listview {
 }
 
 element {
+    spacing:          12px;
     padding:          8px 12px;
     border-radius:    8px;
     background-color: transparent;
@@ -56,6 +57,12 @@ element selected.normal {
 }
 
 element-text {
+    vertical-align:   0.5;
     background-color: transparent;
     text-color:       inherit;
+}
+
+element-icon {
+    size:             56px;
+    background-color: transparent;
 }
