@@ -6,6 +6,7 @@ export const [calendarOpen, setCalendarOpen] = createState(false)
 export const [panelOpen, setPanelOpen] = createState(false)
 export const [themePickerOpen, setThemePickerOpen] = createState(false)
 export const [wallpaperPickerOpen, setWallpaperPickerOpen] = createState(false)
+export const [keysOpen, setKeysOpen] = createState(false)
 
 export function toggleCalendar() {
   const open = !calendarOpen.get()
@@ -13,6 +14,7 @@ export function toggleCalendar() {
     setPanelOpen(false)
     setThemePickerOpen(false)
     setWallpaperPickerOpen(false)
+    setKeysOpen(false)
   }
   setCalendarOpen(open)
 }
@@ -23,6 +25,7 @@ export function togglePanel() {
     setCalendarOpen(false)
     setThemePickerOpen(false)
     setWallpaperPickerOpen(false)
+    setKeysOpen(false)
   }
   setPanelOpen(open)
 }
@@ -33,6 +36,7 @@ export function toggleThemePicker() {
     setCalendarOpen(false)
     setPanelOpen(false)
     setWallpaperPickerOpen(false)
+    setKeysOpen(false)
   }
   setThemePickerOpen(open)
 }
@@ -43,6 +47,18 @@ export function toggleWallpaperPicker() {
     setCalendarOpen(false)
     setPanelOpen(false)
     setThemePickerOpen(false)
+    setKeysOpen(false)
   }
   setWallpaperPickerOpen(open)
+}
+
+export function toggleKeys() {
+  const open = !keysOpen.get()
+  if (open) {
+    setCalendarOpen(false)
+    setPanelOpen(false)
+    setThemePickerOpen(false)
+    setWallpaperPickerOpen(false)
+  }
+  setKeysOpen(open)
 }

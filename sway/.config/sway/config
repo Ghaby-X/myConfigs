@@ -66,121 +66,206 @@ default_dim_inactive 0.15
 include current-theme.conf
 
 ### Keybindings (Super, vim-style hjkl) ###
+#: Apps | Open terminal
 bindsym $mod+Return exec $term
+#: Windows | Close window
 bindsym $mod+shift+q kill
+#: Apps | App launcher
 bindsym $mod+d exec $menu
+#: Session | Reload sway config
 bindsym $mod+shift+c reload
+#: Session | Lock screen
 bindsym $mod+Escape exec ~/.config/rice/lock
 # power menu (lock/sleep/logout/reboot/shutdown) — replaces the plain exit
 # confirm, rofi-based, matches a previously-tuned hyprland setup
+#: Session | Power menu
 bindsym $mod+shift+e exec ~/.config/rofi/powermenu.sh
 
 # focus
+#: Windows | Focus window
 bindsym $mod+h focus left
+#: Windows | Focus window
 bindsym $mod+j focus down
+#: Windows | Focus window
 bindsym $mod+k focus up
+#: Windows | Focus window
 bindsym $mod+l focus right
 
 # move window
+#: Windows | Move window
 bindsym $mod+shift+h move left
+#: Windows | Move window
 bindsym $mod+shift+j move down
+#: Windows | Move window
 bindsym $mod+shift+k move up
+#: Windows | Move window
 bindsym $mod+shift+l move right
 
 # layout
+#: Windows | Split next window vertically
 bindsym $mod+v splitv
+#: Windows | Split next window horizontally
 bindsym $mod+b splith
+#: Windows | Toggle fullscreen
 bindsym $mod+f fullscreen
+#: Windows | Switch focus tiled / floating
 bindsym $mod+space focus mode_toggle
+#: Windows | Toggle floating
 bindsym $mod+shift+space floating toggle
 
 # workspaces
+#: Workspaces | Go to workspace
 bindsym $mod+1 workspace number 1
+#: Workspaces | Go to workspace
 bindsym $mod+2 workspace number 2
+#: Workspaces | Go to workspace
 bindsym $mod+3 workspace number 3
+#: Workspaces | Go to workspace
 bindsym $mod+4 workspace number 4
+#: Workspaces | Go to workspace
 bindsym $mod+5 workspace number 5
+#: Workspaces | Go to workspace
 bindsym $mod+6 workspace number 6
+#: Workspaces | Go to workspace
 bindsym $mod+7 workspace number 7
+#: Workspaces | Go to workspace
 bindsym $mod+8 workspace number 8
+#: Workspaces | Go to workspace
 bindsym $mod+9 workspace number 9
+#: Workspaces | Go to workspace
 bindsym $mod+0 workspace number 10
 
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+1 move container to workspace number 1
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+2 move container to workspace number 2
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+3 move container to workspace number 3
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+4 move container to workspace number 4
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+5 move container to workspace number 5
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+6 move container to workspace number 6
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+7 move container to workspace number 7
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+8 move container to workspace number 8
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+9 move container to workspace number 9
+#: Workspaces | Move window to workspace
 bindsym $mod+shift+0 move container to workspace number 10
 
 # resize mode
+#: Windows | Resize mode
 bindsym $mod+r mode "resize"
 mode "resize" {
+    #: Resize mode (after Super+r) | Shrink width
     bindsym h resize shrink width 20px
+    #: Resize mode (after Super+r) | Grow height
     bindsym j resize grow height 20px
+    #: Resize mode (after Super+r) | Shrink height
     bindsym k resize shrink height 20px
+    #: Resize mode (after Super+r) | Grow width
     bindsym l resize grow width 20px
+    #: Resize mode (after Super+r) | Leave resize mode
     bindsym Return mode "default"
+    #: Resize mode (after Super+r) | Leave resize mode
     bindsym Escape mode "default"
 }
 
 # layout & pane management (sway's conventional keys, vim-style like the rest)
 # layouts of the focused container: stacked, tabbed, or toggle split direction
+#: Layout | Stacked layout
 bindsym $mod+s layout stacking
+#: Layout | Tabbed layout
 bindsym $mod+w layout tabbed
+#: Layout | Toggle split direction
 bindsym $mod+e layout toggle split
 # focus the parent container (select a whole split), and back down
+#: Windows | Focus parent container
 bindsym $mod+a focus parent
+#: Windows | Focus child container
 bindsym $mod+Shift+a focus child
 # arrow keys as alternatives to hjkl
+#: Windows | Focus window
 bindsym $mod+Left focus left
+#: Windows | Focus window
 bindsym $mod+Down focus down
+#: Windows | Focus window
 bindsym $mod+Up focus up
+#: Windows | Focus window
 bindsym $mod+Right focus right
+#: Windows | Move window
 bindsym $mod+Shift+Left move left
+#: Windows | Move window
 bindsym $mod+Shift+Down move down
+#: Windows | Move window
 bindsym $mod+Shift+Up move up
+#: Windows | Move window
 bindsym $mod+Shift+Right move right
 # resize without entering resize mode (Shift = bigger steps)
+#: Windows | Resize window
 bindsym $mod+Ctrl+h resize shrink width 30px
+#: Windows | Resize window
 bindsym $mod+Ctrl+l resize grow width 30px
+#: Windows | Resize window
 bindsym $mod+Ctrl+k resize shrink height 30px
+#: Windows | Resize window
 bindsym $mod+Ctrl+j resize grow height 30px
 # scratchpad: park a window out of the way, toggle it back with one key
+#: Scratchpad | Send window to scratchpad
 bindsym $mod+Shift+minus move scratchpad
+#: Scratchpad | Show / hide scratchpad
 bindsym $mod+minus scratchpad show
 # workspaces: jump back to the previous one, step through the list
+#: Workspaces | Previous workspace
 bindsym $mod+Tab workspace back_and_forth
+#: Workspaces | Previous existing workspace
 bindsym $mod+bracketleft workspace prev
+#: Workspaces | Next existing workspace
 bindsym $mod+bracketright workspace next
 # drag floating windows with $mod + left mouse, resize with $mod + right mouse
 floating_modifier $mod normal
 
 # screenshots
+#: Screenshots | Region: save + copy
 bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
+#: Screenshots | Whole screen: save + copy
 bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
+#: Screenshots | Region to clipboard only
 bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
 # control center / notification panel (right side)
+#: Popups | Show all keybindings
+bindsym $mod+slash exec ags request keys
+#: Popups | Control center
 bindsym $mod+n exec ags request panel
+#: Popups | Calendar
 bindsym $mod+c exec ags request calendar
+#: Popups | Theme picker
 bindsym $mod+t exec ags request themes
+#: Popups | Wallpaper picker
 bindsym $mod+Ctrl+t exec ags request wallpapers
 
 # clipboard history (cliphist)
+#: Popups | Clipboard history
 bindsym $mod+Shift+v exec ~/.config/rofi/clipboard.sh
+#: Popups | Clear clipboard history
 bindsym $mod+Ctrl+v exec cliphist wipe
 
 # media / volume
+#: Media | Volume up
 bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+#: Media | Volume down
 bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+#: Media | Mute
 bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+#: Media | Play / pause
 bindsym XF86AudioPlay exec playerctl play-pause
+#: Media | Next track
 bindsym XF86AudioNext exec playerctl next
+#: Media | Previous track
 bindsym XF86AudioPrev exec playerctl previous
 
 include /etc/sway/config.d/*

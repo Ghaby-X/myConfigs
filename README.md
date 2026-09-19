@@ -71,6 +71,11 @@ plain `h j k l`, `Enter` to pick and `Esc`/`q` to close.
 
 ## Window and workspace keys
 
+`$mod+/` opens a searchable cheat sheet of every binding, grouped. It reads the sway
+config itself: give each new binding a description with a comment line above it,
+`#: Group | What it does`, and it appears (bindings with the same description merge
+into one row).
+
 | Key | Action |
 |---|---|
 | `$mod` + `h j k l` / arrows | focus left / down / up / right |

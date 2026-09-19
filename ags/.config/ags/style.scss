@@ -634,7 +634,8 @@ window.ControlPanel {
 
 // Theme picker ($mod+t)
 window.ThemePicker,
-window.WallpaperPicker {
+window.WallpaperPicker,
+window.Keybindings {
   background: transparent;
 }
 
@@ -704,6 +705,61 @@ window.WallpaperPicker {
       border-radius: 999px;
       border: 1px solid rgba($fg, 0.25);
     }
+  }
+
+  .picker-hint {
+    font-size: 10px;
+    color: rgba($fg, 0.45);
+  }
+}
+
+// Keybinding cheat sheet ($mod+/)
+.keys-card {
+  background: $bg-alt;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 16px;
+  padding: 18px 22px;
+  min-width: 1040px;
+
+  .picker-title {
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .picker-search {
+    background: rgba($fg, 0.08);
+    color: $fg;
+    border: 1px solid rgba($fg, 0.15);
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 2px 8px;
+    min-height: 0;
+  }
+
+  .picker-empty {
+    color: rgba($fg, 0.5);
+  }
+
+  .kb-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: $accent;
+    padding-bottom: 2px;
+  }
+
+  .kb-row {
+    padding: 3px 0;
+  }
+
+  .kb-desc {
+    font-size: 12px;
+  }
+
+  .kb-keys {
+    font-size: 11px;
+    font-weight: bold;
+    color: rgba($fg, 0.6);
   }
 
   .picker-hint {
