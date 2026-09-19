@@ -417,7 +417,7 @@ window.ControlPanel {
     }
 
     &:disabled {
-      opacity: 0.45;
+      opacity: 0.75;
     }
 
     image {
@@ -457,7 +457,7 @@ window.ControlPanel {
     }
 
     &:disabled {
-      opacity: 0.45;
+      opacity: 0.75;
     }
 
     image {
@@ -523,10 +523,25 @@ window.ControlPanel {
       color: rgba($fg, 0.7);
     }
 
-    // collapsed stack: two faint layers peeking out under the top card
-    &.collapsed .notif-item {
-      box-shadow: 0 4px 0 -1px rgba($fg, 0.05), 0 8px 0 -2px rgba($fg, 0.03);
-      margin-bottom: 8px;
+    // collapsed stack: strips of the cards underneath, each one narrower
+    .stack .notif-item {
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .ghost {
+      min-height: 6px;
+      border-radius: 0 0 8px 8px;
+
+      &.g1 {
+        margin: 0 10px;
+        background: color.mix($fg, $bg-alt, 13%);
+      }
+
+      &.g2 {
+        margin: 0 20px;
+        background: color.mix($fg, $bg-alt, 8%);
+      }
     }
   }
 

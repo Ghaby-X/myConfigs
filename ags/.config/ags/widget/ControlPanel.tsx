@@ -209,12 +209,36 @@ function VolumeSlider() {
 }
 
 // ── notifications ────────────────────────────────────────────────────────
-function NotificationItem({ n }: { n: Notifd.Notification }) {
+
+// "Take me to it": run the notification's default action if it has one, and
+// focus that app's window (matched on app_id via the desktop entry / app name).
+function goTo(n: Notifd.Notification) {
+  if (n.actions.some((a) => a.id === "default")) n.invoke("default")
+  const ids = [n.desktopEntry, n.appName]
+    .filter(Boolean)
+    .map((i) => i.replace(/\.desktop$/, "").replace(/[^\w.\-]/g, ""))
+    .filter(Boolean)
+  if (ids.length) {
+    const cmd = ids.map((i) => `[app_id="(?i)^${i}$"] focus`).join("; ")
+    execAsync(["swaymsg", cmd]).catch(() => {})
+  }
+  n.dismiss()
+  close()
+}
+
+function NotificationItem(props: {
+  n: Notifd.Notification
+  onActivate: () => void
+  onClose: () => void
+  closeTip?: string
+}) {
+  const { n } = props
   const hasFile = n.image && n.image.startsWith("/")
   const appIcon = hasFile ? null : appIconPaintable(n)
 
   return (
     <box class="notif-item" spacing={10}>
+      <Gtk.GestureClick onPressed={props.onActivate} />
       {hasFile ? (
         <image class="thumb" file={n.image} pixelSize={36} valign={Gtk.Align.START} />
       ) : appIcon ? (
@@ -234,7 +258,7 @@ function NotificationItem({ n }: { n: Notifd.Notification }) {
           <box />
         )}
       </box>
-      <button class="notif-close" valign={Gtk.Align.START} onClicked={() => n.dismiss()}>
+      <button class="notif-close" valign={Gtk.Align.START} tooltipText={props.closeTip ?? "Dismiss"} onClicked={props.onClose}>
         <image iconName="window-close-symbolic" />
       </button>
     </box>
@@ -252,44 +276,65 @@ const toggleExpanded = (app: string) =>
     return next
   })
 
-type Group = { app: string; items: Notifd.Notification[] }
+type Group = { app: string; key: string; items: Notifd.Notification[] }
 
-// Same app = similar. Input is newest-first, so groups come out ordered by
-// their newest notification.
+// Same app = similar. The key is normalised so variants of one app land in the
+// same stack (Slack / slack / slack.desktop, Firefox / firefox / Mozilla
+// Firefox): desktop entry if the sender gave one, else the app name.
+// Input is newest-first, so groups come out ordered by their newest item and
+// take their display name from it.
+function groupKey(n: Notifd.Notification): string {
+  const raw = (n.desktopEntry || n.appName || "notification").toLowerCase()
+  return raw
+    .replace(/\.desktop$/, "")
+    .replace(/^(org|com|io)\.[a-z0-9_]+\./, "")
+    .replace(/^mozilla[\s-]+/, "")
+    .replace(/[\s_-]+(desktop|browser|app)$/, "")
+    .trim()
+}
+
 function groupByApp(list: Notifd.Notification[]): Group[] {
   const groups = new Map<string, Group>()
   for (const n of list) {
-    const app = n.appName || "Notification"
-    if (!groups.has(app)) groups.set(app, { app, items: [] })
-    groups.get(app)!.items.push(n)
+    const key = groupKey(n)
+    if (!groups.has(key)) groups.set(key, { app: n.appName || "Notification", key, items: [] })
+    groups.get(key)!.items.push(n)
   }
   return [...groups.values()]
 }
 
 function NotificationGroup({ group }: { group: Group }) {
-  const { app, items } = group
-  if (items.length === 1) return <NotificationItem n={items[0]} />
+  const { app, key, items } = group
+  const one = (n: Notifd.Notification) => <NotificationItem n={n} onActivate={() => goTo(n)} onClose={() => n.dismiss()} />
+  if (items.length === 1) return one(items[0])
 
-  const open = expanded.as((s) => s.has(app))
+  const open = expanded.as((s) => s.has(key))
+  const clearAll = () => items.forEach((n) => n.dismiss())
 
   return (
-    <box class={open.as((o) => (o ? "notif-group open" : "notif-group collapsed"))} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
-      <box class="group-bar" spacing={4}>
-        <label class="group-title" label={`${app} · ${items.length}`} xalign={0} hexpand />
-        <button class="group-btn" onClicked={() => toggleExpanded(app)}>
-          <label label={open.as((o) => (o ? "Show less" : "Show all"))} />
-        </button>
-        <button class="group-btn" onClicked={() => items.forEach((n) => n.dismiss())}>
-          <label label="Clear" />
-        </button>
+    <box class={open.as((o) => (o ? "notif-group open" : "notif-group collapsed"))} orientation={Gtk.Orientation.VERTICAL} spacing={6}>
+      {/* collapsed: newest card with the rest peeking out beneath it; click to expand */}
+      <box class="stack" orientation={Gtk.Orientation.VERTICAL} visible={open.as((o) => !o)}>
+        <NotificationItem
+          n={items[0]}
+          onActivate={() => toggleExpanded(key)}
+          onClose={clearAll}
+          closeTip={`Clear all ${items.length}`}
+        />
+        <box class="ghost g1" />
+        {items.length > 2 && <box class="ghost g2" />}
       </box>
-      <box orientation={Gtk.Orientation.VERTICAL} spacing={6} visible={open.as((o) => !o)}>
-        <NotificationItem n={items[0]} />
-      </box>
+      {/* expanded: header (click to collapse) + every notification */}
       <box orientation={Gtk.Orientation.VERTICAL} spacing={6} visible={open}>
-        {items.map((n) => (
-          <NotificationItem n={n} />
-        ))}
+        <box class="group-bar" spacing={4}>
+          <Gtk.GestureClick onPressed={() => toggleExpanded(key)} />
+          <image iconName="pan-down-symbolic" />
+          <label class="group-title" label={`${app} · ${items.length}`} xalign={0} hexpand />
+          <button class="group-btn" onClicked={clearAll}>
+            <label label="Clear all" />
+          </button>
+        </box>
+        {items.map(one)}
       </box>
     </box>
   )
@@ -311,7 +356,7 @@ function Notifications() {
       </box>
       <Gtk.ScrolledWindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
         <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-          <For each={groups} id={(g) => `${g.app}|${g.items.map((n) => `${n.id}-${n.time}`).join(",")}`}>
+          <For each={groups} id={(g) => `${g.key}|${g.items.map((n) => `${n.id}-${n.time}`).join(",")}`}>
             {(g) => <NotificationGroup group={g} />}
           </For>
           <box class="notifs-empty" orientation={Gtk.Orientation.VERTICAL} spacing={8} visible={count.as((c) => c === 0)} valign={Gtk.Align.CENTER}>
@@ -347,8 +392,9 @@ export default function ControlPanel() {
       <box class="panel-card" orientation={Gtk.Orientation.VERTICAL} spacing={14} widthRequest={370}>
         <box class="panel-header" spacing={4}>
           <label class="panel-title" label="Control center" xalign={0} hexpand />
-          <button onClicked={() => run("~/.config/rice/lock")}>
-            <image iconName="system-lock-screen-symbolic" />
+          {/* placeholder for a future settings view — does nothing yet */}
+          <button tooltipText="Settings">
+            <image iconName="emblem-system-symbolic" />
           </button>
           <button onClicked={() => run("~/.config/rofi/powermenu.sh")}>
             <image iconName="system-shutdown-symbolic" />

@@ -14,7 +14,9 @@ const papirus = Gtk.IconTheme.new()
 papirus.set_theme_name("Papirus")
 
 export function appIconPaintable(n: Notifd.Notification): Gtk.IconPaintable | null {
-  const candidates = [n.appIcon, n.desktopEntry, n.appName?.toLowerCase()].filter(Boolean) as string[]
+  // also try a slug of the app name ("Mozilla Firefox" -> "firefox")
+  const slug = n.appName?.toLowerCase().replace(/^mozilla[\s-]+/, "").replace(/\s+/g, "-")
+  const candidates = [n.appIcon, n.desktopEntry, n.appName?.toLowerCase(), slug].filter(Boolean) as string[]
   for (const name of candidates) {
     if (papirus.has_icon(name)) {
       return papirus.lookup_icon(name, null, 48, 1, Gtk.TextDirection.NONE, 0)
