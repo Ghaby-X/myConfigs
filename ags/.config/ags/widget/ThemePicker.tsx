@@ -111,8 +111,16 @@ export default function ThemePicker() {
     const t = filtered.get()[selected.get()]
     if (!t) return
     close()
-    // theme-set restarts the bar (and this popup with it), so run it detached
-    execAsync(["setsid", "-f", "bash", "-c", `${RICE}/theme-set ${t.name}`]).catch(console.error)
+    // theme-set restarts the bar (and this popup with it), so run it fully
+    // detached — output to a log, not our pipes: once the bar quits those pipes
+    // break and theme-set would die on its next echo, before it restarts swaybg
+    execAsync([
+      "setsid",
+      "-f",
+      "bash",
+      "-c",
+      `${RICE}/theme-set ${t.name} >/tmp/theme-set.log 2>&1 </dev/null`,
+    ]).catch(console.error)
   }
 
   const move = (delta: number) => {
