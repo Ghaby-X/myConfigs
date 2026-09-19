@@ -1,6 +1,7 @@
 import Wp from "gi://AstalWp"
 import { createBinding } from "ags"
 import Dnd from "./Dnd"
+import Awake from "./Awake"
 
 export default function Audio() {
   const wp = Wp.get_default()
@@ -33,6 +34,7 @@ export default function Audio() {
         <image iconName={micIcon} />
       </button>
       <Dnd />
+      <Awake />
     </box>
   )
 }

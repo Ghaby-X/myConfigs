@@ -124,6 +124,7 @@ speaker,
 microphone,
 bluetooth,
 dnd,
+awake,
 tray button {
   background: transparent;
   border: none;
@@ -153,7 +154,8 @@ battery {
 }
 
 // do-not-disturb indicator: accent-colored so it stands out from the plain status icons
-dnd {
+dnd,
+awake {
   color: $accent;
   -gtk-icon-size: 13px;
 }
