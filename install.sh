@@ -54,4 +54,5 @@ sudo pacman -S --needed \
   libastal-wireplumber-git \
   libastal-battery-git \
   libastal-mpris-git \
-  libastal-bluetooth-git
+  libastal-bluetooth-git \
+  libastal-notifd-git
