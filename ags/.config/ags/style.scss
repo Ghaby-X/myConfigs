@@ -435,12 +435,16 @@ window.ControlPanel {
     }
   }
 
-  // compact toggles (DND, mic, speaker, airplane): icon + name + status
+  .squares {
+    margin-top: 8px;
+  }
+
+  // compact toggles (DND, mic, speaker, airplane): icon + name
   button.square {
     background: rgba($fg, 0.07);
     border-radius: 12px;
-    min-height: 62px;
-    padding: 6px 4px;
+    min-height: 44px;
+    padding: 4px;
 
     &:hover {
       background: rgba($fg, 0.12);
@@ -454,9 +458,6 @@ window.ControlPanel {
         background: color.adjust($accent, $lightness: 5%);
       }
 
-      .square-status {
-        color: rgba($bg, 0.75);
-      }
     }
 
     &:disabled {
@@ -464,17 +465,12 @@ window.ControlPanel {
     }
 
     image {
-      -gtk-icon-size: 18px;
+      -gtk-icon-size: 15px;
     }
 
     .square-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: bold;
-    }
-
-    .square-status {
-      font-size: 9px;
-      color: rgba($fg, 0.6);
     }
   }
 

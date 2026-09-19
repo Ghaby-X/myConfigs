@@ -45,11 +45,10 @@ function Tile(props: {
   )
 }
 
-// Compact toggle: icon, a short name, and a one-word status underneath.
+// Compact toggle: icon with its name underneath.
 function SquareTile(props: {
   icon: Accessor<string>
   title: string
-  status: Accessor<string>
   active: Accessor<boolean>
   available?: Accessor<boolean>
   onClicked: () => void
@@ -64,7 +63,6 @@ function SquareTile(props: {
       <box orientation={Gtk.Orientation.VERTICAL} spacing={1} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
         <image iconName={props.icon} />
         <label class="square-title" label={props.title} />
-        <label class="square-status" label={props.status} />
       </box>
     </button>
   )
@@ -155,14 +153,12 @@ function Toggles() {
         <SquareTile
           title="DND"
           icon={createComputed(() => "do-not-disturb-symbolic")}
-          status={dnd.as((d) => (d ? "On" : "Off"))}
           active={dnd}
           onClicked={() => (notifd.dontDisturb = !notifd.dontDisturb)}
         />
         <SquareTile
           title="Mic"
           icon={micMuted.as((m) => (m ? "microphone-disabled-symbolic" : "audio-input-microphone-symbolic"))}
-          status={micMuted.as((m) => (m ? "Muted" : "On"))}
           active={micMuted.as((m) => !m)}
           onClicked={() => {
             const mic = wp.audio.defaultMicrophone
@@ -172,7 +168,6 @@ function Toggles() {
         <SquareTile
           title="Speaker"
           icon={speakerIcon}
-          status={createComputed(() => (speakerMuted() ? "Muted" : `${Math.round((speakerVolume() ?? 0) * 100)}%`))}
           active={speakerMuted.as((m) => !m)}
           onClicked={() => {
             const sp = wp.audio.defaultSpeaker
@@ -182,7 +177,6 @@ function Toggles() {
         <SquareTile
           title="Airplane"
           icon={createComputed(() => "airplane-mode-symbolic")}
-          status={createComputed(() => (!airplane.available() ? "N/A" : airplane.on() ? "On" : "Off"))}
           active={airplane.on}
           available={airplane.available}
           onClicked={airplane.toggle}
