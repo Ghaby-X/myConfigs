@@ -70,6 +70,8 @@ include current-theme.conf
 #: Apps | Open terminal
 bindsym $mod+Return exec $term
 #: Windows | Close window
+bindsym $mod+w kill
+#: Windows | Close window
 bindsym $mod+shift+q kill
 #: Apps | App launcher
 bindsym $mod+d exec $menu
@@ -180,7 +182,7 @@ mode "resize" {
 #: Layout | Stacked layout
 bindsym $mod+s layout stacking
 #: Layout | Tabbed layout
-bindsym $mod+w layout tabbed
+bindsym $mod+Shift+w layout tabbed
 #: Layout | Toggle split direction
 bindsym $mod+e layout toggle split
 # focus the parent container (select a whole split), and back down

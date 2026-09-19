@@ -85,7 +85,8 @@ into one row).
 | `$mod+Shift` + `h j k l` / arrows | move the window |
 | `$mod+Ctrl` + `h j k l` | resize (or `$mod+r` for resize mode) |
 | `$mod+v` / `$mod+b` | next window splits vertically / horizontally |
-| `$mod+s` / `$mod+w` / `$mod+e` | stacking / tabbed / toggle split layout |
+| `$mod+s` / `$mod+Shift+w` / `$mod+e` | stacking / tabbed / toggle split layout |
+| `$mod+w` (or `$mod+Shift+q`) | close the focused window |
 | `$mod+a` / `$mod+Shift+a` | focus parent / child container |
 | `$mod+f` | fullscreen |
 | `$mod+Shift+Space` / `$mod+Space` | toggle floating / switch focus between tiled and floating |
