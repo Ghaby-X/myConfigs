@@ -1,4 +1,6 @@
 import app from "ags/gtk4/app"
+import { Gdk, Gtk } from "ags/gtk4"
+import GLib from "gi://GLib"
 import style from "./style.scss"
 import Bar from "./widget/Bar"
 import NotificationPopups from "./widget/NotificationPopups"
@@ -19,6 +21,10 @@ app.start({
     }
   },
   main() {
+    // our own symbolic icons (e.g. do-not-disturb), laid out like an icon theme
+    Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!).add_search_path(
+      `${GLib.get_home_dir()}/.config/ags/icons`,
+    )
     app.get_monitors().map(Bar)
     NotificationPopups()
     CalendarPopup()

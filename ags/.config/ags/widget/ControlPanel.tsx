@@ -59,10 +59,7 @@ function SquareTile(props: {
       tooltipText={props.title}
       onClicked={props.onClicked}
     >
-      <box orientation={Gtk.Orientation.VERTICAL} spacing={4} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-        <image iconName={props.icon} />
-        <label class="square-label" label={props.title} />
-      </box>
+      <image iconName={props.icon} />
     </button>
   )
 }
@@ -148,7 +145,7 @@ function Toggles() {
       <box class="squares" spacing={6}>
         <SquareTile
           title="DND"
-          icon={createComputed(() => "weather-clear-night-symbolic")}
+          icon={createComputed(() => "do-not-disturb-symbolic")}
           active={dnd}
           onClicked={() => (notifd.dontDisturb = !notifd.dontDisturb)}
         />
@@ -244,10 +241,65 @@ function NotificationItem({ n }: { n: Notifd.Notification }) {
   )
 }
 
+// Apps whose stack is expanded. Module-level so it survives the list
+// re-rendering when a new notification arrives.
+const [expanded, setExpanded] = createState<Set<string>>(new Set())
+const toggleExpanded = (app: string) =>
+  setExpanded((s) => {
+    const next = new Set(s)
+    if (next.has(app)) next.delete(app)
+    else next.add(app)
+    return next
+  })
+
+type Group = { app: string; items: Notifd.Notification[] }
+
+// Same app = similar. Input is newest-first, so groups come out ordered by
+// their newest notification.
+function groupByApp(list: Notifd.Notification[]): Group[] {
+  const groups = new Map<string, Group>()
+  for (const n of list) {
+    const app = n.appName || "Notification"
+    if (!groups.has(app)) groups.set(app, { app, items: [] })
+    groups.get(app)!.items.push(n)
+  }
+  return [...groups.values()]
+}
+
+function NotificationGroup({ group }: { group: Group }) {
+  const { app, items } = group
+  if (items.length === 1) return <NotificationItem n={items[0]} />
+
+  const open = expanded.as((s) => s.has(app))
+
+  return (
+    <box class={open.as((o) => (o ? "notif-group open" : "notif-group collapsed"))} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+      <box class="group-bar" spacing={4}>
+        <label class="group-title" label={`${app} · ${items.length}`} xalign={0} hexpand />
+        <button class="group-btn" onClicked={() => toggleExpanded(app)}>
+          <label label={open.as((o) => (o ? "Show less" : "Show all"))} />
+        </button>
+        <button class="group-btn" onClicked={() => items.forEach((n) => n.dismiss())}>
+          <label label="Clear" />
+        </button>
+      </box>
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={6} visible={open.as((o) => !o)}>
+        <NotificationItem n={items[0]} />
+      </box>
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={6} visible={open}>
+        {items.map((n) => (
+          <NotificationItem n={n} />
+        ))}
+      </box>
+    </box>
+  )
+}
+
 function Notifications() {
   const notifd = Notifd.get_default()
   const list = createBinding(notifd, "notifications").as((l) => [...l].sort((a, b) => b.time - a.time || b.id - a.id))
   const count = list.as((l) => l.length)
+  const groups = list.as(groupByApp)
 
   return (
     <box class="notifs" orientation={Gtk.Orientation.VERTICAL} spacing={8} vexpand>
@@ -259,8 +311,8 @@ function Notifications() {
       </box>
       <Gtk.ScrolledWindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
         <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-          <For each={list} id={(n) => `${n.id}-${n.time}`}>
-            {(n) => <NotificationItem n={n} />}
+          <For each={groups} id={(g) => `${g.app}|${g.items.map((n) => `${n.id}-${n.time}`).join(",")}`}>
+            {(g) => <NotificationGroup group={g} />}
           </For>
           <box class="notifs-empty" orientation={Gtk.Orientation.VERTICAL} spacing={8} visible={count.as((c) => c === 0)} valign={Gtk.Align.CENTER}>
             <image iconName="preferences-system-notifications-symbolic" pixelSize={40} />
