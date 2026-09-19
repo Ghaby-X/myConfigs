@@ -1,6 +1,6 @@
 import { execAsync } from "ags/process"
 import { themePickerOpen, setThemePickerOpen } from "../state"
-import { RICE, currentThemeName, listDir, prettify, readText, subsequence } from "../rice"
+import { RICE, currentThemeName, defaultWallpaper, fileExists, listDir, prettify, readColors, subsequence } from "../rice"
 import CardPicker, { PickerItem } from "./CardPicker"
 
 // Theme picker ($mod+t): one card per folder in ~/.config/rice/themes.
@@ -8,22 +8,24 @@ import CardPicker, { PickerItem } from "./CardPicker"
 type Theme = PickerItem & { mode: string; name: string }
 
 function loadThemes(): Theme[] {
-  return listDir(`${RICE}/themes`).map((name) => {
-    const dir = `${RICE}/themes/${name}`
-    const vars = Object.fromEntries(
-      [...readText(`${dir}/ags.scss`).matchAll(/\$([\w-]+):\s*(#[0-9a-fA-F]{6})/g)].map((m) => [m[1], m[2]]),
-    )
-    const mode = readText(`${dir}/mode`).trim() || "dark"
-    return {
-      id: name,
-      name,
-      label: prettify(name),
-      tag: mode === "light" ? "Light" : "Dark",
-      mode,
-      image: `${dir}/wallpaper.png`,
-      swatches: ["bg-alt", "bg", "fg", "accent", "urgent"].map((k) => vars[k]).filter(Boolean),
-    }
-  })
+  return listDir(`${RICE}/themes`)
+    .filter((name) => fileExists(`${RICE}/themes/${name}/colors.toml`))
+    .map((name) => {
+      const dir = `${RICE}/themes/${name}`
+      const c = readColors(dir)
+      const mode = c.mode || "dark"
+      // shell = the bar/launcher color, then the palette's main colors
+      const shell = c.shell ?? c.background
+      return {
+        id: name,
+        name,
+        label: c.name || prettify(name),
+        tag: mode === "light" ? "Light" : "Dark",
+        mode,
+        image: defaultWallpaper(dir),
+        swatches: [shell, c.background, c.foreground, c.accent, c.color1].filter(Boolean),
+      }
+    })
 }
 
 // Search: whitespace-separated tokens, all of which must match.

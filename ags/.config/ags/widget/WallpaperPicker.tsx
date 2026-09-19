@@ -1,6 +1,6 @@
 import { execAsync } from "ags/process"
 import { wallpaperPickerOpen, setWallpaperPickerOpen } from "../state"
-import { HOME, RICE, currentThemeName, currentWallpaperPath, listDir, prettify, readText } from "../rice"
+import { HOME, RICE, currentThemeName, currentWallpaperPath, defaultWallpaper, fileExists, listDir, prettify } from "../rice"
 import CardPicker, { PickerItem } from "./CardPicker"
 
 // Wallpaper picker ($mod+Ctrl+t): the active theme's wallpapers plus your own.
@@ -23,12 +23,9 @@ function loadWallpapers(): PickerItem[] {
     out.push({ id: path, label, tag, image: path })
   }
 
-  // the theme's default: `default-wallpaper` names a file in backgrounds/,
-  // otherwise (or if it isn't downloaded yet) wallpaper.png
-  const named = readText(`${dir}/default-wallpaper`).trim()
-  const defaultPath = named && listDir(`${dir}/backgrounds`).includes(named) ? `${dir}/backgrounds/${named}` : `${dir}/wallpaper.png`
-  add(defaultPath, "Default", "Default")
-  add(`${dir}/wallpaper.png`, "Original", "Theme")
+  // the theme's default (see defaultWallpaper), then the built-in wallpaper.png
+  add(defaultWallpaper(dir), "Default", "Default")
+  if (fileExists(`${dir}/wallpaper.png`)) add(`${dir}/wallpaper.png`, "Original", "Theme")
   for (const f of listDir(`${dir}/backgrounds`).filter((n) => IMAGE.test(n)))
     add(`${dir}/backgrounds/${f}`, prettify(f.replace(IMAGE, "")), "Theme")
   for (const f of listDir(`${HOME}/Pictures/wallpaper`).filter((n) => IMAGE.test(n)))

@@ -175,7 +175,7 @@ window.NotificationPopups {
 }
 
 .notification {
-  background: $bg;
+  background: $surface;
   color: $fg;
   border: 1px solid $inactive;
   border-radius: 6px;
@@ -299,7 +299,7 @@ window.CalendarPopup {
 
     &.today {
       background: $accent;
-      color: $bg;
+      color: $on-accent;
       font-weight: bold;
     }
   }
@@ -344,7 +344,7 @@ window.CalendarPopup {
 
   .media-controls button.play {
     background: $accent;
-    color: $bg;
+    color: $on-accent;
     border-radius: 999px;
     padding: 6px 10px;
 
@@ -405,14 +405,14 @@ window.ControlPanel {
 
     &.active {
       background: $accent;
-      color: $bg;
+      color: $on-accent;
 
       &:hover {
         background: color.adjust($accent, $lightness: 5%);
       }
 
       .tile-sub {
-        color: rgba($bg, 0.75);
+        color: rgba($on-accent, 0.75);
       }
     }
 
@@ -452,7 +452,7 @@ window.ControlPanel {
 
     &.active {
       background: $accent;
-      color: $bg;
+      color: $on-accent;
 
       &:hover {
         background: color.adjust($accent, $lightness: 5%);

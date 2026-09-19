@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Renders every app's theme files from a theme's colors.toml.
+
+    theme-render <theme-name> <output-dir>
+
+Reads  themes/<name>/colors.toml  and the templates in templates/*.tpl, and
+writes the results (sway.conf, kitty.conf, ags.scss, rofi.rasi, swaylock.conf,
+gtk.css, qt6ct.conf, mode) into <output-dir>. A file of the same name inside
+themes/<name>/ is a hand-written override and is copied instead of rendered.
+
+Template syntax:  {{ key }}   {{ key|strip }}   {{ key|rgb }}   {{ key|upper }}
+                  {{ mix(a, b, 0.3) }}   {{ on(color) }} (readable text on color)
+                  {{ alpha(key, 99) }}   (appends a hex alpha byte)
+"""
+import re
+import shutil
+import sys
+import tomllib
+from pathlib import Path
+
+RICE = Path(__file__).resolve().parent
+
+
+# ── color helpers ────────────────────────────────────────────────────────
+def to_rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+
+
+def to_hex(rgb):
+    return "#%02x%02x%02x" % tuple(max(0, min(255, round(v))) for v in rgb)
+
+
+def mix(a, b, t):
+    """a moved toward b by fraction t."""
+    ra, rb = to_rgb(a), to_rgb(b)
+    return to_hex(tuple(ra[i] * (1 - t) + rb[i] * t for i in range(3)))
+
+
+def luminance(h):
+    def ch(v):
+        v /= 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+
+    r, g, b = to_rgb(h)
+    return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b)
+
+
+def contrast(a, b):
+    la, lb = sorted((luminance(a), luminance(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+# ── palette: colors.toml + derived roles ─────────────────────────────────
+def build_palette(theme):
+    src = RICE / "themes" / theme / "colors.toml"
+    raw = tomllib.loads(src.read_text())
+    p = {k: v for k, v in raw.items() if isinstance(v, str)}
+    light = p.get("mode", "dark") == "light"
+    bg, fg = p["background"], p["foreground"]
+
+    for i, name in enumerate(["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]):
+        p.setdefault(name, p[f"color{i}"])
+
+    # roles below can be overridden in colors.toml; otherwise they follow fixed
+    # rules so every theme relates its colors the same way
+    p.setdefault("cursor", fg)
+    p.setdefault("selection", mix(bg, fg, 0.22))
+    p.setdefault("surface", bg)                                   # cards, notifications
+    p.setdefault("shell", mix(bg, "#000000", 0.05 if light else 0.25))  # bar, launcher, panels
+    p.setdefault("border", mix(bg, fg, 0.18))
+    p.setdefault("muted", mix(fg, bg, 0.45))
+    p.setdefault("urgent", p["red"])
+    p.setdefault("ok", p["green"])
+    p.setdefault("warn", p["yellow"])
+    p.setdefault("view", mix(bg, "#ffffff", 0.7) if light else p["shell"])  # text-view/list backgrounds
+    p["shade"] = "rgba(0, 0, 0, 0.07)" if light else "rgba(0, 0, 0, 0.36)"
+    p["mode_is_light"] = "1" if light else "0"
+    p["name"] = raw.get("name", theme)
+    return p
+
+
+# ── templates ────────────────────────────────────────────────────────────
+TOKEN = re.compile(r"\{\{\s*(.+?)\s*\}\}")
+FUNC = re.compile(r"^(\w+)\((.*)\)$")
+
+
+def value(expr, p):
+    expr = expr.strip()
+    m = FUNC.match(expr)
+    if m:
+        fn, args = m.group(1), [a.strip() for a in m.group(2).split(",")]
+        res = lambda a: p[a] if a in p else a
+        if fn == "mix":
+            return mix(res(args[0]), res(args[1]), float(args[2]))
+        if fn == "on":  # readable text color on top of args[0]
+            c = res(args[0])
+            return p["background"] if contrast(p["background"], c) >= contrast(p["foreground"], c) else p["foreground"]
+        if fn == "alpha":
+            return res(args[0]) + args[1]
+        raise ValueError(f"unknown function {fn}")
+    return p[expr]
+
+
+def render_text(text, p):
+    def sub(m):
+        expr, *filters = [s.strip() for s in m.group(1).split("|")]
+        v = value(expr, p)
+        for f in filters:
+            if f == "strip":
+                v = v.lstrip("#")
+            elif f == "upper":
+                v = v.upper()
+            elif f == "rgb":
+                v = ", ".join(str(c) for c in to_rgb(v))
+            else:
+                raise ValueError(f"unknown filter {f}")
+        return v
+
+    return TOKEN.sub(sub, text)
+
+
+# ── Qt palette (needs per-role math, so it isn't a text template) ────────
+def qt_scheme(p):
+    light = p["mode_is_light"] == "1"
+    bg, fg, ac, btn = p["background"], p["foreground"], p["accent"], p["border"]
+    white, black = "#ffffff", "#000000"
+    base = p["view"]
+    hl_text = "#ffffff" if light else p["shell"]
+
+    def scheme(f, h):
+        return [
+            f, btn, mix(btn, white, 0.25), mix(btn, white, 0.12), mix(btn, black, 0.4), mix(btn, black, 0.2),
+            f, white if not light else black, f, base, bg, black, ac, h, ac, mix(ac, fg, 0.4),
+            mix(base, fg, 0.06), f, base, f, mix(fg, bg, 0.5),
+        ]
+
+    argb = lambda cols: ", ".join("#ff" + c.lstrip("#") for c in cols)
+    act = scheme(fg, hl_text)
+    dis_fg = mix(fg, bg, 0.5)
+    dis = scheme(dis_fg, dis_fg)
+    dis[12] = mix(bg, fg, 0.3)
+    return f"[ColorScheme]\nactive_colors={argb(act)}\ndisabled_colors={argb(dis)}\ninactive_colors={argb(act)}\n"
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit("usage: theme-render <theme> <output-dir>")
+    theme, out = sys.argv[1], Path(sys.argv[2])
+    theme_dir = RICE / "themes" / theme
+    if not (theme_dir / "colors.toml").is_file():
+        sys.exit(f"theme-render: {theme_dir}/colors.toml not found")
+    p = build_palette(theme)
+    out.mkdir(parents=True, exist_ok=True)
+
+    outputs = {}
+    for tpl in sorted((RICE / "templates").glob("*.tpl")):
+        outputs[tpl.name[: -len(".tpl")]] = render_text(tpl.read_text(), p)
+    outputs["qt6ct.conf"] = qt_scheme(p)
+    outputs["mode"] = p.get("mode", "dark") + "\n"
+
+    for name, text in outputs.items():
+        override = theme_dir / name
+        if override.is_file() and name != "mode":
+            shutil.copyfile(override, out / name)  # hand-written file wins
+        else:
+            (out / name).write_text(text)
+
+
+if __name__ == "__main__":
+    main()

@@ -74,3 +74,24 @@ export const subsequence = (hay: string, q: string) => {
   }
   return true
 }
+
+export const fileExists = (path: string) => GLib.file_test(path, GLib.FileTest.EXISTS)
+
+/** A theme's colors.toml as { key: "#hex" | "text" } (flat string values only). */
+export function readColors(themeDir: string): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const m of readText(`${themeDir}/colors.toml`).matchAll(/^\s*([\w-]+)\s*=\s*"([^"]*)"/gm)) out[m[1]] = m[2]
+  return out
+}
+
+/**
+ * A theme's default wallpaper: the file named in default-wallpaper (inside
+ * backgrounds/), else wallpaper.png, else the first image in backgrounds/.
+ */
+export function defaultWallpaper(themeDir: string): string {
+  const bgs = listDir(`${themeDir}/backgrounds`).filter((n) => /\.(png|jpe?g|webp)$/i.test(n))
+  const named = readText(`${themeDir}/default-wallpaper`).trim()
+  if (named && bgs.includes(named)) return `${themeDir}/backgrounds/${named}`
+  if (fileExists(`${themeDir}/wallpaper.png`)) return `${themeDir}/wallpaper.png`
+  return bgs.length ? `${themeDir}/backgrounds/${bgs[0]}` : ""
+}

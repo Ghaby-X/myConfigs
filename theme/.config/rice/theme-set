@@ -15,7 +15,7 @@ usage() {
   echo "Usage: theme-set <name>"
   echo "Available themes:"
   for d in "$THEMES_DIR"/*/; do
-    echo "  - $(basename "$d")"
+    [[ -f "$d/colors.toml" ]] && echo "  - $(basename "$d")"
   done
 }
 
@@ -26,29 +26,32 @@ if [[ -z "$name" ]]; then
 fi
 
 theme_path="$THEMES_DIR/$name"
-if [[ ! -d "$theme_path" ]]; then
+if [[ ! -f "$theme_path/colors.toml" ]]; then
   echo "No such theme: $name" >&2
   usage
   exit 1
 fi
 
+# Every app's theme file is generated from the theme's colors.toml (see
+# theme-render); the rendered files live outside the repo and are what the
+# app configs link to.
+render_path="${XDG_STATE_HOME:-$HOME/.local/state}/rice/rendered/$name"
+python3 "$RICE_DIR/theme-render" "$name" "$render_path"
+
 mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/rofi" "$HOME/.config/swaylock" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0" "$HOME/.config/qt6ct/colors"
-ln -sfn "$theme_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
-ln -sfn "$theme_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
-ln -sfn "$theme_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
-ln -sfn "$theme_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
+ln -sfn "$render_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
+ln -sfn "$render_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
+ln -sfn "$render_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
+ln -sfn "$render_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
 # GTK3/GTK4 pick up ~/.config/gtk-{3,4}.0/gtk.css automatically; whole file
 # is theme-managed (named-color overrides), so no include split needed.
-if [[ -f "$theme_path/gtk.css" ]]; then
-  ln -sfn "$theme_path/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
-  ln -sfn "$theme_path/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
-fi
+ln -sfn "$render_path/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
+ln -sfn "$render_path/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
 # Qt (qt6ct, Fusion style + custom palette). qt6ct needs an absolute path to
 # the color scheme, so the config is generated here rather than tracked.
 # QT_QPA_PLATFORMTHEME=qt6ct comes from the `qt` stow package (~/.zshenv).
-if [[ -f "$theme_path/qt6ct.conf" ]]; then
-  ln -sfn "$theme_path/qt6ct.conf" "$HOME/.config/qt6ct/colors/current-theme.conf"
-  cat > "$HOME/.config/qt6ct/qt6ct.conf" <<QT
+ln -sfn "$render_path/qt6ct.conf" "$HOME/.config/qt6ct/colors/current-theme.conf"
+cat > "$HOME/.config/qt6ct/qt6ct.conf" <<QT
 [Appearance]
 color_scheme_path=$HOME/.config/qt6ct/colors/current-theme.conf
 custom_palette=true
@@ -56,28 +59,27 @@ icon_theme=Papirus
 standard_dialogs=default
 style=Fusion
 QT
-fi
 # swaylock has no include directive, so its whole config is theme-managed
 # (not a partial "current-theme.*" that gets included by a static file).
-if [[ -f "$theme_path/swaylock.conf" ]]; then
-  ln -sfn "$theme_path/swaylock.conf" "$HOME/.config/swaylock/config"
+ln -sfn "$render_path/swaylock.conf" "$HOME/.config/swaylock/config"
+# wallpaper: the theme's default (`default-wallpaper` names a file in backgrounds/,
+# which is downloaded rather than committed), else wallpaper.png, else the first
+# image in backgrounds/; a wallpaper picked earlier for this theme (see
+# wallpaper-set) wins over all of those while its file still exists
+wallpaper=""
+if [[ -f "$theme_path/default-wallpaper" ]]; then
+  candidate="$theme_path/backgrounds/$(tr -d '\n' < "$theme_path/default-wallpaper")"
+  [[ -f "$candidate" ]] && wallpaper="$candidate"
 fi
-if [[ -f "$theme_path/wallpaper.png" ]]; then
-  ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
-  # a theme can name a different default in `default-wallpaper` (a file in its
-  # backgrounds/ folder, which is downloaded rather than committed); wallpaper.png
-  # stays as the always-present fallback
-  if [[ -f "$theme_path/default-wallpaper" ]]; then
-    default_bg="$theme_path/backgrounds/$(tr -d '\n' < "$theme_path/default-wallpaper")"
-    [[ -f "$default_bg" ]] && ln -sfn "$default_bg" "$RICE_DIR/current-wallpaper"
-  fi
-  # a wallpaper picked earlier for this theme (see wallpaper-set) wins over the
-  # theme's default, as long as that file still exists
-  saved="${XDG_STATE_HOME:-$HOME/.local/state}/rice/wallpaper/$name"
-  if [[ -f "$saved" ]] && [[ -f "$(cat "$saved")" ]]; then
-    ln -sfn "$(cat "$saved")" "$RICE_DIR/current-wallpaper"
-  fi
+[[ -z "$wallpaper" && -f "$theme_path/wallpaper.png" ]] && wallpaper="$theme_path/wallpaper.png"
+if [[ -z "$wallpaper" ]]; then
+  wallpaper="$(compgen -G "$theme_path/backgrounds/*" | head -n 1 || true)"
 fi
+saved="${XDG_STATE_HOME:-$HOME/.local/state}/rice/wallpaper/$name"
+if [[ -f "$saved" ]] && [[ -f "$(cat "$saved")" ]]; then
+  wallpaper="$(cat "$saved")"
+fi
+[[ -n "$wallpaper" ]] && ln -sfn "$wallpaper" "$RICE_DIR/current-wallpaper"
 
 echo "Theme set to: $name"
 
@@ -120,8 +122,8 @@ fi
 # read via the xdg-desktop-portal Settings interface) — this is what lets
 # portal-aware apps (Firefox, GTK4/libadwaita apps, etc.) follow the rice's
 # theme automatically instead of just our own configs.
-if [[ -f "$theme_path/mode" ]] && command -v gsettings >/dev/null; then
-  mode="$(cat "$theme_path/mode")"
+if [[ -f "$render_path/mode" ]] && command -v gsettings >/dev/null; then
+  mode="$(cat "$render_path/mode")"
   case "$mode" in
     dark)  gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' ;;
     light) gsettings set org.gnome.desktop.interface color-scheme 'prefer-light' ;;
