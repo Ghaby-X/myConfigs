@@ -63,17 +63,31 @@ function currentThemeName(): string {
   }
 }
 
-// subsequence match, case-insensitive: "mcat" finds "catppuccin-mocha"
-const matches = (t: Theme, q: string) => {
-  const hay = `${t.name} ${t.label}`.toLowerCase()
+// Search: whitespace-separated tokens, all of which must match.
+//   "dark" / "light"   exactly the themes of that mode
+//   anything else      case-insensitive subsequence of the name ("mcat" finds
+//                      "catppuccin-mocha"); 3+ letters that start "dark"/"light"
+//                      (e.g. "lig") also match by mode
+const subsequence = (hay: string, q: string) => {
   let i = 0
-  for (const ch of q.toLowerCase().replace(/\s+/g, "")) {
+  for (const ch of q) {
     i = hay.indexOf(ch, i)
     if (i < 0) return false
     i++
   }
   return true
 }
+
+const matches = (t: Theme, q: string) =>
+  q
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((tok) => {
+      if (tok === "dark" || tok === "light") return t.mode === tok
+      if (tok.length >= 3 && t.mode.startsWith(tok)) return true
+      return subsequence(`${t.name} ${t.label}`.toLowerCase(), tok)
+    })
 
 const [themes, setThemes] = createState<Theme[]>([])
 const [query, setQuery] = createState("")
