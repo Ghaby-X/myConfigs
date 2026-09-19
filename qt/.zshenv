@@ -3,3 +3,7 @@
 # .zshenv is read by every zsh (login or not), so it also covers the tty
 # login that starts sway.
 export QT_QPA_PLATFORMTHEME=qt6ct
+
+# Cursor theme for Qt/XWayland/any client that reads the Xcursor env.
+export XCURSOR_THEME=Bibata-Modern-Classic
+export XCURSOR_SIZE=24

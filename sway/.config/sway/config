@@ -8,6 +8,11 @@ set $menu ~/.config/rofi/launchers/type-2/launcher.sh
 
 ### Autostart ###
 exec_always mkdir -p ~/Pictures/Screenshots
+
+# Cursor: sway draws it for native Wayland clients; GTK apps read gsettings.
+seat * xcursor_theme Bibata-Modern-Classic 24
+exec_always gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
+exec_always gsettings set org.gnome.desktop.interface cursor-size 24
 exec ags run
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store

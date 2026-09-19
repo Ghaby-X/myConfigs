@@ -40,6 +40,7 @@ we pull in something new.
 | libastal-notifd-git | notifications | Notification daemon + popups, AGS-native (module 8) — replaces the need for mako. Claims the org.freedesktop.Notifications D-Bus name. From chaotic-aur. | installed |
 | adw-gtk-theme | polish | GTK theme for GTK3/GTK4 apps, recolored per-theme via theme/.../gtk.css. The stock Adwaita builds here hardcode their colors, so named-color overrides do nothing; adw-gtk3 is built to be recolored that way. Official `extra` repo. | installed |
 | cliphist | polish | Clipboard history daemon storage; `wl-paste --watch` feeds it, `rofi/clipboard.sh` is the picker (`$mod+Shift+v`). Official `extra` repo. | installed |
+| bibata-cursor-theme | polish | Cursor theme (Bibata-Modern-Classic, 24px), set in sway config + gsettings + `~/.zshenv`. From chaotic-aur. | installed |
 | qt6ct | polish | Qt6 theming: Fusion style + per-theme palette (`themes/*/qt6ct.conf`), generated config by theme-set; needs `QT_QPA_PLATFORMTHEME=qt6ct`, set by the `qt` stow package (`~/.zshenv`). Official `extra` repo. | installed |
 | kvantum | polish | Installed but **unused** — qt6ct + Fusion covers Qt theming; can be uninstalled. | installed (unused) |
 
