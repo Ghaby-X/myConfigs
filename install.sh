@@ -33,6 +33,17 @@ PACMAN_PACKAGES=(
   zsh-autosuggestions
   zsh-syntax-highlighting
   brightnessctl          # backlight keys (theme/.config/rice/brightness); no-op without a backlight
+  neovim                 # editor; config is the `nvim` stow package (LazyVim; recolored by the rice theme)
+  tree-sitter-cli        # LazyVim compiles syntax parsers with it
+  lazygit                # LazyVim's git UI
+  ripgrep                # LazyVim search (also fd, fzf, gcc, make, unzip, nodejs, npm below)
+  fd
+  fzf
+  unzip
+  gcc
+  make
+  nodejs
+  npm
   tmux                   # terminal multiplexer; config is the `tmux` stow package (plugins: scripts/tmux-plugins.sh)
   eza                    # `ls` alias in ~/.zshrc
   kitty

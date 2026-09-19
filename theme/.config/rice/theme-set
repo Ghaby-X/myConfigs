@@ -38,7 +38,7 @@ fi
 render_path="${XDG_STATE_HOME:-$HOME/.local/state}/rice/rendered/$name"
 python3 "$RICE_DIR/theme-render" "$name" "$render_path"
 
-mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/rofi" "$HOME/.config/swaylock" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0" "$HOME/.config/qt6ct/colors" "$HOME/.config/zsh" "$HOME/.config/tmux"
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/rofi" "$HOME/.config/swaylock" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0" "$HOME/.config/qt6ct/colors" "$HOME/.config/zsh" "$HOME/.config/tmux" "$HOME/.config/nvim/lua/rice"
 ln -sfn "$render_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$render_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
 ln -sfn "$render_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
@@ -47,6 +47,8 @@ ln -sfn "$render_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
 ln -sfn "$render_path/zsh.zsh" "$HOME/.config/zsh/current-theme.zsh"
 # tmux: status bar + pane colors, sourced by ~/.config/tmux/tmux.conf
 ln -sfn "$render_path/tmux-theme.conf" "$HOME/.config/tmux/current-theme.conf"
+# neovim: palette read by lua/rice (the nvim stow package)
+ln -sfn "$render_path/nvim-palette.lua" "$HOME/.config/nvim/lua/rice/palette.lua"
 # GTK3/GTK4 pick up ~/.config/gtk-{3,4}.0/gtk.css automatically; whole file
 # is theme-managed (named-color overrides), so no include split needed.
 ln -sfn "$render_path/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
@@ -95,6 +97,14 @@ fi
 # running tmux sessions pick up the new colors immediately
 if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
   tmux source-file "$HOME/.config/tmux/current-theme.conf" >/dev/null 2>&1 && echo "tmux: reloaded"
+fi
+
+# running Neovim instances recolor themselves (each listens on a socket in $XDG_RUNTIME_DIR)
+if command -v nvim >/dev/null; then
+  for sock in "${XDG_RUNTIME_DIR:-/run/user/$UID}"/nvim.*.0; do
+    [[ -S "$sock" ]] || continue
+    nvim --server "$sock" --remote-send '<Cmd>lua require("rice").reload()<CR>' >/dev/null 2>&1 &
+  done
 fi
 
 # kitty reloads its config (and so the new colors) in every open window on SIGUSR1

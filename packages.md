@@ -25,6 +25,10 @@ we pull in something new.
 | zsh-autosuggestions | zsh | Fish-style suggestions; color follows the rice theme. | installed |
 | zsh-syntax-highlighting | zsh | Command highlighting; colors follow the rice theme. | installed |
 | brightnessctl | polish | Backlight up/down for the brightness keys, via `theme/.config/rice/brightness` (shows the on-screen popup). Does nothing on machines without a backlight (VM, desktop monitor). Official `extra` repo. | pending |
+| neovim | nvim | Editor. Config: `nvim/` stow package (LazyVim starter + markdown extra + One Dark Pro recolored per theme via `lua/rice`, tmux-navigator). Official `extra` repo. | pending |
+| tree-sitter-cli | nvim | LazyVim compiles treesitter parsers with it. | pending |
+| lazygit | nvim | LazyVim's `<leader>gg` git UI. | pending |
+| ripgrep, fd, fzf, unzip, gcc, make, nodejs, npm | nvim | LazyVim/mason helper tools (search, downloads, parser + LSP builds). Normally already installed. | installed |
 | tmux | tmux | Terminal multiplexer. Config: `tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | installed |
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
