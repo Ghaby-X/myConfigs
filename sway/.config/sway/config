@@ -122,8 +122,8 @@ mode "resize" {
 }
 
 # screenshots
-bindsym Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
-bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
+bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
+bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
 bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
 # media / volume
