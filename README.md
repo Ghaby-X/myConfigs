@@ -11,8 +11,11 @@ assumes it lives at `~/project/myConfig`.
 git clone <this-repo> ~/project/myConfig   # any path works
 cd ~/project/myConfig
 ./install.sh                # installs tracked packages (see packages.md)
-./scripts/stow-all.sh       # symlinks every non-empty package into $HOME
+./scripts/stow-all.sh       # symlinks every non-empty package into $HOME (and fetches the tmux plugins)
 ```
+
+The extra wallpapers download during `install.sh`; the tmux plugins during
+`stow-all.sh`, once the config is linked (either script can be re-run safely).
 
 Don't call `stow` directly — its default target is the *parent of wherever
 you run it from*, not `$HOME`. `scripts/stow-all.sh` always targets `$HOME`

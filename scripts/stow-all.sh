@@ -28,3 +28,9 @@ fi
 
 echo "Stowing: ${PACKAGES[*]}"
 stow -v --no-folding -t "$HOME" "${PACKAGES[@]}"
+
+# tmux plugins live outside the repo; on a fresh machine, fetch them now that
+# tmux.conf is linked (skipped when tmux isn't installed or TPM is already there).
+if command -v tmux >/dev/null && [[ ! -d "$HOME/.config/tmux/plugins/tpm" ]]; then
+  "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/tmux-plugins.sh"
+fi
