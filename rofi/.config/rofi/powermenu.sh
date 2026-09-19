@@ -30,7 +30,13 @@ generate_entries() {
   entry "Cancel" "process-stop"
 }
 
-selected="$(generate_entries | rofi -dmenu -show-icons -theme "${dir}/powermenu.rasi" -no-custom -format i)"
+# This menu has no search box worth typing into, so plain vim keys are safe here
+# (other rofi menus use Ctrl+h/j/k/l because letters filter their list).
+selected="$(generate_entries | rofi -dmenu -show-icons -theme "${dir}/powermenu.rasi" -no-custom -format i \
+  -kb-row-left "h,Left,Control+h" -kb-row-right "l,Right,Control+l" \
+  -kb-row-up "k,Up,Control+k" -kb-row-down "j,Down,Control+j" \
+  -kb-move-char-back "Control+b" -kb-move-char-forward "Control+f" \
+  -kb-cancel "Escape,q")"
 
 case "$selected" in
   0) exec ~/.config/rice/lock ;;

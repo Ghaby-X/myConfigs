@@ -40,10 +40,99 @@ const DIRECTIONS: Record<number, Gtk.DirectionType> = {
   [Gdk.KEY_Up]: Gtk.DirectionType.UP,
 }
 
+// ── spatial navigation ──────────────────────────────────────────────────
+// GTK's own directional focus is order-based and gets confused by rows of
+// different widths and by scrolled lists, so we pick the nearest focusable
+// widget in the pressed direction ourselves.
+
+type Box = { x: number; y: number; w: number; h: number }
+
+function focusables(root: Gtk.Widget, out: Gtk.Widget[] = []): Gtk.Widget[] {
+  for (let c = root.get_first_child(); c; c = c.get_next_sibling()) {
+    if (c.get_focusable() && c.get_mapped() && c.is_sensitive()) out.push(c)
+    focusables(c, out)
+  }
+  return out
+}
+
+function boxOf(w: Gtk.Widget, win: Gtk.Widget): Box | null {
+  const [ok, r] = w.compute_bounds(win)
+  return ok ? { x: r.get_x(), y: r.get_y(), w: r.get_width(), h: r.get_height() } : null
+}
+
+// keep a newly focused item visible inside its scrolled window
+function scrollIntoView(w: Gtk.Widget) {
+  for (let p = w.get_parent(); p; p = p.get_parent()) {
+    if (p instanceof Gtk.ScrolledWindow) {
+      const [ok, r] = w.compute_bounds(p)
+      const adj = p.get_vadjustment()
+      if (!ok || !adj) return
+      const pad = 8
+      if (r.get_y() < pad) adj.set_value(adj.get_value() + r.get_y() - pad)
+      else if (r.get_y() + r.get_height() > adj.get_page_size() - pad)
+        adj.set_value(adj.get_value() + r.get_y() + r.get_height() - adj.get_page_size() + pad)
+      return
+    }
+  }
+}
+
+function focusWidget(w: Gtk.Widget) {
+  w.grab_focus()
+  scrollIntoView(w)
+}
+
+function moveFocus(win: Gtk.Window, dir: Gtk.DirectionType) {
+  win.set_focus_visible(true)
+  const cands = focusables(win)
+  if (!cands.length) return
+  const cur = win.get_focus()
+  const from = cur && cands.includes(cur) ? boxOf(cur, win) : null
+  if (!cur || !from) return focusWidget(cands[0])
+
+  const cx = from.x + from.w / 2
+  const cy = from.y + from.h / 2
+  let best: Gtk.Widget | null = null
+  let bestScore = Infinity
+
+  for (const c of cands) {
+    if (c === cur) continue
+    const b = boxOf(c, win)
+    if (!b) continue
+    const dx = b.x + b.w / 2 - cx
+    const dy = b.y + b.h / 2 - cy
+    let score: number
+    if (dir === Gtk.DirectionType.DOWN || dir === Gtk.DirectionType.UP) {
+      const along = dir === Gtk.DirectionType.DOWN ? dy : -dy
+      if (along < 4) continue
+      score = along + Math.abs(dx) * 0.5
+    } else {
+      const along = dir === Gtk.DirectionType.RIGHT ? dx : -dx
+      if (along < 4 || Math.abs(dy) > from.h * 0.6) continue // same row only
+      score = along
+    }
+    if (score < bestScore) {
+      bestScore = score
+      best = c
+    }
+  }
+  if (best) focusWidget(best)
+}
+
 /** Focus the first focusable item (used when a popup opens). */
 export function focusFirst(win: Gtk.Window) {
   win.set_focus_visible(true)
-  win.child_focus(Gtk.DirectionType.TAB_FORWARD)
+  let first: Gtk.Widget | null = null
+  let firstBox: Box | null = null
+  for (const c of focusables(win)) {
+    const b = boxOf(c, win)
+    if (!b) continue
+    // top-most row first, then left-most (rows within 6px count as one row)
+    if (!firstBox || b.y < firstBox.y - 6 || (Math.abs(b.y - firstBox.y) <= 6 && b.x < firstBox.x)) {
+      first = c
+      firstBox = b
+    }
+  }
+  if (first) focusWidget(first)
 }
 
 /**
@@ -69,9 +158,7 @@ export function popupKeys(
 
     const dir = DIRECTIONS[keyval]
     if (dir !== undefined) {
-      win.set_focus_visible(true)
-      if (!win.get_focus()) win.child_focus(Gtk.DirectionType.TAB_FORWARD)
-      else win.child_focus(dir)
+      moveFocus(win, dir)
       return true
     }
 

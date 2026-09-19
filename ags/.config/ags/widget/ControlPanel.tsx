@@ -352,7 +352,7 @@ function Notifications() {
           <label label="Clear all" />
         </button>
       </box>
-      <Gtk.ScrolledWindow vexpand hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
+      <Gtk.ScrolledWindow vexpand focusable={false} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
         <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
           <For each={groups} id={(g) => `${g.key}|${g.items.map((n) => `${n.id}-${n.time}`).join(",")}`}>
             {(g) => <NotificationGroup group={g} />}
