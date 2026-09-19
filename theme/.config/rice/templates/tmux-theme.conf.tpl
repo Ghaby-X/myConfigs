@@ -5,6 +5,8 @@ set -g status-style "bg={{ shell }},fg={{ foreground }}"
 set -g pane-border-style "fg={{ border }}"
 set -g pane-active-border-style "fg={{ accent }}"
 set -g message-style "bg={{ accent }},fg={{ on(accent) }},bold"
+set -g popup-style "bg={{ shell }},fg={{ foreground }}"
+set -g popup-border-style "fg={{ accent }}"
 set -g message-command-style "bg={{ yellow }},fg={{ on(yellow) }},bold"
 
 # left: session badge
