@@ -65,9 +65,9 @@ function currentThemeName(): string {
 
 // Search: whitespace-separated tokens, all of which must match.
 //   "dark" / "light"   exactly the themes of that mode
-//   anything else      case-insensitive subsequence of the name ("mcat" finds
-//                      "catppuccin-mocha"); 3+ letters that start "dark"/"light"
-//                      (e.g. "lig") also match by mode
+//   anything else      substring of the theme name; failing that (3+ letters) a
+//                      subsequence of it ("ctmo" finds catppuccin-mocha)
+//   3+ letters that start "dark"/"light" (e.g. "lig") also match by mode
 const subsequence = (hay: string, q: string) => {
   let i = 0
   for (const ch of q) {
@@ -86,7 +86,8 @@ const matches = (t: Theme, q: string) =>
     .every((tok) => {
       if (tok === "dark" || tok === "light") return t.mode === tok
       if (tok.length >= 3 && t.mode.startsWith(tok)) return true
-      return subsequence(`${t.name} ${t.label}`.toLowerCase(), tok)
+      const name = t.name.replace(/-/g, " ")
+      return name.includes(tok) || (tok.length >= 3 && subsequence(name, tok))
     })
 
 const [themes, setThemes] = createState<Theme[]>([])
