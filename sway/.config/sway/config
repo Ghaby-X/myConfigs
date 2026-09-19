@@ -71,8 +71,6 @@ include current-theme.conf
 bindsym $mod+Return exec $term
 #: Windows | Close window
 bindsym $mod+w kill
-#: Windows | Close window
-bindsym $mod+shift+q kill
 #: Apps | App launcher
 bindsym $mod+d exec $menu
 #: Session | Reload sway config
