@@ -9,7 +9,8 @@ export type KeyRow = { keys: string; desc: string }
 export type KeyGroup = { name: string; rows: KeyRow[] }
 
 const CONFIG = `${HOME}/.config/sway/config`
-const GROUP_ORDER = ["Apps", "Session", "Windows", "Layout", "Workspaces", "Scratchpad", "Popups", "Screenshots", "Media"]
+const TMUX_CONFIG = `${HOME}/.config/tmux/tmux.conf`
+const GROUP_ORDER = ["Apps", "Session", "Windows", "Layout", "Workspaces", "Scratchpad", "Popups", "Screenshots", "Media", "tmux"]
 
 const NAMES: Record<string, string> = {
   return: "Enter", escape: "Esc", space: "Space", minus: "-", slash: "/", tab: "Tab",
@@ -41,6 +42,66 @@ function compact(combos: string[][]): string {
     .join("   ·   ")
 }
 
+// ── tmux: `#: tmux | desc` above a `bind ...` line (same convention as sway) ──
+function tmuxKey(k: string): string {
+  k = k.replace(/^['"]|['"]$/g, "").replace(/\\\\/g, "\\")
+  const ctrl = k.match(/^C-(.+)$/)
+  if (ctrl) return `Ctrl + ${ctrl[1].toUpperCase()}`
+  return NAMES[k.toLowerCase()] ?? k
+}
+
+function loadTmuxRows(): KeyRow[] {
+  const text = readText(TMUX_CONFIG)
+  if (!text) return []
+  let prefix = "Ctrl + B"
+  const pm = text.match(/^\s*set(?:-option)?\s+-g\s+prefix\s+(\S+)/m)
+  if (pm) prefix = tmuxKey(pm[1])
+
+  const rows = new Map<string, Map<string, string[]>>() // desc -> lead -> keys
+  const add = (desc: string, lead: string, key: string) => {
+    const leads = rows.get(desc) ?? new Map<string, string[]>()
+    leads.set(lead, [...(leads.get(lead) ?? []), key])
+    rows.set(desc, leads)
+  }
+
+  let pending: string | null = null
+  for (const raw of text.split("\n")) {
+    const line = raw.trim()
+    const note = line.match(/^#:\s*tmux\s*\|\s*(.+)$/)
+    if (note) {
+      pending = note[1].trim()
+      continue
+    }
+    if (pending) {
+      if (/^set(?:-option)?\s+-g\s+prefix\s/.test(line)) add(pending, "", prefix)
+      else if (/^bind(?:-key)?\s/.test(line)) {
+        const toks = line.match(/'[^']*'|"[^"]*"|\S+/g) ?? []
+        let i = 1
+        let noPrefix = false
+        let table = ""
+        while (/^-[a-zA-Z]+$/.test(toks[i] ?? "")) { // flags like -r -n -T (a lone "-" is a key)
+          if (toks[i] === "-n") noPrefix = true
+          if (toks[i] === "-T") {
+            table = toks[i + 1]
+            i++
+          }
+          i++
+        }
+        const key = tmuxKey(toks[i])
+        if (table === "copy-mode-vi") add(pending, "copy mode:", key)
+        else if (noPrefix) add(pending, "", key)
+        else add(pending, `${prefix}, then`, key)
+      }
+    }
+    if (line && !line.startsWith("#")) pending = null
+  }
+
+  return [...rows.entries()].map(([desc, leads]) => ({
+    desc,
+    keys: [...leads.entries()].map(([lead, keys]) => `${lead ? lead + " " : ""}${keys.join(" / ")}`).join("   ·   "),
+  }))
+}
+
 export function loadKeyGroups(): KeyGroup[] {
   const text = readText(CONFIG)
   const mod = /^\s*set\s+\$mod\s+Mod1\b/m.test(text) ? "Alt" : "Super"
@@ -68,10 +129,13 @@ export function loadKeyGroups(): KeyGroup[] {
     const i = GROUP_ORDER.indexOf(n)
     return i < 0 ? GROUP_ORDER.length : i
   }
-  return [...merged.entries()]
+  const groups: KeyGroup[] = [...merged.entries()]
     .sort((a, b) => rank(a[0]) - rank(b[0]))
     .map(([name, descs]) => ({
       name,
       rows: [...descs.entries()].map(([desc, combos]) => ({ desc, keys: compact(combos) })),
     }))
+  const tmuxRows = loadTmuxRows()
+  if (tmuxRows.length) groups.push({ name: "tmux", rows: tmuxRows })
+  return groups
 }

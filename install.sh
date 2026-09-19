@@ -32,6 +32,7 @@ PACMAN_PACKAGES=(
   zsh-theme-powerlevel10k # prompt
   zsh-autosuggestions
   zsh-syntax-highlighting
+  tmux                   # terminal multiplexer; config is the `tmux` stow package (plugins: scripts/tmux-plugins.sh)
   eza                    # `ls` alias in ~/.zshrc
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
@@ -77,3 +78,10 @@ fi
 
 # Extra per-theme wallpapers for the wallpaper picker (downloaded, not in git).
 "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/fetch-wallpapers.sh"
+
+# tmux plugin manager + plugins (needs the dotfiles stowed first: scripts/stow-all.sh).
+if [[ -f "$HOME/.config/tmux/tmux.conf" ]]; then
+  "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/tmux-plugins.sh"
+else
+  echo "==> Skipping tmux plugins: run scripts/stow-all.sh, then scripts/tmux-plugins.sh"
+fi

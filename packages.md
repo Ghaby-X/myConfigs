@@ -24,6 +24,7 @@ we pull in something new.
 | zsh-theme-powerlevel10k | zsh | Prompt (Pure style, configured in `zsh/.p10k.zsh`). | installed |
 | zsh-autosuggestions | zsh | Fish-style suggestions; color follows the rice theme. | installed |
 | zsh-syntax-highlighting | zsh | Command highlighting; colors follow the rice theme. | installed |
+| tmux | tmux | Terminal multiplexer. Config: `tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | pending |
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |

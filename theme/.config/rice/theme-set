@@ -38,13 +38,15 @@ fi
 render_path="${XDG_STATE_HOME:-$HOME/.local/state}/rice/rendered/$name"
 python3 "$RICE_DIR/theme-render" "$name" "$render_path"
 
-mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/rofi" "$HOME/.config/swaylock" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0" "$HOME/.config/qt6ct/colors" "$HOME/.config/zsh"
+mkdir -p "$HOME/.config/sway" "$HOME/.config/kitty" "$HOME/.config/ags" "$HOME/.config/rofi" "$HOME/.config/swaylock" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0" "$HOME/.config/qt6ct/colors" "$HOME/.config/zsh" "$HOME/.config/tmux"
 ln -sfn "$render_path/sway.conf" "$HOME/.config/sway/current-theme.conf"
 ln -sfn "$render_path/kitty.conf" "$HOME/.config/kitty/current-theme.conf"
 ln -sfn "$render_path/ags.scss" "$HOME/.config/ags/current-theme.scss"
 ln -sfn "$render_path/rofi.rasi" "$HOME/.config/rofi/current-theme.rasi"
 # zsh: autosuggestion + syntax-highlighting colors, sourced by ~/.zshrc
 ln -sfn "$render_path/zsh.zsh" "$HOME/.config/zsh/current-theme.zsh"
+# tmux: status bar + pane colors, sourced by ~/.config/tmux/tmux.conf
+ln -sfn "$render_path/tmux-theme.conf" "$HOME/.config/tmux/current-theme.conf"
 # GTK3/GTK4 pick up ~/.config/gtk-{3,4}.0/gtk.css automatically; whole file
 # is theme-managed (named-color overrides), so no include split needed.
 ln -sfn "$render_path/gtk.css" "$HOME/.config/gtk-3.0/gtk.css"
@@ -88,6 +90,11 @@ echo "Theme set to: $name"
 if command -v swaymsg >/dev/null && [[ -n "${SWAYSOCK:-}" ]]; then
   swaymsg reload >/dev/null
   echo "sway: reloaded"
+fi
+
+# running tmux sessions pick up the new colors immediately
+if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
+  tmux source-file "$HOME/.config/tmux/current-theme.conf" >/dev/null 2>&1 && echo "tmux: reloaded"
 fi
 
 # kitty reloads its config (and so the new colors) in every open window on SIGUSR1
