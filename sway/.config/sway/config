@@ -19,9 +19,10 @@ exec wl-paste --type image --watch cliphist store
 exec swaybg -i ~/.config/rice/current-wallpaper -m fill
 # idle: lock after 5min, screens off after 10min (resume on activity), and
 # always lock before sleep/suspend.
+# (the timers go through `idle`, which does nothing while "keep awake" is on)
 exec swayidle -w \
-  timeout 300 '~/.config/rice/lock' \
-  timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+  timeout 300 '~/.config/rice/idle lock' \
+  timeout 600 '~/.config/rice/idle screen-off' resume '~/.config/rice/idle screen-on' \
   before-sleep '~/.config/rice/lock'
 
 ### Output ###

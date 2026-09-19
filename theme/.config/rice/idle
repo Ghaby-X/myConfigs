@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Idle actions for swayidle. Lock and screen-off are skipped while "keep awake" is
+# on (the flag file is toggled from the control panel); waking the screen is always
+# allowed, and the lock-before-suspend hook in swayidle calls `lock` directly so
+# suspending is never left unlocked.
+#   idle lock | screen-off | screen-on
+FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/rice/keep-awake"
+
+case "${1:-}" in
+  lock)       [[ -e "$FLAG" ]] || exec "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lock" ;;
+  screen-off) [[ -e "$FLAG" ]] || swaymsg 'output * dpms off' >/dev/null ;;
+  # sent twice: on some setups (seen in a VM) the first "dpms on" after "dpms off" is ignored
+  screen-on)  swaymsg 'output * dpms on' >/dev/null; sleep 0.3; swaymsg 'output * dpms on' >/dev/null ;;
+  *) echo "usage: idle lock|screen-off|screen-on" >&2; exit 1 ;;
+esac

@@ -12,6 +12,7 @@ import { Accessor, For, createBinding, createComputed, createState } from "ags"
 import { interval } from "ags/time"
 import { panelOpen, setPanelOpen } from "../state"
 import { focusFirst, navItem, popupKeys } from "../nav"
+import { keepAwake, toggleKeepAwake } from "../awake"
 import { appIconPaintable, timeLabel } from "./NotificationPopups"
 
 const close = () => setPanelOpen(false)
@@ -216,6 +217,13 @@ function Toggles() {
             if (sp) sp.mute = !sp.mute
           }}
           more={() => run("pavucontrol -t 3")}
+        />
+        <SquareTile
+          title="Awake"
+          tooltip="Keep screen awake (no auto-lock or screen-off)"
+          icon={createComputed(() => "keep-awake-symbolic")}
+          active={keepAwake}
+          onClicked={toggleKeepAwake}
         />
         <SquareTile
           title="Airplane"
