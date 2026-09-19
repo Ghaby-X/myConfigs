@@ -158,3 +158,53 @@ bluetooth {
     color: $bar-fg;
   }
 }
+
+// Notification popups — card look modeled on matshell's (header with app
+// name/time, icon + title/body, action buttons, red border when critical),
+// colored from the active theme's own variables rather than $bar-fg.
+window.NotificationPopups {
+  background: transparent;
+}
+
+.notification {
+  background: $bg;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 6px;
+  margin: 8px 8px 0 0;
+  padding: 10px 12px;
+  min-width: 320px;
+
+  &.critical {
+    border-color: $urgent;
+  }
+
+  .app-name,
+  .time {
+    font-size: 11px;
+    color: rgba($fg, 0.6);
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  .body {
+    font-size: 12px;
+    color: rgba($fg, 0.8);
+  }
+
+  .action-button {
+    background: rgba($fg, 0.08);
+    border: none;
+    box-shadow: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: $fg;
+
+    &:hover {
+      background: rgba($accent, 0.3);
+    }
+  }
+}

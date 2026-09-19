@@ -36,7 +36,7 @@ we pull in something new.
 | papirus-icon-theme | launcher | App icons for the launcher grid. Official `extra` repo. | installed |
 | swaylock     | lock-screen | Screen locker, styled per-theme (module 7), used by the power menu's Lock entry and swayidle. Official `extra` repo. | installed |
 | swayidle     | lock-screen | Idle management (module 7) — auto-lock after 5min, DPMS off after 10min, lock before sleep. Official `extra` repo. | installed |
-| libastal-notifd-git | notifications | Notification daemon + popups, AGS-native (module 8) — replaces the need for mako. Claims the org.freedesktop.Notifications D-Bus name. From chaotic-aur. | pending |
+| libastal-notifd-git | notifications | Notification daemon + popups, AGS-native (module 8) — replaces the need for mako. Claims the org.freedesktop.Notifications D-Bus name. From chaotic-aur. | installed |
 
 Workspaces widget: **not** using `libastal-workspace-git` (the generic
 `ext-workspace-v1` protocol binding) — it isn't in chaotic-aur's prebuilt set,
