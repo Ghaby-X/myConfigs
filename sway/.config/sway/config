@@ -133,6 +133,9 @@ bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S)
 bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
 bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
+# control center / notification panel (right side)
+bindsym $mod+n exec ags request panel
+
 # clipboard history (cliphist)
 bindsym $mod+Shift+v exec ~/.config/rofi/clipboard.sh
 bindsym $mod+Ctrl+v exec cliphist wipe

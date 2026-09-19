@@ -357,3 +357,158 @@ window.CalendarPopup {
 .media-empty {
   color: rgba($fg, 0.4);
 }
+
+// Control panel / notification center (right side, $mod+n)
+window.ControlPanel {
+  background: transparent;
+}
+
+.panel-card {
+  background: $bg-alt;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 14px;
+  margin: 6px 6px 6px 0;
+  padding: 16px;
+
+  button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: $fg;
+    border-radius: 8px;
+    padding: 4px 8px;
+
+    &:hover {
+      background: rgba($fg, 0.1);
+    }
+  }
+
+  image {
+    -gtk-icon-size: 16px;
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  // quick toggles
+  button.tile {
+    background: rgba($fg, 0.07);
+    border-radius: 12px;
+    padding: 10px 12px;
+
+    &:hover {
+      background: rgba($fg, 0.12);
+    }
+
+    &.active {
+      background: $accent;
+      color: $bg;
+
+      &:hover {
+        background: color.adjust($accent, $lightness: 5%);
+      }
+
+      .tile-sub {
+        color: rgba($bg, 0.75);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.45;
+    }
+
+    image {
+      -gtk-icon-size: 18px;
+    }
+
+    .tile-title {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .tile-sub {
+      font-size: 11px;
+      color: rgba($fg, 0.6);
+    }
+  }
+
+  // volume
+  .slider-value {
+    font-size: 11px;
+    color: rgba($fg, 0.6);
+    min-width: 32px;
+  }
+
+  scale {
+    trough {
+      min-height: 6px;
+      border-radius: 999px;
+      background: rgba($fg, 0.15);
+    }
+
+    highlight {
+      border-radius: 999px;
+      background: $accent;
+    }
+
+    slider {
+      min-width: 14px;
+      min-height: 14px;
+      margin: -4px;
+      border-radius: 999px;
+      background: $fg;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  // notifications
+  .section-title {
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  .clear {
+    font-size: 11px;
+    color: rgba($fg, 0.7);
+  }
+
+  .notif-item {
+    background: rgba($fg, 0.06);
+    border-radius: 10px;
+    padding: 10px;
+
+    .notif-app,
+    .notif-time {
+      font-size: 11px;
+      color: rgba($fg, 0.6);
+    }
+
+    .notif-title {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .notif-body {
+      font-size: 11px;
+      color: rgba($fg, 0.75);
+    }
+
+    .notif-close {
+      padding: 2px;
+      opacity: 0.6;
+
+      image {
+        -gtk-icon-size: 12px;
+      }
+    }
+  }
+
+  .notifs-empty {
+    color: rgba($fg, 0.4);
+    margin-top: 60px;
+  }
+}

@@ -12,7 +12,7 @@ const DEFAULT_TIMEOUT_MS = 5000
 const papirus = Gtk.IconTheme.new()
 papirus.set_theme_name("Papirus")
 
-function appIconPaintable(n: Notifd.Notification): Gtk.IconPaintable | null {
+export function appIconPaintable(n: Notifd.Notification): Gtk.IconPaintable | null {
   const candidates = [n.appIcon, n.desktopEntry, n.appName?.toLowerCase()].filter(Boolean) as string[]
   for (const name of candidates) {
     if (papirus.has_icon(name)) {
@@ -22,7 +22,7 @@ function appIconPaintable(n: Notifd.Notification): Gtk.IconPaintable | null {
   return null
 }
 
-function timeLabel(unix: number): string {
+export function timeLabel(unix: number): string {
   return GLib.DateTime.new_from_unix_local(unix).format("%H:%M") ?? ""
 }
 

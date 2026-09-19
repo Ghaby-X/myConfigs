@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4"
 import { createPoll } from "ags/time"
-import { calendarOpen, setCalendarOpen } from "../state"
+import { calendarOpen, toggleCalendar } from "../state"
 
 export default function Clock() {
   // Forced via `sh -c` so LC_TIME=C applies regardless of the system locale
@@ -11,7 +11,7 @@ export default function Clock() {
   // inflated the bar). Hover and open both get the oval highlight via CSS.
   return (
     <box cssName="clock" class={calendarOpen.as((o) => (o ? "open" : ""))}>
-      <Gtk.GestureClick onPressed={() => setCalendarOpen((o) => !o)} />
+      <Gtk.GestureClick onPressed={toggleCalendar} />
       <label label={time} />
     </box>
   )
