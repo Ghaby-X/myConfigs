@@ -9,6 +9,8 @@ set $menu ~/.config/rofi/launchers/type-2/launcher.sh
 ### Autostart ###
 exec_always mkdir -p ~/Pictures/Screenshots
 exec ags run
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
 exec swaybg -i ~/.config/rice/current-wallpaper -m fill
 # idle: lock after 5min, screens off after 10min (resume on activity), and
 # always lock before sleep/suspend.
@@ -125,6 +127,10 @@ mode "resize" {
 bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
 bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
 bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
+
+# clipboard history (cliphist)
+bindsym $mod+Shift+v exec ~/.config/rofi/clipboard.sh
+bindsym $mod+Ctrl+v exec cliphist wipe
 
 # media / volume
 bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
