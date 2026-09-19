@@ -18,3 +18,6 @@ swaylock/.config/swaylock/config
 # (node_modules/@girs symlink to the system ags install anyway).
 ags/.config/ags/node_modules/
 ags/.config/ags/@girs/
+
+# downloaded per-theme wallpapers (see scripts/fetch-wallpapers.sh)
+theme/.config/rice/themes/*/backgrounds/

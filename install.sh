@@ -39,6 +39,7 @@ PACMAN_PACKAGES=(
   swaylock               # screen locker — used by the power menu's Lock entry
   swayidle               # idle management (module 7) — auto-lock, DPMS off
   adw-gtk-theme          # GTK3/GTK4 theme built to be recolored via named colors (polish: GTK theming)
+  imagemagick            # decodes/resizes the extra wallpapers (fetch-wallpapers.sh; includes JPEG XL support)
   cliphist               # clipboard history (polish) — picker is rofi/clipboard.sh
   bibata-cursor-theme    # cursor theme (polish) — from chaotic-aur
   qt6ct                  # Qt6 platform theme — applies per-theme color scheme (polish: Qt theming)
@@ -67,3 +68,6 @@ if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
   echo "==> Setting default shell to zsh"
   chsh -s "$(command -v zsh)"
 fi
+
+# Extra per-theme wallpapers for the wallpaper picker (downloaded, not in git).
+"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/fetch-wallpapers.sh"

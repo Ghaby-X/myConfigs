@@ -61,6 +61,10 @@ your own images in `~/Pictures/wallpaper/`. The choice is remembered per theme i
 `~/.local/state/rice/wallpaper/` (not in git); `theme/.config/rice/wallpaper-set <image>`
 does the same from a shell.
 
+The extra wallpapers per theme are downloaded, not committed: run
+`scripts/fetch-wallpapers.sh` (it also runs at the end of `install.sh`). The script
+lists every image, its source and its license.
+
 rofi menus with a search box (launcher, clipboard) use `Ctrl+h/j/k/l` instead, since
 plain letters type into the search. The power menu has no search, so it takes
 plain `h j k l`, `Enter` to pick and `Esc`/`q` to close.
