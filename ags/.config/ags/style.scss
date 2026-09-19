@@ -107,6 +107,14 @@ button.workspace {
 
 clock {
   font-weight: bold;
+  padding: 0 10px;
+  border-radius: 999px;
+  transition: background 120ms ease;
+
+  &:hover,
+  &.open {
+    background: rgba($bar-fg, 0.06);
+  }
 }
 
 // speaker/microphone/bluetooth have cssName overrides, which replace
@@ -207,4 +215,146 @@ window.NotificationPopups {
       background: rgba($accent, 0.3);
     }
   }
+}
+
+// Calendar + media popup, opened from the clock. Themed from the active
+// theme's own variables (like the notification cards), not $bar-fg.
+window.CalendarPopup {
+  background: transparent;
+}
+
+.calendar-card {
+  background: $bg-alt;
+  color: $fg;
+  border: 1px solid $inactive;
+  border-radius: 14px;
+  margin-top: 6px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(black, 0.35);
+
+  .card-divider {
+    margin: 4px 0;
+    background: rgba($fg, 0.15);
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: $fg;
+    padding: 4px 8px;
+    border-radius: 8px;
+
+    &:hover {
+      background: rgba($fg, 0.1);
+    }
+  }
+
+  image {
+    -gtk-icon-size: 16px;
+  }
+}
+
+.calendar {
+  min-width: 260px;
+
+  .cal-today-day {
+    font-size: 11px;
+    font-weight: bold;
+    color: $accent;
+  }
+
+  .cal-today-date {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .cal-header button {
+    font-weight: bold;
+    font-size: 13px;
+
+    &.icon {
+      padding: 4px 6px;
+    }
+  }
+
+  .cal-weekdays label {
+    font-size: 11px;
+    font-weight: bold;
+    color: rgba($fg, 0.5);
+  }
+
+  .cal-day {
+    min-width: 32px;
+    min-height: 30px;
+    border-radius: 999px;
+    font-size: 12px;
+
+    &.weekend {
+      color: rgba($fg, 0.75);
+    }
+
+    &.outside {
+      color: rgba($fg, 0.3);
+    }
+
+    &.today {
+      background: $accent;
+      color: $bg;
+      font-weight: bold;
+    }
+  }
+}
+
+.media-side {
+  min-width: 190px;
+}
+
+.media-panel {
+  .cover {
+    border-radius: 10px;
+    background: rgba($fg, 0.08);
+    min-width: 168px;
+    min-height: 168px;
+  }
+
+  .media-title {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .media-artist,
+  .media-times {
+    font-size: 11px;
+    color: rgba($fg, 0.6);
+  }
+
+  .media-progress {
+    trough {
+      min-height: 4px;
+      border-radius: 999px;
+      background: rgba($fg, 0.15);
+    }
+
+    progress {
+      min-height: 4px;
+      border-radius: 999px;
+      background: $accent;
+    }
+  }
+
+  .media-controls button.play {
+    background: $accent;
+    color: $bg;
+    border-radius: 999px;
+    padding: 6px 10px;
+
+    &:hover {
+      background: color.adjust($accent, $lightness: 6%);
+    }
+  }
+}
+
+.media-empty {
+  color: rgba($fg, 0.4);
 }
