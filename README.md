@@ -68,3 +68,21 @@ lists every image, its source and its license.
 rofi menus with a search box (launcher, clipboard) use `Ctrl+h/j/k/l` instead, since
 plain letters type into the search. The power menu has no search, so it takes
 plain `h j k l`, `Enter` to pick and `Esc`/`q` to close.
+
+## Window and workspace keys
+
+| Key | Action |
+|---|---|
+| `$mod` + `h j k l` / arrows | focus left / down / up / right |
+| `$mod+Shift` + `h j k l` / arrows | move the window |
+| `$mod+Ctrl` + `h j k l` | resize (or `$mod+r` for resize mode) |
+| `$mod+v` / `$mod+b` | next window splits vertically / horizontally |
+| `$mod+s` / `$mod+w` / `$mod+e` | stacking / tabbed / toggle split layout |
+| `$mod+a` / `$mod+Shift+a` | focus parent / child container |
+| `$mod+f` | fullscreen |
+| `$mod+Shift+Space` / `$mod+Space` | toggle floating / switch focus between tiled and floating |
+| `$mod+Shift+minus` / `$mod+minus` | send to scratchpad / show scratchpad |
+| `$mod+1..0` | workspace (`+Shift` moves the window there) |
+| `$mod+Tab` | previous workspace |
+| `$mod+[` / `$mod+]` | previous / next existing workspace |
+| `$mod` + left / right mouse drag | move / resize a floating window |

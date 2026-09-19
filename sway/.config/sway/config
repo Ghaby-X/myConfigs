@@ -128,6 +128,38 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 
+# layout & pane management (sway's conventional keys, vim-style like the rest)
+# layouts of the focused container: stacked, tabbed, or toggle split direction
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+# focus the parent container (select a whole split), and back down
+bindsym $mod+a focus parent
+bindsym $mod+Shift+a focus child
+# arrow keys as alternatives to hjkl
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+# resize without entering resize mode (Shift = bigger steps)
+bindsym $mod+Ctrl+h resize shrink width 30px
+bindsym $mod+Ctrl+l resize grow width 30px
+bindsym $mod+Ctrl+k resize shrink height 30px
+bindsym $mod+Ctrl+j resize grow height 30px
+# scratchpad: park a window out of the way, toggle it back with one key
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+# workspaces: jump back to the previous one, step through the list
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+bracketleft workspace prev
+bindsym $mod+bracketright workspace next
+# drag floating windows with $mod + left mouse, resize with $mod + right mouse
+floating_modifier $mod normal
+
 # screenshots
 bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
 bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
