@@ -7,11 +7,12 @@ import NotificationPopups from "./widget/NotificationPopups"
 import CalendarPopup from "./widget/CalendarPopup"
 import ControlPanel from "./widget/ControlPanel"
 import ThemePicker from "./widget/ThemePicker"
-import { togglePanel, toggleCalendar, toggleThemePicker } from "./state"
+import WallpaperPicker from "./widget/WallpaperPicker"
+import { togglePanel, toggleCalendar, toggleThemePicker, toggleWallpaperPicker } from "./state"
 
 app.start({
   css: style,
-  // `ags request panel|calendar|themes` — bound to $mod+n / $mod+c / $mod+t in the sway config
+  // `ags request panel|calendar|themes|wallpapers` — bound to $mod+n / $mod+c / $mod+t / $mod+Ctrl+t in the sway config
   requestHandler(argv: string[] | string, res: (response: string) => void) {
     const cmd = Array.isArray(argv) ? argv[0] : argv
     if (cmd === "panel") {
@@ -22,6 +23,9 @@ app.start({
       res("ok")
     } else if (cmd === "themes") {
       toggleThemePicker()
+      res("ok")
+    } else if (cmd === "wallpapers") {
+      toggleWallpaperPicker()
       res("ok")
     } else {
       res(`unknown request: ${cmd}`)
@@ -37,5 +41,6 @@ app.start({
     CalendarPopup()
     ControlPanel()
     ThemePicker()
+    WallpaperPicker()
   },
 })

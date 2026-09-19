@@ -55,6 +55,12 @@ while open:
 Theme picker (`$mod+t`): `h`/`l` (or `j`/`k`) move, `Enter` applies, `/` searches by
 name (`dark` / `light` filter by mode), `g`/`G` first/last, `Esc` leaves search then closes.
 
+Wallpaper picker (`$mod+Ctrl+t`): same keys, but only the wallpaper changes. It lists
+the theme's `wallpaper.png`, anything in the theme's `backgrounds/` folder, and
+your own images in `~/Pictures/wallpaper/`. The choice is remembered per theme in
+`~/.local/state/rice/wallpaper/` (not in git); `theme/.config/rice/wallpaper-set <image>`
+does the same from a shell.
+
 rofi menus with a search box (launcher, clipboard) use `Ctrl+h/j/k/l` instead, since
 plain letters type into the search. The power menu has no search, so it takes
 plain `h j k l`, `Enter` to pick and `Esc`/`q` to close.

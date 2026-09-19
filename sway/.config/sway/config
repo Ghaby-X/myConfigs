@@ -137,6 +137,7 @@ bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 bindsym $mod+n exec ags request panel
 bindsym $mod+c exec ags request calendar
 bindsym $mod+t exec ags request themes
+bindsym $mod+Ctrl+t exec ags request wallpapers
 
 # clipboard history (cliphist)
 bindsym $mod+Shift+v exec ~/.config/rofi/clipboard.sh

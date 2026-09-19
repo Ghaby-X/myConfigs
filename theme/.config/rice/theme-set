@@ -64,6 +64,12 @@ if [[ -f "$theme_path/swaylock.conf" ]]; then
 fi
 if [[ -f "$theme_path/wallpaper.png" ]]; then
   ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
+  # a wallpaper picked earlier for this theme (see wallpaper-set) wins over the
+  # theme's default, as long as that file still exists
+  saved="${XDG_STATE_HOME:-$HOME/.local/state}/rice/wallpaper/$name"
+  if [[ -f "$saved" ]] && [[ -f "$(cat "$saved")" ]]; then
+    ln -sfn "$(cat "$saved")" "$RICE_DIR/current-wallpaper"
+  fi
 fi
 
 echo "Theme set to: $name"

@@ -5,12 +5,14 @@ import { createState } from "ags"
 export const [calendarOpen, setCalendarOpen] = createState(false)
 export const [panelOpen, setPanelOpen] = createState(false)
 export const [themePickerOpen, setThemePickerOpen] = createState(false)
+export const [wallpaperPickerOpen, setWallpaperPickerOpen] = createState(false)
 
 export function toggleCalendar() {
   const open = !calendarOpen.get()
   if (open) {
     setPanelOpen(false)
     setThemePickerOpen(false)
+    setWallpaperPickerOpen(false)
   }
   setCalendarOpen(open)
 }
@@ -20,6 +22,7 @@ export function togglePanel() {
   if (open) {
     setCalendarOpen(false)
     setThemePickerOpen(false)
+    setWallpaperPickerOpen(false)
   }
   setPanelOpen(open)
 }
@@ -29,6 +32,17 @@ export function toggleThemePicker() {
   if (open) {
     setCalendarOpen(false)
     setPanelOpen(false)
+    setWallpaperPickerOpen(false)
   }
   setThemePickerOpen(open)
+}
+
+export function toggleWallpaperPicker() {
+  const open = !wallpaperPickerOpen.get()
+  if (open) {
+    setCalendarOpen(false)
+    setPanelOpen(false)
+    setThemePickerOpen(false)
+  }
+  setWallpaperPickerOpen(open)
 }

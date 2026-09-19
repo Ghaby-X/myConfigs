@@ -626,7 +626,8 @@ window.ControlPanel {
 }
 
 // Theme picker ($mod+t)
-window.ThemePicker {
+window.ThemePicker,
+window.WallpaperPicker {
   background: transparent;
 }
 

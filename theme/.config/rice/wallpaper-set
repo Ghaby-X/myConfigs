@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Sets the wallpaper for the active theme without touching its colors:
+#   wallpaper-set /path/to/image
+# The choice is remembered per theme (in $XDG_STATE_HOME, outside the repo) so
+# theme-set restores it the next time that theme is applied.
+set -euo pipefail
+
+RICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/rice/wallpaper"
+
+img="${1:-}"
+if [[ -z "$img" || ! -f "$img" ]]; then
+  echo "Usage: wallpaper-set <image file>" >&2
+  exit 1
+fi
+img="$(realpath "$img")"
+
+# active theme = the folder the ags theme symlink points into
+theme="$(basename "$(dirname "$(readlink "$HOME/.config/ags/current-theme.scss")")")"
+
+mkdir -p "$STATE_DIR"
+printf '%s\n' "$img" > "$STATE_DIR/$theme"
+
+ln -sfn "$img" "$RICE_DIR/current-wallpaper"
+
+if command -v swaybg >/dev/null; then
+  pkill -x swaybg 2>/dev/null || true
+  setsid swaybg -i "$RICE_DIR/current-wallpaper" -m fill >/tmp/swaybg.log 2>&1 &
+  disown
+fi
+echo "wallpaper for $theme: $img"
