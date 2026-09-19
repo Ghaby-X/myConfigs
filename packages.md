@@ -18,6 +18,7 @@ we pull in something new.
 | networkmanager | network | Network management                     | installed (pre-existing) |
 | swayfx       | core      | Sway fork with rounded corners/blur/shadows/dim-inactive — drop-in replacement, same config+IPC. **From chaotic-aur specifically** (cachyos repo's build was stale, pinned to wlroots0.19 vs installed wlroots0.20). Replaced `sway`. | installed |
 | stow         | core      | Symlink dotfiles from this repo        | installed |
+| zsh          | core      | Default login shell — install.sh runs `chsh` to set it | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | installed |

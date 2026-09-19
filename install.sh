@@ -26,6 +26,7 @@ fi
 
 PACMAN_PACKAGES=(
   stow
+  zsh                    # default login shell (set below); ~/.zshenv from the qt package exports the Qt theme var
   kitty
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
@@ -59,3 +60,9 @@ sudo pacman -S --needed \
   libastal-mpris-git \
   libastal-bluetooth-git \
   libastal-notifd-git
+
+# Default login shell -> zsh (chsh prompts for your password).
+if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
+  echo "==> Setting default shell to zsh"
+  chsh -s "$(command -v zsh)"
+fi
