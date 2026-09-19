@@ -1,4 +1,5 @@
 import { Gtk, Gdk } from "ags/gtk4"
+import GLib from "gi://GLib"
 
 // Keyboard navigation shared by every AGS popup.
 //   h j k l / arrows   move focus (GTK's directional focus — works across rows)
@@ -14,16 +15,20 @@ export type NavHandlers = {
   dismiss?: () => void
 }
 
-const items = new WeakMap<Gtk.Widget, NavHandlers>()
+// Handlers are stored as a property on the widget wrapper itself. (A WeakMap
+// keyed by wrapper loses entries: GJS drops wrappers nobody references, so a
+// widget that isn't held by its parent's JS side comes back as a fresh object
+// with no handlers. A property makes GJS keep the wrapper for the widget's life.)
+type Navigable = Gtk.Widget & { __nav?: NavHandlers }
 
 export function navItem<T extends Gtk.Widget>(widget: T, handlers: NavHandlers): T {
-  items.set(widget, handlers)
+  ;(widget as Navigable).__nav = handlers
   return widget
 }
 
 function handlersFor(w: Gtk.Widget | null): { widget: Gtk.Widget; h: NavHandlers } | null {
   for (let cur = w; cur; cur = cur.get_parent()) {
-    const h = items.get(cur)
+    const h = (cur as Navigable).__nav
     if (h) return { widget: cur, h }
   }
   return w ? { widget: w, h: {} } : null
@@ -174,7 +179,14 @@ export function popupKeys(
     if (keyval === Gdk.KEY_x) {
       const target = handlersFor(win.get_focus())
       if (target?.h.dismiss) {
+        // the focused item is about to disappear: land on its neighbour
+        const idx = focusables(win).indexOf(target.widget)
         target.h.dismiss()
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 80, () => {
+          const list = focusables(win)
+          if (list.length) focusWidget(list[Math.max(0, Math.min(idx, list.length - 1))])
+          return GLib.SOURCE_REMOVE
+        })
         return true
       }
     }

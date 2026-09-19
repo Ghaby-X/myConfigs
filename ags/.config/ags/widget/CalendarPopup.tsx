@@ -184,8 +184,10 @@ export default function CalendarPopup() {
 
   // H / L (shift) or PageUp / PageDown change month from anywhere; t = today
   const monthKeys = (keyval: number, shiftHeld: boolean) => {
-    if ((shiftHeld && keyval === Gdk.KEY_H) || keyval === Gdk.KEY_Page_Up) return shift(-1), true
-    if ((shiftHeld && keyval === Gdk.KEY_L) || keyval === Gdk.KEY_Page_Down) return shift(1), true
+    // Shift may arrive as an uppercase keyval or as lowercase + the shift flag
+    const k = Gdk.keyval_to_lower(keyval)
+    if ((shiftHeld && k === Gdk.KEY_h) || keyval === Gdk.KEY_Page_Up) return shift(-1), true
+    if ((shiftHeld && k === Gdk.KEY_l) || keyval === Gdk.KEY_Page_Down) return shift(1), true
     if (keyval === Gdk.KEY_t) return setView(nowView()), true
     return false
   }

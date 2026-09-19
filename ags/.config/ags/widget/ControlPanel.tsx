@@ -219,6 +219,7 @@ function NotificationItem(props: {
   onActivate: () => void
   onClose: () => void
   closeTip?: string
+  ref?: (w: Gtk.Widget) => void
 }) {
   const { n } = props
   const hasFile = n.image && n.image.startsWith("/")
@@ -229,7 +230,10 @@ function NotificationItem(props: {
       class="notif-item"
       spacing={10}
       focusable
-      $={(self) => navItem(self, { activate: props.onActivate, dismiss: props.onClose })}
+      $={(self) => {
+        navItem(self, { activate: props.onActivate, dismiss: props.onClose })
+        props.ref?.(self)
+      }}
     >
       <Gtk.GestureClick onPressed={props.onActivate} />
       {hasFile ? (
@@ -304,15 +308,29 @@ function NotificationGroup({ group }: { group: Group }) {
   const open = expanded.as((s) => s.has(key))
   const clearAll = () => items.forEach((n) => n.dismiss())
 
+  // Expanding hides the card you were on and collapsing hides the header, so
+  // move keyboard focus to the counterpart or it would fall back to the top.
+  let stackCard: Gtk.Widget | undefined
+  let header: Gtk.Widget | undefined
+  const toggleAndFocus = () => {
+    const wasOpen = expanded.get().has(key)
+    toggleExpanded(key)
+    GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      ;(wasOpen ? stackCard : header)?.grab_focus()
+      return GLib.SOURCE_REMOVE
+    })
+  }
+
   return (
     <box class={open.as((o) => (o ? "notif-group open" : "notif-group collapsed"))} orientation={Gtk.Orientation.VERTICAL} spacing={6}>
       {/* collapsed: newest card with the rest peeking out beneath it; click to expand */}
       <box class="stack" orientation={Gtk.Orientation.VERTICAL} visible={open.as((o) => !o)}>
         <NotificationItem
           n={items[0]}
-          onActivate={() => toggleExpanded(key)}
+          onActivate={toggleAndFocus}
           onClose={clearAll}
           closeTip={`Clear all ${items.length}`}
+          ref={(w) => (stackCard = w)}
         />
         <box class="ghost g1" />
         {items.length > 2 && <box class="ghost g2" />}
@@ -323,9 +341,12 @@ function NotificationGroup({ group }: { group: Group }) {
           class="group-bar"
           spacing={4}
           focusable
-          $={(self) => navItem(self, { activate: () => toggleExpanded(key), dismiss: clearAll })}
+          $={(self) => {
+            navItem(self, { activate: toggleAndFocus, dismiss: clearAll })
+            header = self
+          }}
         >
-          <Gtk.GestureClick onPressed={() => toggleExpanded(key)} />
+          <Gtk.GestureClick onPressed={toggleAndFocus} />
           <image iconName="pan-down-symbolic" />
           <label class="group-title" label={`${app} · ${items.length}`} xalign={0} hexpand />
           <button class="group-btn" onClicked={clearAll}>

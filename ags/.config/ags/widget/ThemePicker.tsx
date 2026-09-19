@@ -184,6 +184,12 @@ export default function ThemePicker() {
       return false // everything else types into the search box
     }
 
+    // Shift+g = last (uppercase keyval, or lowercase + the shift flag)
+    if (Gdk.keyval_to_lower(keyval) === Gdk.KEY_g && (state & Gdk.ModifierType.SHIFT_MASK)) {
+      setSelected(Math.max(0, filtered.get().length - 1))
+      return true
+    }
+
     switch (keyval) {
       case Gdk.KEY_Escape:
       case Gdk.KEY_q:
@@ -259,7 +265,7 @@ export default function ThemePicker() {
               list.length === 0 ? (
                 <label class="picker-empty" label="No matching themes" widthRequest={420} heightRequest={160} />
               ) : (
-                <box spacing={GAP}>
+                <box spacing={GAP} halign={Gtk.Align.CENTER}>
                   {list.map((t, i) => (
                     <box
                       class={selected.as((s) => (s === i ? "theme-card selected" : "theme-card"))}
