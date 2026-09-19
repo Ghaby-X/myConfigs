@@ -88,7 +88,10 @@ if command -v swaymsg >/dev/null && [[ -n "${SWAYSOCK:-}" ]]; then
   echo "sway: reloaded"
 fi
 
-echo "kitty: press Ctrl+Shift+F5 in open windows to pick up the new colors (new windows get it automatically)"
+# kitty reloads its config (and so the new colors) in every open window on SIGUSR1
+if pkill -USR1 -x kitty 2>/dev/null; then
+  echo "kitty: reloaded open windows"
+fi
 
 if command -v ags >/dev/null; then
   if ags list 2>/dev/null | grep -q .; then
