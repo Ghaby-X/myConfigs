@@ -65,7 +65,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+shift+q kill
 bindsym $mod+d exec $menu
 bindsym $mod+shift+c reload
-bindsym $mod+shift+l exec ~/.config/rice/lock
+bindsym $mod+Escape exec ~/.config/rice/lock
 # power menu (lock/sleep/logout/reboot/shutdown) — replaces the plain exit
 # confirm, rofi-based, matches a previously-tuned hyprland setup
 bindsym $mod+shift+e exec ~/.config/rofi/powermenu.sh
