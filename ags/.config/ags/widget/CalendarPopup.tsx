@@ -164,9 +164,12 @@ function Media() {
 export default function CalendarPopup() {
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
   const close = () => setCalendarOpen(false)
+  let win: Astal.Window
+  let card: Gtk.Widget
 
-  // Full-screen (below the bar) transparent window: clicking outside the card
-  // lands on it and closes the popup; the card claims its own clicks.
+  // Full-screen (below the bar) transparent window: a click closes the popup
+  // only if it landed outside the card. (Claiming the sequence on the card
+  // instead would deny the buttons inside it their clicks.)
   return (
     <window
       name="calendar"
@@ -177,14 +180,19 @@ export default function CalendarPopup() {
       keymode={Astal.Keymode.ON_DEMAND}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       application={app}
+      $={(self) => (win = self)}
     >
       <Gtk.EventControllerKey onKeyPressed={(_, keyval) => {
         if (keyval === Gdk.KEY_Escape) close()
       }} />
-      <Gtk.GestureClick onPressed={close} />
+      <Gtk.GestureClick
+        onPressed={(_, __, x, y) => {
+          const hit = win.pick(x, y, Gtk.PickFlags.DEFAULT)
+          if (!hit || (hit !== card && !hit.is_ancestor(card))) close()
+        }}
+      />
       <box halign={Gtk.Align.CENTER} valign={Gtk.Align.START}>
-        <box class="calendar-card" spacing={16}>
-          <Gtk.GestureClick onPressed={(g) => g.set_state(Gtk.EventSequenceState.CLAIMED)} />
+        <box class="calendar-card" spacing={16} $={(self) => (card = self)}>
           <Calendar />
           <box cssName="divider" class="card-divider" />
           <Media />
