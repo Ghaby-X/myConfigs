@@ -1,9 +1,0 @@
-show=drun
-width=500
-height=400
-prompt=Search…
-insensitive=true
-allow_images=true
-image_size=24
-hide_scroll=true
-gtk_dark=true

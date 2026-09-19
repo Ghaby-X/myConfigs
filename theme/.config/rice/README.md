@@ -41,7 +41,7 @@ client.urgent           $urgent $bg $fg $urgent $urgent
 
 The bar (`ags.scss`) uses the same five variables, but as SCSS `$vars`
 instead of sway's `set $var` syntax. As more modules gain theming (launcher,
-notifications), each theme folder grows a matching file (`wofi.css`,
+notifications), each theme folder grows a matching file (`rofi.rasi`,
 `mako.conf`, ...).
 
 ## Adding a new app to the engine

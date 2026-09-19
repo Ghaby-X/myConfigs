@@ -8,7 +8,7 @@ we pull in something new.
 |--------------|-----------|----------------------------------------|-----------|
 | ~~sway~~     | core      | Wayland compositor — **replaced** by swayfx | removed |
 | waybar       | bar       | Status bar (unused, replaced by AGS/Astal below) | installed (pre-existing) |
-| ~~wofi~~     | launcher  | App launcher — **replaced** by rofi, config left in place but unbound | installed (pre-existing) |
+| ~~wofi~~     | launcher  | App launcher — **replaced** by rofi, config removed from the repo (package itself can be uninstalled) | installed (pre-existing) |
 | foot         | terminal  | Fallback terminal                      | installed (pre-existing) |
 | alacritty    | terminal  | Fallback terminal                      | installed (pre-existing) |
 | grim         | screenshot| Screenshot capture                     | installed (pre-existing) |

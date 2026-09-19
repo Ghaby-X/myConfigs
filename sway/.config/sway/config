@@ -3,9 +3,7 @@
 ### Variables ###
 set $mod Mod4
 set $term kitty
-# wofi (module 6 first pass) replaced by rofi — matches a previously-tuned
-# hyprland+rofi setup (2-col icon grid via the adi1090x pack's type-2/
-# style-2 theme). wofi's config is left in place, just unused.
+# App launcher: rofi, 2-col icon grid (adi1090x pack type-2/style-2).
 set $menu ~/.config/rofi/launchers/type-2/launcher.sh
 
 ### Autostart ###
@@ -124,8 +122,9 @@ mode "resize" {
 }
 
 # screenshots
-bindsym Print exec grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S.png')
-bindsym $mod+Print exec grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S.png')
+bindsym Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim -g "$(slurp)" "$f" && wl-copy < "$f"'
+bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
+bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
 # media / volume
 bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
