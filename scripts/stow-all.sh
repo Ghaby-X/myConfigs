@@ -27,4 +27,4 @@ if [[ ${#PACKAGES[@]} -eq 0 ]]; then
 fi
 
 echo "Stowing: ${PACKAGES[*]}"
-stow -v -t "$HOME" "${PACKAGES[@]}"
+stow -v --no-folding -t "$HOME" "${PACKAGES[@]}"
