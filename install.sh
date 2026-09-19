@@ -39,6 +39,7 @@ PACMAN_PACKAGES=(
   swayidle               # idle management (module 7) — auto-lock, DPMS off
   adw-gtk-theme          # GTK3/GTK4 theme built to be recolored via named colors (polish: GTK theming)
   cliphist               # clipboard history (polish) — picker is rofi/clipboard.sh
+  qt6ct                  # Qt6 platform theme — applies per-theme color scheme (polish: Qt theming)
 )
 
 echo "Installing: ${PACMAN_PACKAGES[*]}"
