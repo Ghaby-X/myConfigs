@@ -103,7 +103,8 @@ fi
 if command -v nvim >/dev/null; then
   for sock in "${XDG_RUNTIME_DIR:-/run/user/$UID}"/nvim.*.0; do
     [[ -S "$sock" ]] || continue
-    nvim --server "$sock" --remote-send '<Cmd>lua require("rice").reload()<CR>' >/dev/null 2>&1 &
+    # --remote-expr runs immediately, whatever mode the editor is in (unlike typed keys)
+    nvim --server "$sock" --remote-expr 'execute("lua require(\"rice\").reload()")' >/dev/null 2>&1 &
   done
 fi
 
