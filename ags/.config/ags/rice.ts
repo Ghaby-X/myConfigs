@@ -45,10 +45,21 @@ export function currentThemeName(): string {
   }
 }
 
-/** Resolved path of the wallpaper currently in use. */
+// ~/.config/rice is a symlink into the repo; older saved choices may hold the
+// repo-side path, so map it back to the ~/.config/rice form the pickers use
+const REAL_RICE = (() => {
+  try {
+    return GLib.canonicalize_filename(GLib.file_read_link(RICE), `${HOME}/.config`)
+  } catch {
+    return RICE
+  }
+})()
+
+/** Path of the wallpaper currently in use, in the ~/.config/rice form. */
 export function currentWallpaperPath(): string {
   try {
-    return GLib.canonicalize_filename(GLib.file_read_link(`${RICE}/current-wallpaper`), RICE)
+    const p = GLib.canonicalize_filename(GLib.file_read_link(`${RICE}/current-wallpaper`), RICE)
+    return p.startsWith(`${REAL_RICE}/`) ? RICE + p.slice(REAL_RICE.length) : p
   } catch {
     return ""
   }

@@ -13,7 +13,9 @@ if [[ -z "$img" || ! -f "$img" ]]; then
   echo "Usage: wallpaper-set <image file>" >&2
   exit 1
 fi
-img="$(realpath "$img")"
+# absolute but NOT symlink-resolved: ~/.config/rice points into the repo, and the
+# picker identifies the current wallpaper by its ~/.config/rice path
+img="$(realpath -s "$img")"
 
 # active theme = the folder the ags theme symlink points into
 theme="$(basename "$(dirname "$(readlink "$HOME/.config/ags/current-theme.scss")")")"

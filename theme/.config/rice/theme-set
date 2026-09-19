@@ -64,6 +64,13 @@ if [[ -f "$theme_path/swaylock.conf" ]]; then
 fi
 if [[ -f "$theme_path/wallpaper.png" ]]; then
   ln -sfn "$theme_path/wallpaper.png" "$RICE_DIR/current-wallpaper"
+  # a theme can name a different default in `default-wallpaper` (a file in its
+  # backgrounds/ folder, which is downloaded rather than committed); wallpaper.png
+  # stays as the always-present fallback
+  if [[ -f "$theme_path/default-wallpaper" ]]; then
+    default_bg="$theme_path/backgrounds/$(tr -d '\n' < "$theme_path/default-wallpaper")"
+    [[ -f "$default_bg" ]] && ln -sfn "$default_bg" "$RICE_DIR/current-wallpaper"
+  fi
   # a wallpaper picked earlier for this theme (see wallpaper-set) wins over the
   # theme's default, as long as that file still exists
   saved="${XDG_STATE_HOME:-$HOME/.local/state}/rice/wallpaper/$name"
