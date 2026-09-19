@@ -37,3 +37,20 @@ don't leak between machines; the tracked config auto-detects sane defaults.
 ```sh
 ~/.config/rice/theme-set <name>
 ```
+
+## Keyboard navigation in popups
+
+Every AGS popup (control panel `$mod+n`, calendar `$mod+c`) grabs the keyboard
+while open:
+
+| Key | Action |
+|---|---|
+| `h` `j` `k` `l` / arrows | move focus |
+| `Enter` | toggle / activate the focused item |
+| `Shift+Enter` | further settings if the item has them (Wi-Fi → `nmtui`, Bluetooth → `bluetoothctl`, Speaker/Mic → `pavucontrol`), otherwise same as `Enter` |
+| `x` | dismiss the focused notification (or clear a stack) |
+| `Esc` / `q` | close |
+| `H` / `L`, `PageUp` / `PageDown`, `t` | calendar only: previous / next month, jump to today |
+
+rofi menus (launcher, power menu, clipboard) use `Ctrl+h/j/k/l` instead, since
+plain letters type into rofi's search box.

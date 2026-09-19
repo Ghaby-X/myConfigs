@@ -607,3 +607,20 @@ window.ControlPanel {
     margin-top: 60px;
   }
 }
+
+// Keyboard focus ring for popups (only drawn while navigating by keyboard).
+.panel-card,
+.calendar-card {
+  button:focus-visible,
+  .notif-item:focus-visible,
+  .group-bar:focus-visible {
+    outline: 2px solid $fg;
+    outline-offset: -2px;
+  }
+
+  button.tile:focus-visible,
+  button.square:focus-visible,
+  .notif-item:focus-visible {
+    border-radius: 10px;
+  }
+}

@@ -104,6 +104,16 @@ configuration {
     }
 
 	/*---------- Keybindings ----------*/
+	/* vim-style movement: Ctrl+h/j/k/l (plain letters would type into the
+	   search box). Ctrl+j/k/l/h defaults are freed up below. */
+	kb-row-up: "Up,Control+p,Control+k";
+	kb-row-down: "Down,Control+n,Control+j";
+	kb-row-left: "Control+Page_Up,Control+h";
+	kb-row-right: "Control+Page_Down,Control+l";
+	kb-accept-entry: "Control+m,Return,KP_Enter";
+	kb-remove-char-back: "BackSpace,Shift+BackSpace";
+	kb-remove-to-eol: "Control+Alt+k";
+	kb-mode-complete: "Control+Alt+l";
 /*
 	kb-primary-paste: "Control+V,Shift+Insert";
 	kb-secondary-paste: "Control+v,Insert";

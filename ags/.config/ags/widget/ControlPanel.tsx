@@ -1,5 +1,5 @@
 import app from "ags/gtk4/app"
-import { Astal, Gtk, Gdk } from "ags/gtk4"
+import { Astal, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process"
 import Notifd from "gi://AstalNotifd"
 import Wp from "gi://AstalWp"
@@ -7,9 +7,11 @@ import Network from "gi://AstalNetwork"
 import Bluetooth from "gi://AstalBluetooth"
 import Battery from "gi://AstalBattery"
 import Pango from "gi://Pango"
+import GLib from "gi://GLib"
 import { Accessor, For, createBinding, createComputed, createState } from "ags"
 import { interval } from "ags/time"
 import { panelOpen, setPanelOpen } from "../state"
+import { focusFirst, navItem, popupKeys } from "../nav"
 import { appIconPaintable, timeLabel } from "./NotificationPopups"
 
 const close = () => setPanelOpen(false)
@@ -26,6 +28,7 @@ function Tile(props: {
   active: Accessor<boolean>
   available?: Accessor<boolean>
   onClicked: () => void
+  more?: () => void
 }) {
   return (
     <button
@@ -33,6 +36,7 @@ function Tile(props: {
       sensitive={props.available ?? true}
       hexpand
       onClicked={props.onClicked}
+      $={(self) => navItem(self, { more: props.more })}
     >
       <box spacing={10}>
         <image iconName={props.icon} />
@@ -52,6 +56,7 @@ function SquareTile(props: {
   active: Accessor<boolean>
   available?: Accessor<boolean>
   onClicked: () => void
+  more?: () => void
 }) {
   return (
     <button
@@ -59,6 +64,7 @@ function SquareTile(props: {
       sensitive={props.available ?? true}
       hexpand
       onClicked={props.onClicked}
+      $={(self) => navItem(self, { more: props.more })}
     >
       <box orientation={Gtk.Orientation.VERTICAL} spacing={1} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
         <image iconName={props.icon} />
@@ -132,6 +138,7 @@ function Toggles() {
             const w = network.wifi
             if (w) w.enabled = !w.enabled
           }}
+          more={() => run("kitty -e nmtui")}
         />
         <Tile
           title="Bluetooth"
@@ -147,6 +154,7 @@ function Toggles() {
           onClicked={() => {
             if (bt.adapter) bt.adapter.powered = !bt.adapter.powered
           }}
+          more={() => run("kitty -e bluetoothctl")}
         />
       </box>
       <box class="squares" spacing={6} homogeneous>
@@ -164,6 +172,7 @@ function Toggles() {
             const mic = wp.audio.defaultMicrophone
             if (mic) mic.mute = !mic.mute
           }}
+          more={() => run("pavucontrol -t 4")}
         />
         <SquareTile
           title="Speaker"
@@ -173,6 +182,7 @@ function Toggles() {
             const sp = wp.audio.defaultSpeaker
             if (sp) sp.mute = !sp.mute
           }}
+          more={() => run("pavucontrol -t 3")}
         />
         <SquareTile
           title="Airplane"
@@ -215,7 +225,12 @@ function NotificationItem(props: {
   const appIcon = hasFile ? null : appIconPaintable(n)
 
   return (
-    <box class="notif-item" spacing={10}>
+    <box
+      class="notif-item"
+      spacing={10}
+      focusable
+      $={(self) => navItem(self, { activate: props.onActivate, dismiss: props.onClose })}
+    >
       <Gtk.GestureClick onPressed={props.onActivate} />
       {hasFile ? (
         <image class="thumb" file={n.image} pixelSize={36} valign={Gtk.Align.START} />
@@ -236,7 +251,7 @@ function NotificationItem(props: {
           <box />
         )}
       </box>
-      <button class="notif-close" valign={Gtk.Align.START} tooltipText={props.closeTip ?? "Dismiss"} onClicked={props.onClose}>
+      <button class="notif-close" focusable={false} valign={Gtk.Align.START} tooltipText={props.closeTip ?? "Dismiss"} onClicked={props.onClose}>
         <image iconName="window-close-symbolic" />
       </button>
     </box>
@@ -304,7 +319,12 @@ function NotificationGroup({ group }: { group: Group }) {
       </box>
       {/* expanded: header (click to collapse) + every notification */}
       <box orientation={Gtk.Orientation.VERTICAL} spacing={6} visible={open}>
-        <box class="group-bar" spacing={4}>
+        <box
+          class="group-bar"
+          spacing={4}
+          focusable
+          $={(self) => navItem(self, { activate: () => toggleExpanded(key), dismiss: clearAll })}
+        >
           <Gtk.GestureClick onPressed={() => toggleExpanded(key)} />
           <image iconName="pan-down-symbolic" />
           <label class="group-title" label={`${app} · ${items.length}`} xalign={0} hexpand />
@@ -365,6 +385,17 @@ function BatteryChip() {
 
 export default function ControlPanel() {
   const { TOP, BOTTOM, RIGHT } = Astal.WindowAnchor
+  let win: Astal.Window
+
+  // take keyboard focus as soon as the panel opens and land on the first item
+  panelOpen.subscribe(() => {
+    if (panelOpen.get()) {
+      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        if (win) focusFirst(win)
+        return GLib.SOURCE_REMOVE
+      })
+    }
+  })
 
   return (
     <window
@@ -373,14 +404,14 @@ export default function ControlPanel() {
       visible={panelOpen}
       layer={Astal.Layer.TOP}
       exclusivity={Astal.Exclusivity.NORMAL}
-      keymode={Astal.Keymode.ON_DEMAND}
+      keymode={panelOpen.as((o) => (o ? Astal.Keymode.EXCLUSIVE : Astal.Keymode.NONE))}
       anchor={TOP | BOTTOM | RIGHT}
       application={app}
+      $={(self) => (win = self)}
     >
       <Gtk.EventControllerKey
-        onKeyPressed={(_, keyval) => {
-          if (keyval === Gdk.KEY_Escape) close()
-        }}
+        propagationPhase={Gtk.PropagationPhase.CAPTURE}
+        onKeyPressed={popupKeys(() => win, { close })}
       />
       <box class="panel-card" orientation={Gtk.Orientation.VERTICAL} spacing={14} widthRequest={370}>
         <box class="panel-header" spacing={4}>

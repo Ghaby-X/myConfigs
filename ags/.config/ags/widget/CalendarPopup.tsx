@@ -2,9 +2,11 @@ import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import Mpris from "gi://AstalMpris"
 import Pango from "gi://Pango"
+import GLib from "gi://GLib"
 import { With, createBinding, createComputed, createState } from "ags"
 import { createPoll } from "ags/time"
 import { calendarOpen, setCalendarOpen } from "../state"
+import { focusFirst, popupKeys } from "../nav"
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
@@ -29,21 +31,22 @@ function monthCells({ year, month }: View) {
   })
 }
 
-function Calendar() {
-  const [view, setView] = createState<View>(nowView())
+// module-level so the popup's key handler can drive the month too
+const [view, setView] = createState<View>(nowView())
 
-  // always open on the current month
-  calendarOpen.subscribe(() => {
-    if (calendarOpen.get()) setView(nowView())
+// always open on the current month
+calendarOpen.subscribe(() => {
+  if (calendarOpen.get()) setView(nowView())
+})
+
+const shift = (delta: number) =>
+  setView((v) => {
+    const d = new Date(v.year, v.month + delta, 1)
+    return { year: d.getFullYear(), month: d.getMonth() }
   })
 
+function Calendar() {
   const cells = view.as(monthCells)
-
-  const shift = (delta: number) =>
-    setView((v) => {
-      const d = new Date(v.year, v.month + delta, 1)
-      return { year: d.getFullYear(), month: d.getMonth() }
-    })
 
   const now = new Date()
 
@@ -169,6 +172,24 @@ export default function CalendarPopup() {
   let win: Astal.Window
   let card: Gtk.Widget
 
+  // take keyboard focus as soon as the popup opens
+  calendarOpen.subscribe(() => {
+    if (calendarOpen.get()) {
+      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        if (win) focusFirst(win)
+        return GLib.SOURCE_REMOVE
+      })
+    }
+  })
+
+  // H / L (shift) or PageUp / PageDown change month from anywhere; t = today
+  const monthKeys = (keyval: number, shiftHeld: boolean) => {
+    if ((shiftHeld && keyval === Gdk.KEY_H) || keyval === Gdk.KEY_Page_Up) return shift(-1), true
+    if ((shiftHeld && keyval === Gdk.KEY_L) || keyval === Gdk.KEY_Page_Down) return shift(1), true
+    if (keyval === Gdk.KEY_t) return setView(nowView()), true
+    return false
+  }
+
   // Full-screen (below the bar) transparent window: a click closes the popup
   // only if it landed outside the card. (Claiming the sequence on the card
   // instead would deny the buttons inside it their clicks.)
@@ -179,14 +200,15 @@ export default function CalendarPopup() {
       visible={calendarOpen}
       layer={Astal.Layer.TOP}
       exclusivity={Astal.Exclusivity.NORMAL}
-      keymode={Astal.Keymode.ON_DEMAND}
+      keymode={calendarOpen.as((o) => (o ? Astal.Keymode.EXCLUSIVE : Astal.Keymode.NONE))}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       application={app}
       $={(self) => (win = self)}
     >
-      <Gtk.EventControllerKey onKeyPressed={(_, keyval) => {
-        if (keyval === Gdk.KEY_Escape) close()
-      }} />
+      <Gtk.EventControllerKey
+        propagationPhase={Gtk.PropagationPhase.CAPTURE}
+        onKeyPressed={popupKeys(() => win, { close, extra: monthKeys })}
+      />
       <Gtk.GestureClick
         onPressed={(_, __, x, y) => {
           const hit = win.pick(x, y, Gtk.PickFlags.DEFAULT)
