@@ -45,7 +45,7 @@ if [[ -f "$theme_path/gtk.css" ]]; then
 fi
 # Qt (qt6ct, Fusion style + custom palette). qt6ct needs an absolute path to
 # the color scheme, so the config is generated here rather than tracked.
-# QT_QPA_PLATFORMTHEME=qt6ct comes from the `qt` stow package (fish conf.d).
+# QT_QPA_PLATFORMTHEME=qt6ct comes from the `qt` stow package (~/.zshenv).
 if [[ -f "$theme_path/qt6ct.conf" ]]; then
   ln -sfn "$theme_path/qt6ct.conf" "$HOME/.config/qt6ct/colors/current-theme.conf"
   cat > "$HOME/.config/qt6ct/qt6ct.conf" <<QT
