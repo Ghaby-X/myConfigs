@@ -45,11 +45,11 @@ font pango:MesloLGL Nerd Font Mono 10
 
 default_border pixel 2
 default_floating_border pixel 2
-hide_edge_borders smart
+hide_edge_borders none
 
 gaps inner 4
 gaps outer 6
-smart_gaps on
+smart_gaps off
 
 # swayfx eye-candy — ported from a previously-tuned hyprland+waybar setup
 # (rounding=6, shadow range=4/color 0xee1a1a1a, blur size=3/passes=1)
