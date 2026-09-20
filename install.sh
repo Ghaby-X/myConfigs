@@ -61,6 +61,8 @@ PACMAN_PACKAGES=(
   tmux                   # terminal multiplexer; config is the `tmux` stow package (plugins: scripts/tmux-plugins.sh)
   eza                    # `ls` alias in ~/.zshrc
   kitty
+  thunar                 # GUI file explorer, opened with $mod+e
+  yazi                   # terminal file manager (run `yazi` in kitty)
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
   ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these

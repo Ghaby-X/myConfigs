@@ -70,6 +70,8 @@ include current-theme.conf
 ### Keybindings (Super, vim-style hjkl) ###
 #: Apps | Open terminal
 bindsym $mod+Return exec $term
+#: Apps | File explorer (Thunar)
+bindsym $mod+e exec thunar
 #: Windows | Close window
 bindsym $mod+w kill
 #: Apps | App launcher
@@ -186,7 +188,7 @@ bindsym $mod+s layout stacking
 #: Layout | Tabbed layout
 bindsym $mod+Shift+w layout tabbed
 #: Layout | Toggle split direction
-bindsym $mod+e layout toggle split
+bindsym $mod+t layout toggle split
 # focus the parent container (select a whole split), and back down
 #: Windows | Focus parent container
 bindsym $mod+a focus parent
