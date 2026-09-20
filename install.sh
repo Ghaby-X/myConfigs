@@ -89,7 +89,7 @@ if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
 fi
 
 # Extra per-theme wallpapers for the wallpaper picker (downloaded, not in git).
-"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/fetch-wallpapers.sh"
+"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/fetch-wallpapers.sh" || echo "==> Some wallpapers could not be downloaded; re-run scripts/fetch-wallpapers.sh later"
 
 # tmux plugin manager + plugins (needs the dotfiles stowed first: scripts/stow-all.sh).
 if [[ -f "$HOME/.config/tmux/tmux.conf" ]]; then

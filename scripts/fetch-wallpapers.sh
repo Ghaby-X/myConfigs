@@ -16,13 +16,16 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/configs/theme/.config/rice/themes"
-Z=https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/landscapes
-N=https://raw.githubusercontent.com/Narmis-E/onedark-wallpapers/main/minimal
-G=https://gitlab.gnome.org/GNOME/gnome-backgrounds/-/raw/main/backgrounds
-T=https://raw.githubusercontent.com/tokyo-night/wallpapers/main
-R=https://raw.githubusercontent.com/rose-pine/wallpapers/main
-V=https://raw.githubusercontent.com/AngelJumbo/gruvbox-wallpapers/main/wallpapers
-K=https://raw.githubusercontent.com/philikarus/Kanagawa-wallpapers/main/wallpapers/landscape
+# Every source is pinned to an exact commit, so the files can never change or
+# move under us (a branch like "main" can be rewritten). To update a source,
+# replace its commit id with the new HEAD (`git ls-remote <repo> HEAD`).
+Z=https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/1023077979591cdeca76aae94e0359da1707a60e/landscapes
+N=https://raw.githubusercontent.com/Narmis-E/onedark-wallpapers/6f084e27d7a407be5c73a9fc88a5644408b74dca/minimal
+G=https://gitlab.gnome.org/GNOME/gnome-backgrounds/-/raw/3e0962c0184a6ddebb7af3ff632eae095edb778d/backgrounds
+T=https://raw.githubusercontent.com/tokyo-night/wallpapers/9a72582d7505da9a28b2fd77c155fbf140f6c8f0
+R=https://raw.githubusercontent.com/rose-pine/wallpapers/c14c3845853d170a500dfaceb25d5cde243aab46
+V=https://raw.githubusercontent.com/AngelJumbo/gruvbox-wallpapers/64a1f5fdbc4f7e0a7700405a80f6011dbe2e00f8/wallpapers
+K=https://raw.githubusercontent.com/philikarus/Kanagawa-wallpapers/a8659f85a2f224619285025f29bc6a35fe21da1a/wallpapers/landscape
 
 # theme | output name | url
 MANIFEST=(
@@ -94,23 +97,44 @@ MANIFEST=(
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
+failed=()
+fetched=0
+have=0
+
 for entry in "${MANIFEST[@]}"; do
   IFS='|' read -r theme name url <<<"$entry"
   dest_dir="$ROOT/$theme/backgrounds"
   mkdir -p "$dest_dir"
   if compgen -G "$dest_dir/$name.*" >/dev/null; then
-    echo "have  $theme/$name"
+    have=$((have + 1))
     continue
   fi
   echo "fetch $theme/$name"
   src="$tmp/src.${url##*.}"
-  curl -sfL --max-time 120 -o "$src" "$url" || { echo "  FAILED: $url" >&2; continue; }
+  out="$dest_dir/$name.jpg"
   # small flat PNGs (One Dark art) stay as-is; everything else becomes a JPEG
   # capped at 2560px so photos/renders don't take megabytes each
-  if [[ "$src" == *.png && "$(stat -c%s "$src")" -lt 500000 ]]; then
-    cp "$src" "$dest_dir/$name.png"
+  [[ "$url" == *.png ]] && out="$dest_dir/$name.png"
+
+  # retry flaky connections; the result must be a real image, not an error page
+  if curl -sfL --retry 3 --retry-delay 2 --max-time 180 -o "$src" "$url" \
+     && magick identify "$src" >/dev/null 2>&1; then
+    if [[ "$src" == *.png && "$(stat -c%s "$src")" -lt 500000 ]]; then
+      cp "$src" "$dest_dir/$name.png"
+    elif magick "$src" -resize '2560x2560>' -quality 90 "$dest_dir/$name.jpg"; then
+      :
+    else
+      rm -f "$dest_dir/$name.jpg"; failed+=("$theme/$name (conversion)"); continue
+    fi
+    fetched=$((fetched + 1))
   else
-    magick "$src" -resize '2560x2560>' -quality 90 "$dest_dir/$name.jpg"
+    failed+=("$theme/$name  <- $url")
   fi
 done
-echo "done"
+
+echo "wallpapers: $fetched downloaded, $have already present, ${#failed[@]} failed"
+if [[ ${#failed[@]} -gt 0 ]]; then
+  printf '  FAILED: %s\n' "${failed[@]}" >&2
+  echo "Re-run this script to retry; themes fall back to their built-in wallpaper meanwhile." >&2
+  exit 1
+fi
