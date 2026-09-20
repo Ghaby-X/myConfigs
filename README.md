@@ -1,8 +1,8 @@
 # myConfig
 
-Personal SwayFX rice. Portable via git + GNU Stow — every top-level directory
-is a stow package that mirrors `$HOME` (e.g. `kitty/.config/kitty/...` gets
-symlinked to `~/.config/kitty/...`). Can be cloned to any path — nothing
+Personal SwayFX rice. Portable via git + GNU Stow — every directory inside
+`configs/` is a stow package that mirrors `$HOME` (e.g. `configs/kitty/.config/kitty/...`
+gets symlinked to `~/.config/kitty/...`). Can be cloned to any path — nothing
 assumes it lives at `~/project/myConfig`.
 
 ## Bootstrap on a new machine
@@ -23,17 +23,28 @@ explicitly regardless of clone path or cwd.
 
 Real per-machine specifics (actual monitor names/positions, machine-only
 input quirks) go in `config.d/*.conf` inside the relevant package (e.g.
-`sway/.config/sway/config.d/`) — those are gitignored on purpose so they
+`configs/sway/.config/sway/config.d/`) — those are gitignored on purpose so they
 don't leak between machines; the tracked config auto-detects sane defaults.
 
 ## Layout
 
-- `packages.md` — every package this rice depends on, and why.
-- `install.sh` — installs those packages via pacman.
-- `scripts/stow-all.sh` — symlinks every package into `$HOME`, portably.
-- `theme/` — the theme-switching engine. See `theme/.config/rice/README.md`.
-- one directory per app (`sway/`, `kitty/`, `ags/`, `rofi/`, `qt/`) — each
-  a stow package.
+```
+configs/            one stow package per app; each mirrors $HOME
+  ags/              the bar, notifications, control panel and popups (AGS)
+  kitty/            terminal
+  nvim/             Neovim (LazyVim), recolored by the active theme
+  rofi/             launcher, power menu, clipboard history
+  sway/             the compositor config (SwayFX)
+  theme/            the theme engine: colors.toml per theme -> every app's colors
+  tmux/             tmux
+  zsh/              .zshrc, .p10k.zsh, .zshenv
+scripts/            install helpers (stow-all, wallpaper fetch, tmux plugins, base16 import)
+install.sh          installs every package the rice needs (see packages.md)
+packages.md         every package, why it's there, and whether it's installed
+```
+
+- `configs/theme/.config/rice/README.md` explains the theme engine.
+- `scripts/stow-all.sh` links every package in `configs/` into `$HOME`, portably.
 
 ## Switching themes
 
@@ -61,7 +72,7 @@ name (`dark` / `light` filter by mode), `g`/`G` first/last, `Esc` leaves search 
 Wallpaper picker (`$mod+Ctrl+t`): same keys, but only the wallpaper changes. It lists
 the theme's `wallpaper.png`, anything in the theme's `backgrounds/` folder, and
 your own images in `~/Pictures/wallpaper/`. The choice is remembered per theme in
-`~/.local/state/rice/wallpaper/` (not in git); `theme/.config/rice/wallpaper-set <image>`
+`~/.local/state/rice/wallpaper/` (not in git); `configs/theme/.config/rice/wallpaper-set <image>`
 does the same from a shell.
 
 The extra wallpapers per theme are downloaded, not committed: run

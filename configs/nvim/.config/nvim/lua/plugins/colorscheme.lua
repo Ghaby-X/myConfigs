@@ -1,5 +1,5 @@
 -- One Dark Pro, recolored from the active rice theme (see lua/rice/init.lua and
--- theme/.config/rice/templates/nvim-palette.lua.tpl). Falls back to the plain
+-- configs/theme/.config/rice/templates/nvim-palette.lua.tpl). Falls back to the plain
 -- One Dark palette until a theme has been applied.
 return {
   {

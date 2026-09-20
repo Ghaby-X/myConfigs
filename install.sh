@@ -32,7 +32,7 @@ PACMAN_PACKAGES=(
   zsh-theme-powerlevel10k # prompt
   zsh-autosuggestions
   zsh-syntax-highlighting
-  brightnessctl          # backlight keys (theme/.config/rice/brightness); no-op without a backlight
+  brightnessctl          # backlight keys (configs/theme/.config/rice/brightness); no-op without a backlight
   neovim                 # editor; config is the `nvim` stow package (LazyVim; recolored by the rice theme)
   tree-sitter-cli        # LazyVim compiles syntax parsers with it
   lazygit                # LazyVim's git UI

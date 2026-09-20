@@ -6,7 +6,7 @@
     scripts/import-base16.py tokyo-night-storm my-storm
 
 Fetches https://github.com/tinted-theming/schemes (base16/<scheme>.yaml) and writes
-theme/.config/rice/themes/<theme-name>/colors.toml using the standard Base16 ->
+configs/theme/.config/rice/themes/<theme-name>/colors.toml using the standard Base16 ->
 terminal mapping. Then check it by eye: some schemes don't follow the role
 guidelines (e.g. Tokyo Night's base08 is a light blue, not red), in which case use
 the theme's official palette for the color1..color6 / accent lines instead.
@@ -45,7 +45,7 @@ lines = [
 ]
 lines += [f'color{i} = "{pal["base" + b]}"' for i, b in enumerate(ansi)]
 
-out = Path(__file__).resolve().parent.parent / "theme/.config/rice/themes" / name
+out = Path(__file__).resolve().parent.parent / "configs/theme/.config/rice/themes" / name
 out.mkdir(parents=True, exist_ok=True)
 (out / "colors.toml").write_text("\n".join(lines) + "\n")
 print(f"wrote {out}/colors.toml")

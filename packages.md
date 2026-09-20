@@ -20,16 +20,16 @@ we pull in something new.
 | python | core | Runs `theme-render`, which generates every app's theme files from a theme's `colors.toml` (stdlib only, needs 3.11+ for `tomllib`). Normally already installed. | installed |
 | stow         | core      | Symlink dotfiles from this repo        | installed |
 | zsh          | core      | Default login shell — install.sh runs `chsh` to set it; config lives in the `zsh` stow package (.zshrc, .p10k.zsh, .zshenv) | installed |
-| oh-my-zsh-git | zsh | Oh My Zsh framework (`git` plugin); loaded from /usr/share/oh-my-zsh by `zsh/.zshrc`. cachyos/chaotic-aur. | installed |
-| zsh-theme-powerlevel10k | zsh | Prompt (Pure style, configured in `zsh/.p10k.zsh`). | installed |
+| oh-my-zsh-git | zsh | Oh My Zsh framework (`git` plugin); loaded from /usr/share/oh-my-zsh by `configs/zsh/.zshrc`. cachyos/chaotic-aur. | installed |
+| zsh-theme-powerlevel10k | zsh | Prompt (Pure style, configured in `configs/zsh/.p10k.zsh`). | installed |
 | zsh-autosuggestions | zsh | Fish-style suggestions; color follows the rice theme. | installed |
 | zsh-syntax-highlighting | zsh | Command highlighting; colors follow the rice theme. | installed |
-| brightnessctl | polish | Backlight up/down for the brightness keys, via `theme/.config/rice/brightness` (shows the on-screen popup). Does nothing on machines without a backlight (VM, desktop monitor). Official `extra` repo. | pending |
-| neovim | nvim | Editor. Config: `nvim/` stow package (LazyVim starter + markdown extra + One Dark Pro recolored per theme via `lua/rice`, tmux-navigator). Official `extra` repo. | pending |
+| brightnessctl | polish | Backlight up/down for the brightness keys, via `configs/theme/.config/rice/brightness` (shows the on-screen popup). Does nothing on machines without a backlight (VM, desktop monitor). Official `extra` repo. | pending |
+| neovim | nvim | Editor. Config: `configs/nvim/` stow package (LazyVim starter + markdown extra + One Dark Pro recolored per theme via `lua/rice`, tmux-navigator). Official `extra` repo. | pending |
 | tree-sitter-cli | nvim | LazyVim compiles treesitter parsers with it. | pending |
 | lazygit | nvim | LazyVim's `<leader>gg` git UI. | pending |
 | ripgrep, fd, fzf, unzip, gcc, make, nodejs, npm | nvim | LazyVim/mason helper tools (search, downloads, parser + LSP builds). Normally already installed. | installed |
-| tmux | tmux | Terminal multiplexer. Config: `tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | installed |
+| tmux | tmux | Terminal multiplexer. Config: `configs/tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | installed |
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |

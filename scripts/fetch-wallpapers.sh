@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Downloads the extra per-theme wallpapers into
-#   theme/.config/rice/themes/<theme>/backgrounds/
+#   configs/theme/.config/rice/themes/<theme>/backgrounds/
 # They are NOT committed (backgrounds/ is gitignored) — this script is the
 # record of where they come from, so a new machine can just run it.
 # Skips files that already exist. Needs curl + ImageMagick (magick).
@@ -15,7 +15,7 @@
 #   philikarus/Kanagawa-wallpapers  no license stated (Kanagawa)
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/theme/.config/rice/themes"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/configs/theme/.config/rice/themes"
 Z=https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/landscapes
 N=https://raw.githubusercontent.com/Narmis-E/onedark-wallpapers/main/minimal
 G=https://gitlab.gnome.org/GNOME/gnome-backgrounds/-/raw/main/backgrounds

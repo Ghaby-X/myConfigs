@@ -7,17 +7,17 @@
 **/current-theme.scss
 **/current-theme.css
 **/current-theme.rasi
-theme/.config/rice/current-wallpaper
+configs/theme/.config/rice/current-wallpaper
 
 # swaylock's whole config is theme-managed (no include directive to split
 # out just the color bits), so the active symlink is just "config" here,
 # not a "current-theme.*" name like everywhere else.
-swaylock/.config/swaylock/config
+configs/swaylock/.config/swaylock/config
 
 # ags: generated types/build artifacts, npm deps — all regeneratable
 # (node_modules/@girs symlink to the system ags install anyway).
-ags/.config/ags/node_modules/
-ags/.config/ags/@girs/
+configs/ags/.config/ags/node_modules/
+configs/ags/.config/ags/@girs/
 
 # downloaded per-theme wallpapers (see scripts/fetch-wallpapers.sh)
-theme/.config/rice/themes/*/backgrounds/
+configs/theme/.config/rice/themes/*/backgrounds/
