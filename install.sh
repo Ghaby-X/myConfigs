@@ -1,14 +1,26 @@
 #!/usr/bin/env bash
 # Installs every package this rice depends on. Safe to re-run. Requires sudo —
 # run it yourself, not via Claude.
+#
+#   ./install.sh             install everything, then print a summary of what happened
+#   ./install.sh --dry-run   only report what is already installed and what would be
+#                            installed (no sudo, changes nothing)
 set -euo pipefail
 
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$REPO_ROOT/scripts/lib.sh"
+
+DRY_RUN=0
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
+
 CHAOTIC_KEY=3056513887B78AEB
+chaotic_actions=()
 
 if ! pacman-key --list-keys "$CHAOTIC_KEY" >/dev/null 2>&1; then
   echo "==> Importing Chaotic-AUR signing key"
   sudo pacman-key --recv-key "$CHAOTIC_KEY" --keyserver keyserver.ubuntu.com
   sudo pacman-key --lsign-key "$CHAOTIC_KEY"
+  chaotic_actions+=("signing key imported")
 fi
 
 if ! pacman -Q chaotic-keyring >/dev/null 2>&1; then
@@ -16,12 +28,14 @@ if ! pacman -Q chaotic-keyring >/dev/null 2>&1; then
   sudo pacman -U --noconfirm \
     'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
     'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+  chaotic_actions+=("keyring + mirrorlist installed")
 fi
 
 if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
   echo "==> Adding [chaotic-aur] repo to /etc/pacman.conf"
   printf '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n' | sudo tee -a /etc/pacman.conf >/dev/null
   sudo pacman -Syu
+  chaotic_actions+=("repo added to pacman.conf")
 fi
 
 PACMAN_PACKAGES=(
@@ -64,36 +78,89 @@ PACMAN_PACKAGES=(
   qt6ct                  # Qt6 platform theme — applies per-theme color scheme (polish: Qt theming)
 )
 
-echo "Installing: ${PACMAN_PACKAGES[*]}"
-sudo pacman -S --needed "${PACMAN_PACKAGES[@]}"
-
 # cachyos's swayfx build lags behind their own wlroots updates (was pinned to
-# wlroots0.19 while cachyos ships wlroots0.20) — pull it from chaotic-aur
+# wlroots0.19 while cachyos ships wlroots0.20) — it is pulled from chaotic-aur
 # explicitly instead, since repo priority would otherwise pick the stale one.
-sudo pacman -S --needed chaotic-aur/swayfx
+SWAYFX_PACKAGE=swayfx
 
 # Astal widget libraries for the bar (module 4) — all prebuilt via chaotic-aur.
-sudo pacman -S --needed \
-  libastal-tray-git \
-  libastal-network-git \
-  libastal-wireplumber-git \
-  libastal-battery-git \
-  libastal-mpris-git \
-  libastal-bluetooth-git \
+ASTAL_PACKAGES=(
+  libastal-tray-git
+  libastal-network-git
+  libastal-wireplumber-git
+  libastal-battery-git
+  libastal-mpris-git
+  libastal-bluetooth-git
   libastal-notifd-git
+)
+
+ALL_PACKAGES=("${PACMAN_PACKAGES[@]}" "$SWAYFX_PACKAGE" "${ASTAL_PACKAGES[@]}")
+installed_before="$(pacman -Qq | sort)"
+is_installed() { grep -qx -- "$1" <<<"$installed_before"; }
+
+already=(); todo=()
+for p in "${ALL_PACKAGES[@]}"; do
+  if is_installed "$p"; then already+=("$p"); else todo+=("$p"); fi
+done
+
+if [[ $DRY_RUN -eq 1 ]]; then
+  echo "install.sh --dry-run (nothing will be changed)"
+  echo "  packages the rice needs:  ${#ALL_PACKAGES[@]}"
+  echo "  already installed:        ${#already[@]}"
+  echo "  would be installed:       ${#todo[@]}${todo[*]:+  →  ${todo[*]}}"
+  chaotic="not configured (would be set up)"
+  grep -q '^\[chaotic-aur\]' /etc/pacman.conf && chaotic="configured"
+  echo "  chaotic-aur repo:         $chaotic"
+  echo "  login shell:              $(getent passwd "$USER" | cut -d: -f7)"
+  exit 0
+fi
+
+summary_trap "install.sh"
+
+
+echo "Installing ${#todo[@]} missing packages (${#already[@]} already present)"
+sudo pacman -S --needed "${PACMAN_PACKAGES[@]}"
+sudo pacman -S --needed "chaotic-aur/$SWAYFX_PACKAGE"
+sudo pacman -S --needed "${ASTAL_PACKAGES[@]}"
+
+installed_after="$(pacman -Qq | sort)"
+newly=(); missing=()
+for p in "${todo[@]}"; do
+  if grep -qx -- "$p" <<<"$installed_after"; then newly+=("$p"); else missing+=("$p"); fi
+done
+summary_add "chaotic-aur" "${chaotic_actions[*]:-already set up}"
+summary_add "packages" "${#ALL_PACKAGES[@]} required — ${#already[@]} already present, ${#newly[@]} newly installed, ${#missing[@]} missing"
+[[ ${#newly[@]} -gt 0 ]] && summary_add "newly installed" "${newly[*]}"
+[[ ${#missing[@]} -gt 0 ]] && summary_warn "not installed: ${missing[*]}"
 
 # Default login shell -> zsh (chsh prompts for your password).
 if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
   echo "==> Setting default shell to zsh"
   chsh -s "$(command -v zsh)"
+  summary_add "login shell" "changed to zsh (takes effect at next login)"
+else
+  summary_add "login shell" "already zsh"
 fi
 
 # Extra per-theme wallpapers for the wallpaper picker (downloaded, not in git).
-"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/fetch-wallpapers.sh" || echo "==> Some wallpapers could not be downloaded; re-run scripts/fetch-wallpapers.sh later"
+if "$REPO_ROOT/scripts/fetch-wallpapers.sh"; then
+  summary_add "wallpapers" "downloaded / already present (details above)"
+else
+  summary_add "wallpapers" "some downloads failed"
+  summary_warn "some wallpapers could not be downloaded — re-run scripts/fetch-wallpapers.sh"
+fi
 
 # tmux plugin manager + plugins (needs the dotfiles stowed first: scripts/stow-all.sh).
 if [[ -f "$HOME/.config/tmux/tmux.conf" ]]; then
-  "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/tmux-plugins.sh"
+  if "$REPO_ROOT/scripts/tmux-plugins.sh"; then
+    summary_add "tmux plugins" "installed / up to date (details above)"
+  else
+    summary_add "tmux plugins" "failed"
+    summary_warn "tmux plugins failed — re-run scripts/tmux-plugins.sh"
+  fi
 else
-  echo "==> Skipping tmux plugins: run scripts/stow-all.sh, then scripts/tmux-plugins.sh"
+  summary_add "tmux plugins" "skipped (dotfiles not linked yet)"
 fi
+
+echo
+echo "Next: ./scripts/stow-all.sh   (links the configs into your home folder)"

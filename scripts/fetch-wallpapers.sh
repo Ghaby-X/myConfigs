@@ -15,6 +15,8 @@
 #   philikarus/Kanagawa-wallpapers  no license stated (Kanagawa)
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/configs/theme/.config/rice/themes"
 # Every source is pinned to an exact commit, so the files can never change or
 # move under us (a branch like "main" can be rewritten). To update a source,
@@ -95,7 +97,8 @@ MANIFEST=(
 )
 
 tmp="$(mktemp -d)"
-trap 'rm -rf "$tmp"' EXIT
+_SUMMARY_TITLE="fetch-wallpapers.sh"
+trap 'rm -rf "$tmp"; _rc=$?; summary_print "$_SUMMARY_TITLE" "$_rc"' EXIT
 
 failed=()
 fetched=0
@@ -132,9 +135,16 @@ for entry in "${MANIFEST[@]}"; do
   fi
 done
 
-echo "wallpapers: $fetched downloaded, $have already present, ${#failed[@]} failed"
+summary_add "wallpapers" "${#MANIFEST[@]} in the list — $fetched downloaded now, $have already present, ${#failed[@]} failed"
+per_theme=""
+for theme in $(printf '%s\n' "${MANIFEST[@]}" | cut -d'|' -f1 | sort -u); do
+  n="$(find "$ROOT/$theme/backgrounds" -type f 2>/dev/null | wc -l)"
+  per_theme+="$theme:$n  "
+done
+summary_add "per theme" "$per_theme"
+summary_add "disk used" "$(du -shc "$ROOT"/*/backgrounds 2>/dev/null | tail -1 | cut -f1) in configs/theme/.../backgrounds (not tracked by git)"
 if [[ ${#failed[@]} -gt 0 ]]; then
-  printf '  FAILED: %s\n' "${failed[@]}" >&2
-  echo "Re-run this script to retry; themes fall back to their built-in wallpaper meanwhile." >&2
+  for f in "${failed[@]}"; do summary_warn "failed: $f"; done
+  summary_warn "re-run this script to retry; themes fall back to their built-in wallpaper meanwhile"
   exit 1
 fi
