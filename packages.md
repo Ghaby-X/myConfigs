@@ -35,6 +35,9 @@ we pull in something new.
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | thunar | files | GUI file explorer, bound to `$mod+e` in the sway config. Official `extra` repo. | pending |
 | yazi | files | Terminal file manager (run `yazi`). Official `extra` repo. | pending |
+| gvfs | files | Lets Thunar list, mount and unmount drives (USB sticks) in its sidebar. Official `extra` repo. | pending |
+| udisks2 | files | Mounts drives as a normal user; used by gvfs. Official `extra` repo. | pending |
+| thunar-volman | files | Thunar reacts when a drive/device is plugged in. Official `extra` repo. | pending |
 | aylurs-gtk-shell-git | bar | AGS v2 (Astal) — bar/shell toolkit, replaces waybar. Pulls in `libastal-git` + `libastal-4-git` automatically. From chaotic-aur. | installed |
 | otf-geist-mono-nerd | terminal | Geist Mono, patched with Nerd Font glyphs — kitty font (`GeistMono Nerd Font Mono`). Official `extra` repo (nerd-fonts group), no AUR needed. | installed |
 | dart-sass    | bar       | Compiles the AGS bar's style.scss. Official `extra` repo. | installed |

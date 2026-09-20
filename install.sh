@@ -63,6 +63,9 @@ PACMAN_PACKAGES=(
   kitty
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
+  gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
+  udisks2                # mounts drives as a normal user (used by gvfs)
+  thunar-volman          # Thunar reacts when a drive/device is plugged in
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
   ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these
