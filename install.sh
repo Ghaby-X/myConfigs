@@ -67,6 +67,7 @@ PACMAN_PACKAGES=(
   udisks2                # mounts drives as a normal user (used by gvfs)
   thunar-volman          # Thunar reacts when a drive/device is plugged in
   ntfs-3g                # mount NTFS drives (Windows/external disks) via udisks
+  ntfsprogs              # NTFS tools (ntfsfix to clear a dirty flag; not part of ntfs-3g on Arch)
   aylurs-gtk-shell-git   # AGS v2 / Astal — bar/shell toolkit (from chaotic-aur, prebuilt)
   otf-geist-mono-nerd    # kitty font (official extra repo, nerd-fonts group)
   ttf-jetbrains-mono-nerd  # full icon-set nerd font for bar glyphs (CPU/RAM) — GeistMono/MesloL builds lack these
