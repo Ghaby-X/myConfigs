@@ -140,6 +140,20 @@ summary_add "packages" "${#ALL_PACKAGES[@]} required — ${#already[@]} already 
 [[ ${#newly[@]} -gt 0 ]] && summary_add "newly installed" "${newly[*]}"
 [[ ${#missing[@]} -gt 0 ]] && summary_warn "not installed: ${missing[*]}"
 
+# NTFS drives: udisks (Thunar's mounter) defaults to the kernel ntfs3 driver, which
+# refuses any volume Windows left "dirty" (unclean unplug, Fast Startup) with a
+# generic "wrong fs type" error. ntfs-3g (installed above) copes with them.
+UDISKS_CONF=/etc/udisks2/mount_options.conf
+if ! grep -qx 'ntfs_drivers=ntfs-3g' "$UDISKS_CONF" 2>/dev/null; then
+  echo "==> Configuring udisks to mount NTFS with ntfs-3g"
+  sudo mkdir -p /etc/udisks2
+  printf '[defaults]\nntfs_drivers=ntfs-3g\n' | sudo tee "$UDISKS_CONF" >/dev/null
+  sudo systemctl restart udisks2
+  summary_add "udisks NTFS" "configured to use ntfs-3g"
+else
+  summary_add "udisks NTFS" "already uses ntfs-3g"
+fi
+
 # Default login shell -> zsh (chsh prompts for your password).
 if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
   echo "==> Setting default shell to zsh"
