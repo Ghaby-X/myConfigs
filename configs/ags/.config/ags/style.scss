@@ -412,16 +412,18 @@ window.ControlPanel {
       background: rgba($fg, 0.12);
     }
 
+    // "on" is a neutral highlight (a brighter tint of the text color), not the
+    // theme's accent — the accent blue on selected toggles was too loud
     &.active {
-      background: $accent;
-      color: $on-accent;
+      background: rgba($fg, 0.22);
+      color: $fg;
 
       &:hover {
-        background: color.adjust($accent, $lightness: 5%);
+        background: rgba($fg, 0.3);
       }
 
       .tile-sub {
-        color: rgba($on-accent, 0.75);
+        color: rgba($fg, 0.75);
       }
     }
 
@@ -460,13 +462,12 @@ window.ControlPanel {
     }
 
     &.active {
-      background: $accent;
-      color: $on-accent;
+      background: rgba($fg, 0.22);
+      color: $fg;
 
       &:hover {
-        background: color.adjust($accent, $lightness: 5%);
+        background: rgba($fg, 0.3);
       }
-
     }
 
     &:disabled {
@@ -675,8 +676,8 @@ window.Keybindings {
     transition: border-color 120ms ease;
 
     &.selected {
-      border-color: $accent;
-      background: rgba($accent, 0.14);
+      border-color: rgba($fg, 0.7);
+      background: rgba($fg, 0.14);
     }
 
     .thumb-frame {

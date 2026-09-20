@@ -490,10 +490,11 @@ export default function ControlPanel() {
         <box class="panel-header" spacing={4}>
           <label class="panel-title" label="Control center" xalign={0} hexpand />
           <BatteryChip />
-          {/* placeholder for a future settings view — does nothing yet */}
+          {/* Settings button — commented out until there is a settings view to open:
           <button tooltipText="Settings">
             <image iconName="emblem-system-symbolic" />
           </button>
+          */}
           <button onClicked={() => run("~/.config/rofi/powermenu.sh")}>
             <image iconName="system-shutdown-symbolic" />
           </button>

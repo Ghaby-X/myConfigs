@@ -7,6 +7,8 @@
     background-alt: {{ mix(shell, foreground, 0.08)|upper }}FF;
     foreground:     {{ foreground|upper }}FF;
     selected:       {{ accent|upper }}FF;
+    selected-bg:    {{ mix(shell, foreground, 0.22)|upper }}FF;
+    selected-fg:    {{ foreground|upper }}FF;
     active:         {{ ok|upper }}FF;
     urgent:         {{ urgent|upper }}FF;
 }

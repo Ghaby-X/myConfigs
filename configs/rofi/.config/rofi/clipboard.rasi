@@ -52,8 +52,8 @@ element {
 }
 
 element selected.normal {
-    background-color: @selected;
-    text-color:       @background;
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
 }
 
 element-text {
