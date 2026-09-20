@@ -7,6 +7,7 @@
 # reconstructable by re-running this script. Themes themselves live in
 # themes/<name>/ and ARE tracked.
 set -euo pipefail
+STARTED_AT=$SECONDS
 
 RICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 THEMES_DIR="$RICE_DIR/themes"
@@ -166,3 +167,13 @@ if [[ -f "$render_path/mode" ]] && command -v gsettings >/dev/null; then
   fi
   echo "system color-scheme: $mode"
 fi
+
+# ── summary ──────────────────────────────────────────────────────────────
+mode_now="$(cat "$render_path/mode" 2>/dev/null || echo "?")"
+wall_now="$(basename "$(readlink -f "$RICE_DIR/current-wallpaper" 2>/dev/null)" 2>/dev/null || echo "none")"
+echo
+echo "════════ theme-set — summary ════════"
+printf '  %-12s %s (%s)\n' "theme" "$name" "$mode_now"
+printf '  %-12s %s\n' "wallpaper" "$wall_now"
+printf '  %-12s %s\n' "took" "$((SECONDS - STARTED_AT))s"
+echo "═════════════════════════════════════"

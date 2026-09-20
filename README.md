@@ -8,14 +8,19 @@ assumes it lives at `~/project/myConfig`.
 ## Bootstrap on a new machine
 
 ```sh
-git clone <this-repo> ~/project/myConfig   # any path works
+git clone git@github.com:Ghaby-X/myConfigs.git ~/project/myConfig   # any path works
 cd ~/project/myConfig
-./install.sh                # installs tracked packages (see packages.md)
-./scripts/stow-all.sh       # symlinks every non-empty package into $HOME (and fetches the tmux plugins)
+./install.sh --dry-run      # optional: what's installed already, what would be added (changes nothing)
+./install.sh                # installs the packages (see packages.md) and downloads the wallpapers
+./scripts/stow-all.sh       # links every config in configs/ into $HOME (and fetches the tmux plugins)
+~/.config/rice/theme-set one-dark   # first time only: apply a theme (then pick others with $mod+t)
 ```
 
-The extra wallpapers download during `install.sh`; the tmux plugins during
-`stow-all.sh`, once the config is linked (either script can be re-run safely).
+Then log in to sway. Every script ends with a **summary** of what it did — packages
+installed vs already present, links created, wallpapers downloaded, anything that
+failed, and how long it took — and prints it even if it stops early. Each is safe to
+re-run. The wallpapers are downloaded from pinned sources, not stored in git; each
+theme also has a small built-in wallpaper as a fallback if a download fails.
 
 Don't call `stow` directly — its default target is the *parent of wherever
 you run it from*, not `$HOME`. `scripts/stow-all.sh` always targets `$HOME`
