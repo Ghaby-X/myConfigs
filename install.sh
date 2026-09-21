@@ -107,6 +107,7 @@ ASTAL_PACKAGES=(
 # Not run as root — yay asks for sudo itself. Prebuilt "-bin" variants avoid compiling.
 AUR_PACKAGES=(
   wifitui-bin            # wifi TUI (NetworkManager) — opened from the control panel's Wi-Fi tile
+  qimgv                  # image viewer — made the default by scripts/set-default-apps.sh (builds from source)
 )
 
 ALL_PACKAGES=("${PACMAN_PACKAGES[@]}" "$SWAYFX_PACKAGE" "${ASTAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}")
@@ -161,6 +162,14 @@ if ! grep -qx 'ntfs_drivers=ntfs-3g' "$UDISKS_CONF" 2>/dev/null; then
   summary_add "udisks NTFS" "configured to use ntfs-3g"
 else
   summary_add "udisks NTFS" "already uses ntfs-3g"
+fi
+
+# Default applications (qimgv for images).
+if "$REPO_ROOT/scripts/set-default-apps.sh"; then
+  summary_add "default apps" "qimgv set as image viewer"
+else
+  summary_add "default apps" "failed"
+  summary_warn "could not set default apps — install qimgv, then run scripts/set-default-apps.sh"
 fi
 
 # Default login shell -> zsh (chsh prompts for your password).
