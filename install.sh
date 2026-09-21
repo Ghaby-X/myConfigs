@@ -63,6 +63,7 @@ PACMAN_PACKAGES=(
   kitty
   yay                    # AUR helper (cachyos/chaotic-aur repos, prebuilt)
   bluetui                # bluetooth TUI — opened from the control panel's Bluetooth tile
+  qimgv-git              # image viewer — made the default by scripts/set-default-apps.sh (chaotic-aur, prebuilt)
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
@@ -107,7 +108,6 @@ ASTAL_PACKAGES=(
 # Not run as root — yay asks for sudo itself. Prebuilt "-bin" variants avoid compiling.
 AUR_PACKAGES=(
   wifitui-bin            # wifi TUI (NetworkManager) — opened from the control panel's Wi-Fi tile
-  qimgv                  # image viewer — made the default by scripts/set-default-apps.sh (builds from source)
 )
 
 ALL_PACKAGES=("${PACMAN_PACKAGES[@]}" "$SWAYFX_PACKAGE" "${ASTAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}")
