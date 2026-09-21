@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Toggles a screen recording: first press asks for a region (slurp) and starts
+# recording, the next press stops it. Saves to ~/Videos/Screenrecordings.
+#   screenrecord          region, no audio
+#   screenrecord full     whole screen, no audio
+#   screenrecord audio    region, with audio (default sink monitor)
+set -uo pipefail
+
+DIR="$HOME/Videos/Screenrecordings"
+
+# already recording -> stop (SIGINT makes wf-recorder finalize the file)
+if pkill -INT -x wf-recorder; then
+  notify-send -a screenrecord "Screen recording stopped" "Saved in $DIR"
+  exit 0
+fi
+
+mkdir -p "$DIR"
+file="$DIR/$(date +%Y-%m-%d-%H%M%S).mp4"
+args=()
+case "${1:-region}" in
+  full) ;;
+  audio|region)
+    geometry="$(slurp)" || exit 0   # selection cancelled
+    args+=(-g "$geometry")
+    [[ "${1:-}" == audio ]] && args+=(-a)
+    ;;
+esac
+
+notify-send -a screenrecord "Screen recording started" "Press the same key to stop"
+exec wf-recorder "${args[@]}" -f "$file"

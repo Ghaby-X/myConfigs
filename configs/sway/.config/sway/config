@@ -242,6 +242,10 @@ bindsym $mod+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S)
 bindsym $mod+Shift+Print exec sh -c 'f=~/Pictures/Screenshots/$(date +%Y-%m-%d-%H%M%S).png; grim "$f" && wl-copy < "$f"'
 #: Screenshots | Region to clipboard only
 bindsym Shift+Print exec sh -c 'grim -g "$(slurp)" - | wl-copy'
+#: Screenshots | Screen recording: region, press again to stop
+bindsym $mod+Shift+r exec ~/.config/rice/screenrecord
+#: Screenshots | Screen recording: whole screen, press again to stop
+bindsym $mod+Ctrl+r exec ~/.config/rice/screenrecord full
 
 # control center / notification panel (right side)
 #: Popups | Show all keybindings

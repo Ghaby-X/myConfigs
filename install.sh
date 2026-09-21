@@ -65,6 +65,7 @@ PACMAN_PACKAGES=(
   bluetui                # bluetooth TUI — opened from the control panel's Bluetooth tile
   qimgv-git              # image viewer — made the default by scripts/set-default-apps.sh (chaotic-aur, prebuilt)
   mpv                    # video player — made the default by scripts/set-default-apps.sh
+  wf-recorder            # screen recording — configs/theme/.config/rice/screenrecord ($mod+Shift+r)
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
