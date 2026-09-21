@@ -125,6 +125,7 @@ microphone,
 bluetooth,
 dnd,
 awake,
+recording,
 tray button {
   background: transparent;
   border: none;
@@ -157,6 +158,12 @@ battery {
 dnd,
 awake {
   color: $accent;
+  -gtk-icon-size: 13px;
+}
+
+// screen-recording indicator: red so it can't be missed
+recording {
+  color: $urgent;
   -gtk-icon-size: 13px;
 }
 

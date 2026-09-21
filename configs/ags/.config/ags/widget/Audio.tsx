@@ -2,6 +2,7 @@ import Wp from "gi://AstalWp"
 import { createBinding } from "ags"
 import Dnd from "./Dnd"
 import Awake from "./Awake"
+import Recording from "./Recording"
 
 export default function Audio() {
   const wp = Wp.get_default()
@@ -35,6 +36,7 @@ export default function Audio() {
       </button>
       <Dnd />
       <Awake />
+      <Recording />
     </box>
   )
 }
