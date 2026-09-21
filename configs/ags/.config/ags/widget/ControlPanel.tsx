@@ -188,7 +188,7 @@ function Toggles() {
           onClicked={() => {
             if (bt.adapter) bt.adapter.powered = !bt.adapter.powered
           }}
-          more={() => run("kitty -e bluetoothctl")}
+          more={() => run("kitty -e bluetui")}
         />
       </box>
       <box class="squares" spacing={6} homogeneous>

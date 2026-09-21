@@ -62,6 +62,7 @@ PACMAN_PACKAGES=(
   eza                    # `ls` alias in ~/.zshrc
   kitty
   yay                    # AUR helper (cachyos/chaotic-aur repos, prebuilt)
+  bluetui                # bluetooth TUI — opened from the control panel's Bluetooth tile
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
