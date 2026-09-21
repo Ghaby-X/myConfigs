@@ -33,6 +33,7 @@ we pull in something new.
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
 | yay | core | AUR helper for packages that aren't in the repos. Prebuilt in the cachyos and chaotic-aur repos, so no bootstrapping from the AUR needed. | pending |
+| wifitui-bin | network | Wifi TUI for NetworkManager (scan, connect, saved networks), opened by the control panel's Wi-Fi tile instead of `nmtui`. **AUR** (not in the repos), prebuilt binary, installed via `yay` by `install.sh`. | pending |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | thunar | files | GUI file explorer, bound to `$mod+e` in the sway config. Official `extra` repo. | pending |
 | yazi | files | Terminal file manager (run `yazi`). Official `extra` repo. | pending |

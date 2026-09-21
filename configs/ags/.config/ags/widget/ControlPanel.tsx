@@ -172,7 +172,7 @@ function Toggles() {
             const w = network.wifi
             if (w) w.enabled = !w.enabled
           }}
-          more={() => run("kitty -e nmtui")}
+          more={() => run("kitty -e wifitui")}
         />
         <Tile
           title="Bluetooth"

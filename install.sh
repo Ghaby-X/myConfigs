@@ -102,7 +102,13 @@ ASTAL_PACKAGES=(
   libastal-notifd-git
 )
 
-ALL_PACKAGES=("${PACMAN_PACKAGES[@]}" "$SWAYFX_PACKAGE" "${ASTAL_PACKAGES[@]}")
+# AUR-only packages, built/installed with yay (which is in PACMAN_PACKAGES above).
+# Not run as root — yay asks for sudo itself. Prebuilt "-bin" variants avoid compiling.
+AUR_PACKAGES=(
+  wifitui-bin            # wifi TUI (NetworkManager) — opened from the control panel's Wi-Fi tile
+)
+
+ALL_PACKAGES=("${PACMAN_PACKAGES[@]}" "$SWAYFX_PACKAGE" "${ASTAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}")
 installed_before="$(pacman -Qq | sort)"
 is_installed() { grep -qx -- "$1" <<<"$installed_before"; }
 
@@ -130,6 +136,7 @@ echo "Installing ${#todo[@]} missing packages (${#already[@]} already present)"
 sudo pacman -S --needed "${PACMAN_PACKAGES[@]}"
 sudo pacman -S --needed "chaotic-aur/$SWAYFX_PACKAGE"
 sudo pacman -S --needed "${ASTAL_PACKAGES[@]}"
+yay -S --needed "${AUR_PACKAGES[@]}"
 
 installed_after="$(pacman -Qq | sort)"
 newly=(); missing=()
