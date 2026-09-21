@@ -32,6 +32,7 @@ we pull in something new.
 | tmux | tmux | Terminal multiplexer. Config: `configs/tmux/` stow package (Ctrl+a prefix, vim keys, `wl-copy` clipboard); colors generated from the theme (`tmux-theme.conf.tpl`); plugins via TPM (`scripts/tmux-plugins.sh`): sensible, yank, resurrect, continuum. | installed |
 | eza | zsh | `ls` replacement (`alias ls="eza -l"`). | installed |
 | kitty        | terminal  | Default terminal (theme-friendly, ligatures, remote control for live theme reload) | installed |
+| yay | core | AUR helper for packages that aren't in the repos. Prebuilt in the cachyos and chaotic-aur repos, so no bootstrapping from the AUR needed. | pending |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | thunar | files | GUI file explorer, bound to `$mod+e` in the sway config. Official `extra` repo. | pending |
 | yazi | files | Terminal file manager (run `yazi`). Official `extra` repo. | pending |

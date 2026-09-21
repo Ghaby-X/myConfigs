@@ -61,6 +61,7 @@ PACMAN_PACKAGES=(
   tmux                   # terminal multiplexer; config is the `tmux` stow package (plugins: scripts/tmux-plugins.sh)
   eza                    # `ls` alias in ~/.zshrc
   kitty
+  yay                    # AUR helper (cachyos/chaotic-aur repos, prebuilt)
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
