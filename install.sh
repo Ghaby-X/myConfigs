@@ -64,6 +64,7 @@ PACMAN_PACKAGES=(
   yay                    # AUR helper (cachyos/chaotic-aur repos, prebuilt)
   bluetui                # bluetooth TUI — opened from the control panel's Bluetooth tile
   qimgv-git              # image viewer — made the default by scripts/set-default-apps.sh (chaotic-aur, prebuilt)
+  mpv                    # video player — made the default by scripts/set-default-apps.sh
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar
@@ -164,12 +165,12 @@ else
   summary_add "udisks NTFS" "already uses ntfs-3g"
 fi
 
-# Default applications (qimgv for images).
+# Default applications (qimgv for images, mpv for video).
 if "$REPO_ROOT/scripts/set-default-apps.sh"; then
-  summary_add "default apps" "qimgv set as image viewer"
+  summary_add "default apps" "qimgv (images), mpv (video)"
 else
   summary_add "default apps" "failed"
-  summary_warn "could not set default apps — install qimgv, then run scripts/set-default-apps.sh"
+  summary_warn "could not set all default apps — install qimgv/mpv, then run scripts/set-default-apps.sh"
 fi
 
 # Default login shell -> zsh (chsh prompts for your password).

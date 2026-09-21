@@ -36,6 +36,7 @@ we pull in something new.
 | bluetui | bluetooth | Bluetooth TUI (scan, pair, connect), opened by the control panel's Bluetooth tile instead of raw `bluetoothctl`. Official `extra` repo. | pending |
 | wifitui-bin | network | Wifi TUI for NetworkManager (scan, connect, saved networks), opened by the control panel's Wi-Fi tile instead of `nmtui`. **AUR** (not in the repos), prebuilt binary, installed via `yay` by `install.sh`. | pending |
 | qimgv-git | viewer | Image viewer, the default for image files (set by `scripts/set-default-apps.sh` via `xdg-mime`, run from `install.sh`). From chaotic-aur, prebuilt (a git snapshot; the AUR's `qimgv` release builds from source instead). | pending |
+| mpv | viewer | Video player, the default for video files (set by `scripts/set-default-apps.sh` via `xdg-mime`, run from `install.sh`). Official `extra` repo. | installed |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | thunar | files | GUI file explorer, bound to `$mod+e` in the sway config. Official `extra` repo. | pending |
 | yazi | files | Terminal file manager (run `yazi`). Official `extra` repo. | pending |
