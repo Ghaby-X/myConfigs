@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Moves the *focused* workspace onto "the other" connected output — the fix for
+# sway's default hotplug behavior, which hands a newly connected monitor
+# whatever empty workspace happens to be next, not the one you're actually
+# using (so an audience watching the external screen sees a blank workspace).
+#
+# Only handles the common 2-output case (laptop + one external/projector,
+# which is what screen-sharing/presenting means here). With more than two
+# outputs, target which one explicitly with sway's own bind, e.g.:
+#   bindsym $mod+Shift+o exec swaymsg move workspace to output <name>
+set -euo pipefail
+
+outputs="$(swaymsg -t get_outputs | jq -r '.[] | select(.active) | .name')"
+count="$(wc -l <<<"$outputs")"
+
+if [[ "$count" -lt 2 ]]; then
+  notify-send -a workspace-to-output "Can't move workspace" "Only one active output — connect a second screen first"
+  exit 1
+elif [[ "$count" -gt 2 ]]; then
+  notify-send -a workspace-to-output "Can't move workspace" "More than 2 outputs active — target one by name instead"
+  exit 1
+fi
+
+focused="$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')"
+other="$(grep -vx "$focused" <<<"$outputs")"
+
+swaymsg move workspace to output "$other"
+notify-send -a workspace-to-output "Workspace moved" "now on $other"

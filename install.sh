@@ -66,6 +66,8 @@ PACMAN_PACKAGES=(
   qimgv-git              # image viewer — made the default by scripts/set-default-apps.sh (chaotic-aur, prebuilt)
   mpv                    # video player — made the default by scripts/set-default-apps.sh
   wf-recorder            # screen recording — configs/theme/.config/rice/screenrecord ($mod+Shift+r)
+  wl-mirror              # output mirroring — configs/theme/.config/rice/screen-mirror ($mod+Shift+m)
+  kanshi                 # output hotplug profiles (not wired up yet — see packages.md)
   thunar                 # GUI file explorer, opened with $mod+e
   yazi                   # terminal file manager (run `yazi` in kitty)
   gvfs                   # lets Thunar list/mount drives (USB sticks) in its sidebar

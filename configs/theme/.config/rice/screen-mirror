@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Toggles true output mirroring via wl-mirror — sway/wlroots has no built-in
+# mirror/clone mode (unlike X11 RandR --same-as), so this is the standard
+# wlroots-ecosystem workaround: a fullscreen client window on the external
+# output that shows a live copy of the laptop output.
+#
+# Auto-detects source (the internal panel, eDP-*) and destination (the other
+# active output) — only handles the common laptop + one external screen case.
+# Press the same key again to stop mirroring.
+set -euo pipefail
+
+if pkill -INT -x wl-mirror; then
+  notify-send -a screen-mirror "Mirroring stopped"
+  exit 0
+fi
+
+outputs="$(swaymsg -t get_outputs | jq -r '.[] | select(.active) | .name')"
+count="$(wc -l <<<"$outputs")"
+if [[ "$count" -ne 2 ]]; then
+  notify-send -a screen-mirror "Can't mirror" "Need exactly 2 active outputs (laptop + external), found $count"
+  exit 1
+fi
+
+src="$(grep '^eDP-' <<<"$outputs" || true)"
+if [[ -z "$src" ]]; then
+  notify-send -a screen-mirror "Can't mirror" "No internal (eDP-*) output found to use as the source"
+  exit 1
+fi
+dst="$(grep -vx "$src" <<<"$outputs")"
+
+notify-send -a screen-mirror "Mirroring started" "$src -> $dst (press the same key to stop)"
+exec wl-mirror "$src" --fullscreen-output "$dst" --show-cursor

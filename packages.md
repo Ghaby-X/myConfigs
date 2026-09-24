@@ -38,6 +38,8 @@ we pull in something new.
 | qimgv-git | viewer | Image viewer, the default for image files (set by `scripts/set-default-apps.sh` via `xdg-mime`, run from `install.sh`). From chaotic-aur, prebuilt (a git snapshot; the AUR's `qimgv` release builds from source instead). | pending |
 | mpv | viewer | Video player, the default for video files (set by `scripts/set-default-apps.sh` via `xdg-mime`, run from `install.sh`). Official `extra` repo. | installed |
 | wf-recorder | screenshot | Screen recording for Wayland, driven by `configs/theme/.config/rice/screenrecord` (toggle: `$mod+Shift+r` region, `$mod+Ctrl+r` whole screen; saves to `~/Videos/Screenrecordings`). Official `extra` repo. | pending |
+| wl-mirror | display | True output mirroring for presenting/screen-sharing — sway/wlroots has no native clone mode, so this is the standard workaround: a fullscreen client window showing a live copy of the laptop output on the external one. Driven by `configs/theme/.config/rice/screen-mirror` (`$mod+Shift+m` toggles). Official `extra` repo. | pending |
+| kanshi | display | Applies output profiles automatically on hotplug (e.g. laptop-off-when-docked, or auto-run a command when a specific external monitor connects). Installed for when we set up an automatic profile — not wired to anything yet; needs the external monitor's actual output name/EDID captured once it's plugged in. Official `extra` repo. | pending |
 | chaotic-aur (repo) | bar | Binary repo providing prebuilt AGS/Astal packages (and the current swayfx build) | installed |
 | thunar | files | GUI file explorer, bound to `$mod+e` in the sway config. Official `extra` repo. | pending |
 | yazi | files | Terminal file manager (run `yazi`). Official `extra` repo. | pending |

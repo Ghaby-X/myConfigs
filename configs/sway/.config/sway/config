@@ -256,6 +256,14 @@ bindsym $mod+Ctrl+minus exec ~/.config/rice/output-zoom out
 #: Display | Reset zoom (focused output)
 bindsym $mod+Ctrl+0 exec ~/.config/rice/output-zoom reset
 
+# presenting/screen-sharing on a 2nd output: sway's hotplug default hands the
+# new monitor an arbitrary empty workspace, not the one you're using — move
+# it explicitly, or mirror instead (sway/wlroots has no native clone mode)
+#: Display | Move focused workspace to the other output
+bindsym $mod+Shift+o exec ~/.config/rice/workspace-to-output
+#: Display | Toggle mirroring the laptop screen to the other output
+bindsym $mod+Shift+m exec ~/.config/rice/screen-mirror
+
 # control center / notification panel (right side)
 #: Popups | Show all keybindings
 bindsym $mod+slash exec ags request keys
