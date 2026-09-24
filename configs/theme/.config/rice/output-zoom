@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Zooms in/out by adjusting the *focused output's* scale — sway renders
+# everything on it bigger, which is the easiest way to make a screen readable
+# to an audience on an external monitor when presenting. Not a magnifier that
+# follows the cursor; it resizes the whole output.
+#   output-zoom in       step scale up   (e.g. 1.0 -> 1.25 -> 1.5 ...)
+#   output-zoom out      step scale down, floored at 1.0
+#   output-zoom reset    back to 1.0 (native size)
+set -euo pipefail
+
+STEP=0.25
+MIN=1.0
+MAX=3.0
+
+output="$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')"
+[[ -z "$output" || "$output" == null ]] && { echo "output-zoom: no focused output" >&2; exit 1; }
+current="$(swaymsg -t get_outputs | jq -r --arg o "$output" '.[] | select(.name==$o) | .scale')"
+
+case "${1:-}" in
+  in)    new="$(awk -v c="$current" -v s="$STEP" -v max="$MAX" 'BEGIN{n=c+s; if(n>max)n=max; print n}')" ;;
+  out)   new="$(awk -v c="$current" -v s="$STEP" -v min="$MIN" 'BEGIN{n=c-s; if(n<min)n=min; print n}')" ;;
+  reset) new="$MIN" ;;
+  *) echo "usage: output-zoom {in|out|reset}" >&2; exit 1 ;;
+esac
+
+swaymsg output "$output" scale "$new"
+notify-send -a output-zoom "Zoom: $output" "scale ${new}x"

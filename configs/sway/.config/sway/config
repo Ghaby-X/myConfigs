@@ -247,6 +247,15 @@ bindsym $mod+Shift+r exec ~/.config/rice/screenrecord
 #: Screenshots | Screen recording: whole screen, press again to stop
 bindsym $mod+Ctrl+r exec ~/.config/rice/screenrecord full
 
+# zoom the focused output (e.g. an external monitor while presenting) by
+# bumping its scale — not a cursor-following magnifier, the whole screen gets bigger
+#: Display | Zoom in (focused output)
+bindsym $mod+Ctrl+equal exec ~/.config/rice/output-zoom in
+#: Display | Zoom out (focused output)
+bindsym $mod+Ctrl+minus exec ~/.config/rice/output-zoom out
+#: Display | Reset zoom (focused output)
+bindsym $mod+Ctrl+0 exec ~/.config/rice/output-zoom reset
+
 # control center / notification panel (right side)
 #: Popups | Show all keybindings
 bindsym $mod+slash exec ags request keys
