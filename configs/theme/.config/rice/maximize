@@ -6,6 +6,13 @@ window on the workspace is hidden behind it. Press again to put things back.
 Sway's own fullscreen hides the bar, so this floats the window at the workspace
 rect instead; a mark on the window remembers how it was (tiled, or its old floating
 geometry). maximize-watch un-maximizes when a new window opens on that workspace.
+
+Restoring a tiled window with `floating disable` does NOT put it back at its old
+tree position — sway re-inserts it whereever its own placement logic picks (in
+practice: at the end of its old siblings), which looks like windows swapping
+places. So for the tiled case we also record the window's parent + index before
+floating it, and afterwards nudge it back into place with `move left/right` (or
+up/down, depending on the parent's layout) until the index matches again.
 """
 import json
 import subprocess
@@ -27,6 +34,17 @@ def find_focused(node):
     return None
 
 
+def find_parent_and_index(node, target_id, parent=None):
+    """Search tiled `nodes` only (floating containers don't have tree position)."""
+    for i, child in enumerate(node.get("nodes", [])):
+        if child["id"] == target_id:
+            return node, i
+        hit = find_parent_and_index(child, target_id, node)
+        if hit:
+            return hit
+    return None
+
+
 win = find_focused(json.loads(sway("-t", "get_tree")))
 if not win or win.get("type") not in ("con", "floating_con") or not win.get("pid"):
     raise SystemExit(0)
@@ -43,7 +61,24 @@ if marks:  # restore
     parts = mark.split(":")
     sway(f"[con_id={cid}] unmark {mark}")
     if parts[1] == "tiled":
+        parent_id, orig_index = int(parts[2]), int(parts[3])
         sway(f"[con_id={cid}] floating disable, border pixel 2")
+
+        # walk it back to its original index among its original siblings
+        tree = json.loads(sway("-t", "get_tree"))
+        hit = find_parent_and_index(tree, cid)
+        for _ in range(8):  # bounded: never loop forever if the tree shifted a lot
+            if not hit:
+                break
+            parent, index = hit
+            if parent["id"] != parent_id or index == orig_index:
+                break
+            forward = index < orig_index
+            axis = "down" if parent.get("layout") == "splitv" else "right"
+            back_axis = "up" if parent.get("layout") == "splitv" else "left"
+            sway(f"[con_id={cid}] move {axis if forward else back_axis}")
+            tree = json.loads(sway("-t", "get_tree"))
+            hit = find_parent_and_index(tree, cid)
     else:
         x, y, w, h = parts[2:6]
         sway(f"[con_id={cid}] resize set {w} {h}")
@@ -56,7 +91,12 @@ ws = next(w for w in json.loads(sway("-t", "get_workspaces")) if w["focused"])["
 x, y, w, h = ws["x"], ws["y"], ws["width"], ws["height"]
 
 r = win["rect"]
-mark = "_max:tiled" if win["type"] == "con" else f"_max:float:{r['x']}:{r['y']}:{r['width']}:{r['height']}"
+if win["type"] == "con":
+    hit = find_parent_and_index(json.loads(sway("-t", "get_tree")), cid)
+    parent_id, index = (hit[0]["id"], hit[1]) if hit else (win.get("parent_id", 0), 0)
+    mark = f"_max:tiled:{parent_id}:{index}"
+else:
+    mark = f"_max:float:{r['x']}:{r['y']}:{r['width']}:{r['height']}"
 # One chained command, so sway applies mark + floating + size + position in a single
 # step and the window never shows up at its default floating size in the middle.
 sway(
