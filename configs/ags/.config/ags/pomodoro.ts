@@ -2,23 +2,34 @@ import { createState, createComputed } from "ags"
 import { interval } from "ags/time"
 import { readJSON, writeJSON, todayStr, notify } from "./store"
 
-// Standard pomodoro cadence: 25 min work / 5 min break, a 15 min long break
-// every 4th session. Breaks auto-start (no reason to make you click twice);
-// work does not auto-start after a break, so you decide when you're back.
-const WORK_SEC = 25 * 60
-const BREAK_SEC = 5 * 60
+// Standard pomodoro cadence: 25 min work / 5 min break by default (both
+// adjustable, in 5-min steps, while idle), a fixed 15 min long break every
+// 4th session. Breaks auto-start (no reason to make you click twice); work
+// does not auto-start after a break, so you decide when you're back.
+const DEFAULT_WORK_MIN = 25
+const DEFAULT_BREAK_MIN = 5
 const LONG_BREAK_SEC = 15 * 60
 const SESSIONS_UNTIL_LONG = 4
+const WORK_RANGE = [5, 90] as const
+const BREAK_RANGE = [1, 30] as const
+const STEP_MIN = 5
 
 type Phase = "idle" | "work" | "break" | "longBreak"
-type Stored = { date: string; completed: number }
+type Stored = { date: string; completed: number; workMin: number; breakMin: number }
 
-const stored = readJSON<Stored>("pomodoro", { date: todayStr(), completed: 0 })
+const stored = readJSON<Stored>("pomodoro", {
+  date: todayStr(),
+  completed: 0,
+  workMin: DEFAULT_WORK_MIN,
+  breakMin: DEFAULT_BREAK_MIN,
+})
 let currentDate = stored.date
 
 export const [completedToday, setCompletedToday] = createState(
   stored.date === todayStr() ? stored.completed : 0,
 )
+export const [workMin, setWorkMinState] = createState(stored.workMin ?? DEFAULT_WORK_MIN)
+export const [breakMin, setBreakMinState] = createState(stored.breakMin ?? DEFAULT_BREAK_MIN)
 export const [phase, setPhase] = createState<Phase>("idle")
 export const [running, setRunning] = createState(false)
 export const [remaining, setRemaining] = createState(0) // seconds left in the current phase
@@ -27,18 +38,37 @@ export const [sessionCount, setSessionCount] = createState(0) // work sessions t
 // how much of the current phase is left, 0..1 — drives the circular timer ring
 export const fraction = createComputed([phase, remaining], (p, r) => {
   if (p === "idle") return 0
-  const total = p === "work" ? WORK_SEC : p === "longBreak" ? LONG_BREAK_SEC : BREAK_SEC
+  const total = p === "work" ? workMin.get() * 60 : p === "longBreak" ? LONG_BREAK_SEC : breakMin.get() * 60
   return r / total
 })
 
+function persist() {
+  writeJSON("pomodoro", { date: currentDate, completed: completedToday.get(), workMin: workMin.get(), breakMin: breakMin.get() })
+}
+
 function persistCompleted(n: number) {
   setCompletedToday(n)
-  writeJSON("pomodoro", { date: currentDate, completed: n })
+  persist()
 }
+
+/** Only takes effect while idle — the steppers are hidden once a session starts. */
+export function adjustWorkMin(delta: number) {
+  const [min, max] = WORK_RANGE
+  setWorkMinState(Math.min(max, Math.max(min, workMin.get() + delta)))
+  persist()
+}
+
+export function adjustBreakMin(delta: number) {
+  const [min, max] = BREAK_RANGE
+  setBreakMinState(Math.min(max, Math.max(min, breakMin.get() + delta)))
+  persist()
+}
+
+export const STEP = STEP_MIN
 
 export function startWork() {
   setPhase("work")
-  setRemaining(WORK_SEC)
+  setRemaining(workMin.get() * 60)
   setRunning(true)
 }
 
@@ -65,7 +95,7 @@ function advance(natural: boolean) {
     setSessionCount(n)
     const long = n % SESSIONS_UNTIL_LONG === 0
     setPhase(long ? "longBreak" : "break")
-    setRemaining(long ? LONG_BREAK_SEC : BREAK_SEC)
+    setRemaining(long ? LONG_BREAK_SEC : breakMin.get() * 60)
     setRunning(true)
     if (natural) notify("Pomodoro done", long ? "Long break time" : "Short break time")
   } else {

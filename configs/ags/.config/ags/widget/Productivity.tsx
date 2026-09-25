@@ -11,6 +11,11 @@ import {
   running,
   remaining,
   completedToday,
+  workMin,
+  breakMin,
+  adjustWorkMin,
+  adjustBreakMin,
+  STEP as POMODORO_STEP,
   fraction as pomFraction,
   pauseResume,
   skip as skipPomodoro,
@@ -83,6 +88,7 @@ function PomodoroTab() {
   )
   const buttonLabel = createComputed([running, phase], (r, p) => (r ? "Pause" : p === "idle" ? "Start" : "Resume"))
   const buttonIcon = running.as((r) => (r ? "media-playback-pause-symbolic" : "media-playback-start-symbolic"))
+  const idle = phase.as((p) => p === "idle")
 
   return (
     <box name="pomodoro" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
@@ -102,18 +108,43 @@ function PomodoroTab() {
         </button>
       </box>
       <label class="tab-meta" label={completedToday.as((n) => `${n} today`)} />
+      {/* only while idle — mid-session lengths would be confusing to change */}
+      <box class="stepper-row" spacing={14} visible={idle}>
+        <box class="stepper" spacing={4} valign={Gtk.Align.CENTER}>
+          <label class="tab-meta" label="Work" />
+          <button onClicked={() => adjustWorkMin(-POMODORO_STEP)} tooltipText="-5 min">
+            <image iconName="list-remove-symbolic" />
+          </button>
+          <label class="stepper-value" label={workMin.as((n) => `${n}m`)} />
+          <button onClicked={() => adjustWorkMin(POMODORO_STEP)} tooltipText="+5 min">
+            <image iconName="list-add-symbolic" />
+          </button>
+        </box>
+        <box class="stepper" spacing={4} valign={Gtk.Align.CENTER}>
+          <label class="tab-meta" label="Break" />
+          <button onClicked={() => adjustBreakMin(-POMODORO_STEP)} tooltipText="-5 min">
+            <image iconName="list-remove-symbolic" />
+          </button>
+          <label class="stepper-value" label={breakMin.as((n) => `${n}m`)} />
+          <button onClicked={() => adjustBreakMin(POMODORO_STEP)} tooltipText="+5 min">
+            <image iconName="list-add-symbolic" />
+          </button>
+        </box>
+      </box>
     </box>
   )
 }
 
 function StopwatchTab() {
-  const swFraction = createComputed([stopwatchElapsed], (e) => (e % 60) / 60)
+  // no ring here on purpose: a stopwatch counts up with no target, so there's
+  // nothing for a ring to show "progress" toward (unlike Pomodoro/Reminder,
+  // which count down to something) — plain digits say what it actually is
   const icon = stopwatchRunning.as((r) => (r ? "media-playback-pause-symbolic" : "media-playback-start-symbolic"))
   const meta = stopwatchRunning.as((r) => (r ? "Running" : "Paused"))
 
   return (
     <box name="stopwatch" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
-      <CircularTimer fraction={swFraction} text={stopwatchElapsed.as(fmt)} sub={undefined} />
+      <label class="stopwatch-display" label={stopwatchElapsed.as(fmt)} />
       <box spacing={6}>
         <button hexpand onClicked={toggleStopwatch}>
           <box spacing={4} halign={Gtk.Align.CENTER}>

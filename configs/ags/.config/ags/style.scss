@@ -648,9 +648,40 @@ window.ProductivityPanel {
     color: rgba($fg, 0.6);
   }
 
+  // stopwatch has no ring (see StopwatchTab), so its digits stand alone —
+  // bigger than .timer-display, which is sized to fit inside a 160px ring
+  .stopwatch-display {
+    font-size: 34px;
+    font-weight: bold;
+    font-family: monospace;
+    padding: 10px 0;
+  }
+
   .tab-meta {
     font-size: 11px;
     color: rgba($fg, 0.6);
+  }
+
+  // pomodoro work/break length steppers (idle only)
+  .stepper-row {
+    margin-top: -4px;
+  }
+
+  .stepper {
+    button {
+      padding: 2px;
+
+      image {
+        -gtk-icon-size: 12px;
+      }
+    }
+  }
+
+  .stepper-value {
+    font-size: 11px;
+    font-weight: bold;
+    font-family: monospace;
+    min-width: 22px;
   }
 
   // tab switcher (timers: pomodoro/stopwatch/reminder; tasks: todo/routine/notes)
