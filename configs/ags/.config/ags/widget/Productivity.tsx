@@ -198,7 +198,7 @@ function TimersCard() {
 
 // ─── Tasks: todo / routine, one card, tab-switched ─────────────────────────
 
-type TaskTab = "todo" | "routine"
+type TaskTab = "todo" | "routine" | "notes"
 
 function TasksNav({ tab, setTab }: { tab: Accessor<TaskTab>; setTab: (t: TaskTab) => void }) {
   let a: Gtk.ToggleButton
@@ -219,6 +219,14 @@ function TasksNav({ tab, setTab }: { tab: Accessor<TaskTab>; setTab: (t: TaskTab
         onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("routine")}
       >
         <label label="Routine" />
+      </togglebutton>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "notes")}
+        $={(self) => self.set_group(a)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("notes")}
+      >
+        <label label="Notes" />
       </togglebutton>
     </box>
   )
@@ -242,7 +250,7 @@ function TodoTab() {
   const doneCount = createComputed([todos], (list) => list.filter((t) => t.done).length)
   const empty = todos.as((l) => l.length === 0)
   return (
-    <box name="todo" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
+    <box name="todo" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={6}>
       <box class="section-header">
         <label class="section-title" label="Todo" xalign={0} hexpand />
         <button class="clear" visible={doneCount.as((n) => n > 0)} onClicked={clearCompletedTodos}>
@@ -281,7 +289,7 @@ function RoutineRow({ i }: { i: RoutineItem }) {
 function RoutineTab() {
   const empty = routineItems.as((l) => l.length === 0)
   return (
-    <box name="routine" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
+    <box name="routine" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={6}>
       <box class="section-header">
         <label class="section-title" label="Routine" xalign={0} hexpand />
         <label label={streak.as((n) => (n > 0 ? `🔥 ${n}d streak` : "resets daily"))} />
@@ -301,37 +309,14 @@ function RoutineTab() {
   )
 }
 
-function TasksCard() {
-  const [tab, setTab] = createState<TaskTab>("todo")
-  return (
-    <box class="notif-item tasks-card" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-      <TasksNav tab={tab} setTab={setTab} />
-      <stack
-        transitionType={Gtk.StackTransitionType.CROSSFADE}
-        transitionDuration={150}
-        // set after construction, not as a prop: Gtk.Stack needs its named
-        // children added first, or it (harmlessly) warns about a missing name
-        $={(self: Gtk.Stack) => {
-          self.set_visible_child_name(tab.get())
-          tab.subscribe(() => self.set_visible_child_name(tab.get()))
-        }}
-      >
-        <TodoTab />
-        <RoutineTab />
-      </stack>
-    </box>
-  )
-}
-
-// ─── Notes: a real scratchpad, not a one-line entry ────────────────────────
-
-function NotesCard() {
+// A real scratchpad, not a one-line entry — folded into the Todo/Routine nav
+// as a third tab rather than its own separate card.
+function NotesTab() {
   let saveTimer: ReturnType<typeof timeout> | null = null
 
   return (
-    <box class="notif-item notes-card" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
-      <label class="section-title" label="Notes" xalign={0} />
-      <Gtk.ScrolledWindow heightRequest={150} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
+    <box name="notes" $type="named" orientation={Gtk.Orientation.VERTICAL}>
+      <Gtk.ScrolledWindow heightRequest={260} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
         <Gtk.TextView
           class="notes-view"
           wrapMode={Gtk.WrapMode.WORD_CHAR}
@@ -351,6 +336,29 @@ function NotesCard() {
           }}
         />
       </Gtk.ScrolledWindow>
+    </box>
+  )
+}
+
+function TasksCard() {
+  const [tab, setTab] = createState<TaskTab>("todo")
+  return (
+    <box class="notif-item tasks-card" orientation={Gtk.Orientation.VERTICAL} spacing={6}>
+      <TasksNav tab={tab} setTab={setTab} />
+      <stack
+        transitionType={Gtk.StackTransitionType.CROSSFADE}
+        transitionDuration={150}
+        // set after construction, not as a prop: Gtk.Stack needs its named
+        // children added first, or it (harmlessly) warns about a missing name
+        $={(self: Gtk.Stack) => {
+          self.set_visible_child_name(tab.get())
+          tab.subscribe(() => self.set_visible_child_name(tab.get()))
+        }}
+      >
+        <TodoTab />
+        <RoutineTab />
+        <NotesTab />
+      </stack>
     </box>
   )
 }
@@ -395,7 +403,6 @@ export default function Productivity() {
         <Gtk.ScrolledWindow vexpand focusable={false} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
           <box orientation={Gtk.Orientation.VERTICAL} spacing={14}>
             <TasksCard />
-            <NotesCard />
             <TimersCard />
           </box>
         </Gtk.ScrolledWindow>
