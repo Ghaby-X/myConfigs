@@ -177,6 +177,7 @@ function TimersCard() {
   const [tab, setTab] = createState<TimerTab>("pomodoro")
   return (
     <box class="notif-item timers-card" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+      <TimersNav tab={tab} setTab={setTab} />
       <stack
         transitionType={Gtk.StackTransitionType.CROSSFADE}
         transitionDuration={150}
@@ -191,7 +192,6 @@ function TimersCard() {
         <StopwatchTab />
         <ReminderTab />
       </stack>
-      <TimersNav tab={tab} setTab={setTab} />
     </box>
   )
 }
@@ -305,6 +305,7 @@ function TasksCard() {
   const [tab, setTab] = createState<TaskTab>("todo")
   return (
     <box class="notif-item tasks-card" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+      <TasksNav tab={tab} setTab={setTab} />
       <stack
         transitionType={Gtk.StackTransitionType.CROSSFADE}
         transitionDuration={150}
@@ -318,7 +319,6 @@ function TasksCard() {
         <TodoTab />
         <RoutineTab />
       </stack>
-      <TasksNav tab={tab} setTab={setTab} />
     </box>
   )
 }
@@ -394,9 +394,9 @@ export default function Productivity() {
         </box>
         <Gtk.ScrolledWindow vexpand focusable={false} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
           <box orientation={Gtk.Orientation.VERTICAL} spacing={14}>
-            <TimersCard />
             <TasksCard />
             <NotesCard />
+            <TimersCard />
           </box>
         </Gtk.ScrolledWindow>
       </box>
