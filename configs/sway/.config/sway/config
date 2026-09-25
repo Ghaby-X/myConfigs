@@ -271,6 +271,8 @@ bindsym $mod+slash exec ags request keys
 bindsym $mod+n exec ags request panel
 #: Popups | Calendar
 bindsym $mod+c exec ags request calendar
+#: Popups | Productivity (pomodoro, todo, routine, reminder/stopwatch, notes)
+bindsym $mod+p exec ags request productivity
 #: Popups | Theme picker
 bindsym $mod+t exec ags request themes
 #: Popups | Wallpaper picker

@@ -10,11 +10,13 @@ import ThemePicker from "./widget/ThemePicker"
 import WallpaperPicker from "./widget/WallpaperPicker"
 import Keybindings from "./widget/Keybindings"
 import OsdPopup, { showBrightness } from "./widget/Osd"
-import { togglePanel, toggleCalendar, toggleThemePicker, toggleWallpaperPicker, toggleKeys } from "./state"
+import Productivity from "./widget/Productivity"
+import { togglePanel, toggleCalendar, toggleThemePicker, toggleWallpaperPicker, toggleKeys, toggleProductivity } from "./state"
 
 app.start({
   css: style,
-  // `ags request panel|calendar|themes|wallpapers|keys` — bound to $mod+n / $mod+c / $mod+t / $mod+Ctrl+t / $mod+/ in the sway config
+  // `ags request panel|calendar|themes|wallpapers|keys|productivity` — bound to
+  // $mod+n / $mod+c / $mod+t / $mod+Ctrl+t / $mod+/ / $mod+p in the sway config
   requestHandler(argv: string[] | string, res: (response: string) => void) {
     const cmd = Array.isArray(argv) ? argv[0] : argv
     if (cmd === "panel") {
@@ -25,6 +27,9 @@ app.start({
       res("ok")
     } else if (cmd === "themes") {
       toggleThemePicker()
+      res("ok")
+    } else if (cmd === "productivity") {
+      toggleProductivity()
       res("ok")
     } else if (cmd === "osd") {
       // ags request osd brightness <percent>
@@ -54,5 +59,6 @@ app.start({
     WallpaperPicker()
     Keybindings()
     OsdPopup()
+    Productivity()
   },
 })

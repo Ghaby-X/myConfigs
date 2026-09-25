@@ -379,6 +379,17 @@ window.ControlPanel {
   background: transparent;
 }
 
+// Productivity panel (left side, $mod+p) — same card look as the control
+// panel, mirrored: .panel-card hugs the right screen edge (margin-left: 0),
+// so this hugs the left edge instead (margin-right: 0).
+window.ProductivityPanel {
+  background: transparent;
+}
+
+.panel-card.productivity-card {
+  margin: 6px 0 6px 6px;
+}
+
 .panel-card {
   background: $bg-alt;
   color: $fg;
@@ -622,6 +633,25 @@ window.ControlPanel {
   .notifs-empty {
     color: rgba($fg, 0.4);
     margin-top: 60px;
+  }
+
+  // productivity panel: pomodoro/reminder/stopwatch digits, list empty states,
+  // done-item strikethrough — the rows themselves reuse .notif-item as-is
+  .timer-display {
+    font-size: 26px;
+    font-weight: bold;
+    font-family: monospace;
+  }
+
+  .empty-hint {
+    color: rgba($fg, 0.4);
+    font-size: 11px;
+    padding: 2px 0;
+  }
+
+  .task-text.done {
+    text-decoration-line: line-through;
+    color: rgba($fg, 0.5);
   }
 }
 
