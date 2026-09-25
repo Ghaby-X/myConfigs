@@ -1,5 +1,5 @@
 import app from "ags/gtk4/app"
-import { Astal, Gtk } from "ags/gtk4"
+import { Astal, Gtk, Gdk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import { For, Accessor, createState, createComputed } from "ags"
 import { timeout } from "ags/time"
@@ -234,7 +234,7 @@ function TasksNav({ tab, setTab }: { tab: Accessor<TaskTab>; setTab: (t: TaskTab
 
 function TodoRow({ t }: { t: Todo }) {
   return (
-    <box class="notif-item" spacing={8} valign={Gtk.Align.CENTER}>
+    <box class="notif-item task-row" spacing={8} valign={Gtk.Align.CENTER}>
       <button onClicked={() => toggleTodo(t.id)}>
         <image iconName={t.done ? "checkbox-checked-symbolic" : "checkbox-symbolic"} />
       </button>
@@ -274,7 +274,7 @@ function TodoTab() {
 
 function RoutineRow({ i }: { i: RoutineItem }) {
   return (
-    <box class="notif-item" spacing={8} valign={Gtk.Align.CENTER}>
+    <box class="notif-item task-row" spacing={8} valign={Gtk.Align.CENTER}>
       <button onClicked={() => toggleRoutineItem(i.id)}>
         <image iconName={i.done ? "checkbox-checked-symbolic" : "checkbox-symbolic"} />
       </button>
@@ -380,6 +380,19 @@ export default function Productivity() {
 
   const close = () => setProductivityOpen(false)
 
+  // this panel has text entries (and now a TextView), and they need to receive
+  // their own keys normally (typing, Enter-to-submit) instead of h/j/k/l/Enter/x
+  // being grabbed for panel navigation. CAPTURE (matching every other popup)
+  // runs before the focused widget sees the event at all, so bail out here,
+  // explicitly, before popupKeys ever gets a look — Escape still closes.
+  const navigate = popupKeys(() => win, { close })
+  const onKeyPressed = (self: unknown, keyval: number, code: number, state: Gdk.ModifierType) => {
+    const focused = win?.get_focus()
+    const typing = focused instanceof Gtk.Text || focused instanceof Gtk.TextView
+    if (typing && keyval !== Gdk.KEY_Escape) return false
+    return navigate(self, keyval, code, state)
+  }
+
   return (
     <window
       name="productivity"
@@ -392,10 +405,7 @@ export default function Productivity() {
       application={app}
       $={(self) => (win = self)}
     >
-      {/* BUBBLE, not the usual CAPTURE: this panel has text entries, and they need
-          first crack at their own keys (typing, Enter-to-submit) before
-          h/j/k/l/Enter/Escape/x get treated as panel navigation. */}
-      <Gtk.EventControllerKey propagationPhase={Gtk.PropagationPhase.BUBBLE} onKeyPressed={popupKeys(() => win, { close })} />
+      <Gtk.EventControllerKey propagationPhase={Gtk.PropagationPhase.CAPTURE} onKeyPressed={onKeyPressed} />
       <box class="panel-card productivity-card" orientation={Gtk.Orientation.VERTICAL} spacing={14} widthRequest={370}>
         <box class="panel-header" spacing={4}>
           <label class="panel-title" label="Productivity" xalign={0} hexpand />

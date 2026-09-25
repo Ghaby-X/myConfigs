@@ -689,6 +689,21 @@ window.ProductivityPanel {
     padding: 8px 10px;
   }
 
+  // todo/routine checklist rows — same idea, a checkbox + one line of text
+  // doesn't need a notification card's padding, and it was making every row
+  // look oversized
+  .task-row {
+    padding: 4px 6px;
+
+    button {
+      padding: 2px;
+    }
+
+    image {
+      -gtk-icon-size: 15px;
+    }
+  }
+
   .empty-hint {
     color: rgba($fg, 0.4);
     font-size: 11px;
