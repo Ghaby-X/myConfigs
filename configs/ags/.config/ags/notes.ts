@@ -1,25 +1,21 @@
-import { createState } from "ags"
-import { readJSON, writeJSON } from "./store"
+import GLib from "gi://GLib"
 
-// Quick-capture log: short notes with a timestamp, newest first. Not a
-// freeform document editor — for that, just use a text editor.
-export type Note = { id: number; text: string; at: number } // at = unix seconds
+// Freeform scratchpad — one plain-text file, not a database of entries.
+// (An earlier version modeled this as a list of timestamped notes; a single
+// text box is what was actually wanted, so it's just a file on disk now.)
+const DIR = `${GLib.get_user_state_dir()}/rice/productivity`
+GLib.mkdir_with_parents(DIR, 0o755)
+const FILE = `${DIR}/notes.txt`
 
-const initial = readJSON<Note[]>("notes", [])
-export const [notes, setNotes] = createState<Note[]>(initial)
-let nextId = 1 + initial.reduce((m, n) => Math.max(m, n.id), 0)
-
-function persist(list: Note[]) {
-  setNotes(list)
-  writeJSON("notes", list)
+export function readNotes(): string {
+  try {
+    const [ok, bytes] = GLib.file_get_contents(FILE)
+    return ok ? new TextDecoder().decode(bytes) : ""
+  } catch {
+    return ""
+  }
 }
 
-export function addNote(text: string) {
-  const t = text.trim()
-  if (!t) return
-  persist([{ id: nextId++, text: t, at: Math.floor(Date.now() / 1000) }, ...notes.get()])
-}
-
-export function removeNote(id: number) {
-  persist(notes.get().filter((n) => n.id !== id))
+export function writeNotes(text: string) {
+  GLib.file_set_contents(FILE, text)
 }

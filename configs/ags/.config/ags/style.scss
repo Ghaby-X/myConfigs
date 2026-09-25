@@ -635,12 +635,51 @@ window.ProductivityPanel {
     margin-top: 60px;
   }
 
-  // productivity panel: pomodoro/reminder/stopwatch digits, list empty states,
-  // done-item strikethrough — the rows themselves reuse .notif-item as-is
+  // productivity panel: circular timer ring text, tab nav, list empty states,
+  // done-item strikethrough, notes textview — the rows reuse .notif-item as-is
   .timer-display {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: bold;
     font-family: monospace;
+  }
+
+  .timer-sub {
+    font-size: 11px;
+    color: rgba($fg, 0.6);
+  }
+
+  .tab-meta {
+    font-size: 11px;
+    color: rgba($fg, 0.6);
+  }
+
+  // bottom tab switcher (timers: pomodoro/stopwatch/reminder; tasks: todo/routine)
+  .tab-nav {
+    background: rgba($fg, 0.06);
+    border-radius: 10px;
+    padding: 3px;
+
+    togglebutton {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      color: rgba($fg, 0.6);
+      border-radius: 8px;
+      padding: 5px 4px;
+      font-size: 11px;
+      font-weight: bold;
+
+      &:hover {
+        background: rgba($fg, 0.1);
+      }
+
+      // neutral highlight for the active tab, matching the quick-toggle tiles
+      // above (not the accent blue — see the panel-toggle styling)
+      &:checked {
+        background: rgba($fg, 0.22);
+        color: $fg;
+      }
+    }
   }
 
   .empty-hint {
@@ -652,6 +691,16 @@ window.ProductivityPanel {
   .task-text.done {
     text-decoration-line: line-through;
     color: rgba($fg, 0.5);
+  }
+
+  .notes-view {
+    background: transparent;
+    color: $fg;
+    font-size: 12px;
+
+    text {
+      background: transparent;
+    }
   }
 }
 

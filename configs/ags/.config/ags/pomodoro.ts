@@ -1,4 +1,4 @@
-import { createState } from "ags"
+import { createState, createComputed } from "ags"
 import { interval } from "ags/time"
 import { readJSON, writeJSON, todayStr, notify } from "./store"
 
@@ -23,6 +23,13 @@ export const [phase, setPhase] = createState<Phase>("idle")
 export const [running, setRunning] = createState(false)
 export const [remaining, setRemaining] = createState(0) // seconds left in the current phase
 export const [sessionCount, setSessionCount] = createState(0) // work sessions this run, for long-break cadence
+
+// how much of the current phase is left, 0..1 — drives the circular timer ring
+export const fraction = createComputed([phase, remaining], (p, r) => {
+  if (p === "idle") return 0
+  const total = p === "work" ? WORK_SEC : p === "longBreak" ? LONG_BREAK_SEC : BREAK_SEC
+  return r / total
+})
 
 function persistCompleted(n: number) {
   setCompletedToday(n)

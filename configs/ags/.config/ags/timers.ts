@@ -1,4 +1,4 @@
-import { createState } from "ags"
+import { createState, createComputed } from "ags"
 import { interval } from "ags/time"
 import { notify } from "./store"
 
@@ -7,18 +7,25 @@ import { notify } from "./store"
 // mid-timer it's lost, same as any other in-progress state in the bar.
 
 export const [reminderRemaining, setReminderRemaining] = createState(0) // seconds; 0 = not running
+export const [reminderTotal, setReminderTotal] = createState(0) // seconds set at start, for the ring
 export const [reminderLabel, setReminderLabel] = createState("")
 
 export function startReminder(minutes: number, label: string) {
   if (!(minutes > 0)) return
+  const secs = Math.round(minutes * 60)
   setReminderLabel(label.trim())
-  setReminderRemaining(Math.round(minutes * 60))
+  setReminderTotal(secs)
+  setReminderRemaining(secs)
 }
 
 export function cancelReminder() {
   setReminderRemaining(0)
+  setReminderTotal(0)
   setReminderLabel("")
 }
+
+// how much of the reminder is left, 0..1 — drives the circular timer ring
+export const reminderFraction = createComputed([reminderRemaining, reminderTotal], (r, t) => (t > 0 ? r / t : 0))
 
 interval(1000, () => {
   const r = reminderRemaining.get()

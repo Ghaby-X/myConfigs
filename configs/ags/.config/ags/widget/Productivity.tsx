@@ -1,15 +1,17 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib"
-import { For, createComputed } from "ags"
+import { For, Accessor, createState, createComputed } from "ags"
+import { timeout } from "ags/time"
 import { productivityOpen, setProductivityOpen } from "../state"
 import { focusFirst, popupKeys } from "../nav"
-import { timeLabel } from "./NotificationPopups"
+import CircularTimer from "./CircularTimer"
 import {
   phase,
   running,
   remaining,
   completedToday,
+  fraction as pomFraction,
   pauseResume,
   skip as skipPomodoro,
   reset as resetPomodoro,
@@ -17,6 +19,7 @@ import {
 import {
   reminderRemaining,
   reminderLabel,
+  reminderFraction,
   startReminder,
   cancelReminder,
   stopwatchElapsed,
@@ -26,7 +29,7 @@ import {
 } from "../timers"
 import { todos, addTodo, toggleTodo, removeTodo, clearCompletedTodos, type Todo } from "../todo"
 import { routineItems, streak, addRoutineItem, toggleRoutineItem, removeRoutineItem, type RoutineItem } from "../routine"
-import { notes, addNote, removeNote, type Note } from "../notes"
+import { readNotes, writeNotes } from "../notes"
 
 /** "125" -> "2:05", "5400" -> "1:30:00" */
 function fmt(totalSeconds: number): string {
@@ -38,7 +41,43 @@ function fmt(totalSeconds: number): string {
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`
 }
 
-function PomodoroSection() {
+// ─── Timers: pomodoro / stopwatch / reminder, one card, tab-switched ───────
+
+type TimerTab = "pomodoro" | "stopwatch" | "reminder"
+
+function TimersNav({ tab, setTab }: { tab: Accessor<TimerTab>; setTab: (t: TimerTab) => void }) {
+  let a: Gtk.ToggleButton
+  return (
+    <box class="tab-nav" spacing={2}>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "pomodoro")}
+        $={(self) => (a = self)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("pomodoro")}
+      >
+        <label label="Pomodoro" />
+      </togglebutton>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "stopwatch")}
+        $={(self) => self.set_group(a)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("stopwatch")}
+      >
+        <label label="Stopwatch" />
+      </togglebutton>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "reminder")}
+        $={(self) => self.set_group(a)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("reminder")}
+      >
+        <label label="Reminder" />
+      </togglebutton>
+    </box>
+  )
+}
+
+function PomodoroTab() {
   const phaseLabel = createComputed([phase], (p) =>
     p === "idle" ? "Ready to focus" : p === "work" ? "Focus" : p === "longBreak" ? "Long break" : "Break",
   )
@@ -46,15 +85,8 @@ function PomodoroSection() {
   const buttonIcon = running.as((r) => (r ? "media-playback-pause-symbolic" : "media-playback-start-symbolic"))
 
   return (
-    <box class="notif-item" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
-      <box class="section-header">
-        <label class="section-title" label="Pomodoro" xalign={0} hexpand />
-        <label label={completedToday.as((n) => `${n} today`)} />
-      </box>
-      <box spacing={10} valign={Gtk.Align.CENTER}>
-        <label class="timer-display" label={remaining.as(fmt)} hexpand xalign={0} />
-        <label label={phaseLabel} />
-      </box>
+    <box name="pomodoro" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
+      <CircularTimer fraction={pomFraction} text={remaining.as(fmt)} sub={phaseLabel} />
       <box spacing={6}>
         <button hexpand onClicked={pauseResume}>
           <box spacing={4} halign={Gtk.Align.CENTER}>
@@ -69,6 +101,125 @@ function PomodoroSection() {
           <image iconName="edit-clear-symbolic" />
         </button>
       </box>
+      <label class="tab-meta" label={completedToday.as((n) => `${n} today`)} />
+    </box>
+  )
+}
+
+function StopwatchTab() {
+  const swFraction = createComputed([stopwatchElapsed], (e) => (e % 60) / 60)
+  const icon = stopwatchRunning.as((r) => (r ? "media-playback-pause-symbolic" : "media-playback-start-symbolic"))
+  const meta = stopwatchRunning.as((r) => (r ? "Running" : "Paused"))
+
+  return (
+    <box name="stopwatch" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
+      <CircularTimer fraction={swFraction} text={stopwatchElapsed.as(fmt)} sub={undefined} />
+      <box spacing={6}>
+        <button hexpand onClicked={toggleStopwatch}>
+          <box spacing={4} halign={Gtk.Align.CENTER}>
+            <image iconName={icon} />
+            <label label={stopwatchRunning.as((r) => (r ? "Pause" : "Start"))} />
+          </box>
+        </button>
+        <button onClicked={resetStopwatch} tooltipText="Reset">
+          <image iconName="edit-clear-symbolic" />
+        </button>
+      </box>
+      <label class="tab-meta" label={meta} />
+    </box>
+  )
+}
+
+function ReminderTab() {
+  const active = reminderRemaining.as((r) => r > 0)
+  const idle = reminderRemaining.as((r) => r <= 0)
+
+  return (
+    <box name="reminder" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
+      <box visible={active} orientation={Gtk.Orientation.VERTICAL} spacing={10} halign={Gtk.Align.CENTER}>
+        <CircularTimer fraction={reminderFraction} text={reminderRemaining.as(fmt)} sub={reminderLabel.as((l) => l || "Reminder")} />
+        <button onClicked={cancelReminder} tooltipText="Cancel">
+          <box spacing={4} halign={Gtk.Align.CENTER}>
+            <image iconName="edit-clear-symbolic" />
+            <label label="Cancel" />
+          </box>
+        </button>
+      </box>
+      <box visible={idle} orientation={Gtk.Orientation.VERTICAL} spacing={8} widthRequest={200}>
+        <box spacing={6}>
+          <button hexpand onClicked={() => startReminder(5, "")}>
+            <label label="5m" />
+          </button>
+          <button hexpand onClicked={() => startReminder(10, "")}>
+            <label label="10m" />
+          </button>
+          <button hexpand onClicked={() => startReminder(15, "")}>
+            <label label="15m" />
+          </button>
+          <button hexpand onClicked={() => startReminder(25, "")}>
+            <label label="25m" />
+          </button>
+        </box>
+        <entry
+          placeholderText="or custom minutes"
+          onActivate={(self) => {
+            const n = Number(self.get_text())
+            if (n > 0) startReminder(n, "")
+            self.set_text("")
+          }}
+        />
+      </box>
+    </box>
+  )
+}
+
+function TimersCard() {
+  const [tab, setTab] = createState<TimerTab>("pomodoro")
+  return (
+    <box class="notif-item timers-card" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+      <stack
+        transitionType={Gtk.StackTransitionType.CROSSFADE}
+        transitionDuration={150}
+        // set after construction, not as a prop: Gtk.Stack needs its named
+        // children added first, or it (harmlessly) warns about a missing name
+        $={(self: Gtk.Stack) => {
+          self.set_visible_child_name(tab.get())
+          tab.subscribe(() => self.set_visible_child_name(tab.get()))
+        }}
+      >
+        <PomodoroTab />
+        <StopwatchTab />
+        <ReminderTab />
+      </stack>
+      <TimersNav tab={tab} setTab={setTab} />
+    </box>
+  )
+}
+
+// ─── Tasks: todo / routine, one card, tab-switched ─────────────────────────
+
+type TaskTab = "todo" | "routine"
+
+function TasksNav({ tab, setTab }: { tab: Accessor<TaskTab>; setTab: (t: TaskTab) => void }) {
+  let a: Gtk.ToggleButton
+  return (
+    <box class="tab-nav" spacing={2}>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "todo")}
+        $={(self) => (a = self)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("todo")}
+      >
+        <label label="Todo" />
+      </togglebutton>
+      <togglebutton
+        hexpand
+        active={tab.as((t) => t === "routine")}
+        $={(self) => self.set_group(a)}
+        onToggled={(self: Gtk.ToggleButton) => self.get_active() && setTab("routine")}
+      >
+        <label label="Routine" />
+      </togglebutton>
     </box>
   )
 }
@@ -87,11 +238,11 @@ function TodoRow({ t }: { t: Todo }) {
   )
 }
 
-function TodoSection() {
+function TodoTab() {
   const doneCount = createComputed([todos], (list) => list.filter((t) => t.done).length)
   const empty = todos.as((l) => l.length === 0)
   return (
-    <box orientation={Gtk.Orientation.VERTICAL} spacing={8}>
+    <box name="todo" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
       <box class="section-header">
         <label class="section-title" label="Todo" xalign={0} hexpand />
         <button class="clear" visible={doneCount.as((n) => n > 0)} onClicked={clearCompletedTodos}>
@@ -127,10 +278,10 @@ function RoutineRow({ i }: { i: RoutineItem }) {
   )
 }
 
-function RoutineSection() {
+function RoutineTab() {
   const empty = routineItems.as((l) => l.length === 0)
   return (
-    <box orientation={Gtk.Orientation.VERTICAL} spacing={8}>
+    <box name="routine" $type="named" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
       <box class="section-header">
         <label class="section-title" label="Routine" xalign={0} hexpand />
         <label label={streak.as((n) => (n > 0 ? `🔥 ${n}d streak` : "resets daily"))} />
@@ -150,106 +301,61 @@ function RoutineSection() {
   )
 }
 
-function ReminderBlock() {
-  const active = reminderRemaining.as((r) => r > 0)
-  const idle = reminderRemaining.as((r) => r <= 0)
+function TasksCard() {
+  const [tab, setTab] = createState<TaskTab>("todo")
   return (
-    <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-      <label class="section-title" label="Reminder" xalign={0} />
-      <box spacing={8} valign={Gtk.Align.CENTER} visible={active}>
-        <label class="timer-display" label={reminderRemaining.as(fmt)} hexpand xalign={0} />
-        <label label={reminderLabel} visible={reminderLabel.as((l) => !!l)} />
-        <button onClicked={cancelReminder} tooltipText="Cancel">
-          <image iconName="edit-clear-symbolic" />
-        </button>
-      </box>
-      <box spacing={6} visible={idle}>
-        <button hexpand onClicked={() => startReminder(5, "")}>
-          <label label="5m" />
-        </button>
-        <button hexpand onClicked={() => startReminder(10, "")}>
-          <label label="10m" />
-        </button>
-        <button hexpand onClicked={() => startReminder(15, "")}>
-          <label label="15m" />
-        </button>
-        <button hexpand onClicked={() => startReminder(25, "")}>
-          <label label="25m" />
-        </button>
-      </box>
-      <entry
-        placeholderText="or custom minutes"
-        visible={idle}
-        onActivate={(self) => {
-          const n = Number(self.get_text())
-          if (n > 0) startReminder(n, "")
-          self.set_text("")
+    <box class="notif-item tasks-card" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+      <stack
+        transitionType={Gtk.StackTransitionType.CROSSFADE}
+        transitionDuration={150}
+        // set after construction, not as a prop: Gtk.Stack needs its named
+        // children added first, or it (harmlessly) warns about a missing name
+        $={(self: Gtk.Stack) => {
+          self.set_visible_child_name(tab.get())
+          tab.subscribe(() => self.set_visible_child_name(tab.get()))
         }}
-      />
+      >
+        <TodoTab />
+        <RoutineTab />
+      </stack>
+      <TasksNav tab={tab} setTab={setTab} />
     </box>
   )
 }
 
-function StopwatchBlock() {
-  const icon = stopwatchRunning.as((r) => (r ? "media-playback-pause-symbolic" : "media-playback-start-symbolic"))
+// ─── Notes: a real scratchpad, not a one-line entry ────────────────────────
+
+function NotesCard() {
+  let saveTimer: ReturnType<typeof timeout> | null = null
+
   return (
-    <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-      <label class="section-title" label="Stopwatch" xalign={0} />
-      <box spacing={10} valign={Gtk.Align.CENTER}>
-        <label class="timer-display" label={stopwatchElapsed.as(fmt)} hexpand xalign={0} />
-        <button onClicked={toggleStopwatch}>
-          <image iconName={icon} />
-        </button>
-        <button onClicked={resetStopwatch} tooltipText="Reset">
-          <image iconName="edit-clear-symbolic" />
-        </button>
-      </box>
+    <box class="notif-item notes-card" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
+      <label class="section-title" label="Notes" xalign={0} />
+      <Gtk.ScrolledWindow heightRequest={150} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
+        <Gtk.TextView
+          class="notes-view"
+          wrapMode={Gtk.WrapMode.WORD_CHAR}
+          topMargin={8}
+          bottomMargin={8}
+          leftMargin={8}
+          rightMargin={8}
+          $={(self: Gtk.TextView) => {
+            const buffer = self.get_buffer()
+            buffer.set_text(readNotes(), -1)
+            buffer.connect("changed", () => {
+              saveTimer?.cancel()
+              saveTimer = timeout(500, () => {
+                writeNotes(buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), false))
+              })
+            })
+          }}
+        />
+      </Gtk.ScrolledWindow>
     </box>
   )
 }
 
-function TimersSection() {
-  return (
-    <box class="notif-item" orientation={Gtk.Orientation.VERTICAL} spacing={14}>
-      <ReminderBlock />
-      <StopwatchBlock />
-    </box>
-  )
-}
-
-function NoteRow({ n }: { n: Note }) {
-  return (
-    <box class="notif-item" spacing={8} valign={Gtk.Align.CENTER}>
-      <label class="notif-time" label={timeLabel(n.at)} />
-      <label label={n.text} hexpand xalign={0} wrap />
-      <button class="notif-close" onClicked={() => removeNote(n.id)}>
-        <image iconName="window-close-symbolic" />
-      </button>
-    </box>
-  )
-}
-
-function NotesSection() {
-  const empty = notes.as((l) => l.length === 0)
-  return (
-    <box orientation={Gtk.Orientation.VERTICAL} spacing={8}>
-      <box class="section-header">
-        <label class="section-title" label="Notes" xalign={0} hexpand />
-      </box>
-      <entry
-        placeholderText="Jot something down, Enter to save"
-        onActivate={(self) => {
-          addNote(self.get_text())
-          self.set_text("")
-        }}
-      />
-      <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
-        <For each={notes} id={(n) => `${n.id}`}>{(n) => <NoteRow n={n} />}</For>
-        <label class="empty-hint" label="No notes yet" visible={empty} />
-      </box>
-    </box>
-  )
-}
+// ─── Panel ──────────────────────────────────────────────────────────────
 
 export default function Productivity() {
   const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
@@ -288,11 +394,9 @@ export default function Productivity() {
         </box>
         <Gtk.ScrolledWindow vexpand focusable={false} hscrollbarPolicy={Gtk.PolicyType.NEVER} overlayScrolling={false}>
           <box orientation={Gtk.Orientation.VERTICAL} spacing={14}>
-            <PomodoroSection />
-            <TodoSection />
-            <RoutineSection />
-            <TimersSection />
-            <NotesSection />
+            <TimersCard />
+            <TasksCard />
+            <NotesCard />
           </box>
         </Gtk.ScrolledWindow>
       </box>
